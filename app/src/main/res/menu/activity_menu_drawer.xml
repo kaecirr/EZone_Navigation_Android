@@ -9,15 +9,19 @@
         <item
             android:id="@+id/nav_favourites"
             android:icon="@android:drawable/ic_menu_myplaces"
-            android:title="Favourites" />
+            android:title="Favourite Locations" />
         <item
             android:id="@+id/nav_recentlocations"
             android:icon="@drawable/quantum_ic_replay_white_24"
             android:title="Recent Locations" />
         <item
-            android:id="@+id/nav_aboutlocations"
+            android:id="@+id/nav_settings"
+            android:icon="@drawable/ic_setting_dark"
+            android:title="Settings" />
+        <item
+            android:id="@+id/nav_about"
             android:icon="@android:drawable/ic_menu_info_details"
-            android:title="About Locations" />
+            android:title="About" />
     </group>
 
 </menu>

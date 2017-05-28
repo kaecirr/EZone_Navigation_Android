@@ -1,8 +1,11 @@
 package com.example.kaelansinclair.ezone_navigation_android;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -15,6 +18,10 @@ import android.view.MenuItem;
 
 public class MenuActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    private static final String PREFS_NAME = "IsLoggedIn";
+    private static int PRIVATE_MODE = 0;
+    private static boolean first = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,8 +45,35 @@ public class MenuActivity extends AppCompatActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
+        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, PRIVATE_MODE);
+        if (first) {
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putBoolean("logged", false); // set it to false when the user is logged out
+            editor.commit();
+            first = false;
+        }
+
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, PRIVATE_MODE);
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+
+        MenuItem item = navigationView.getMenu().findItem(R.id.nav_signin);
+        if (prefs.getBoolean("logged", true)) { //user logged in before
+            item.setTitle("Sign Out");
+            item.setIcon(android.R.drawable.ic_menu_revert);
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
     }
 
     @Override
@@ -82,11 +116,21 @@ public class MenuActivity extends AppCompatActivity
 
         if (id == R.id.nav_signin) {
             // Handle the camera action
+            SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+            if (prefs.getBoolean("logged", true)) { //user logged in before
+                item.setTitle("Sign In");
+                item.setIcon(R.drawable.common_full_open_on_phone);
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putBoolean("logged", false); // set it to false when the user is logged out
+                editor.commit();
+            }
+            else startActivity(new Intent(MenuActivity.this, LoginActivity.class));
         } else if (id == R.id.nav_favourites) {
 
         } else if (id == R.id.nav_recentlocations) {
+        } else if (id == R.id.nav_settings) {
 
-        } else if (id == R.id.nav_aboutlocations) {
+        } else if (id == R.id.nav_about) {
 
         }
 
