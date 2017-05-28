@@ -1,6 +1,5 @@
 package com.example.kaelansinclair.ezone_navigation_android;
 
-import android.*;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.pm.ActivityInfo;
@@ -12,12 +11,11 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 
-public class MainActivity extends AppCompatActivity  implements OnMapReadyCallback {
+public class MapsActivity extends AppCompatActivity  implements OnMapReadyCallback {
 
     private GoogleMap mMap;
     private static final int REQUEST_CODE_ACCESS_COARSE_LOCATION = 1;
@@ -26,7 +24,7 @@ public class MainActivity extends AppCompatActivity  implements OnMapReadyCallba
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_maps);
 
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
@@ -56,7 +54,7 @@ public class MainActivity extends AppCompatActivity  implements OnMapReadyCallba
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 Log.d(TAG, "request permissions");
-                                ActivityCompat.requestPermissions(MainActivity.this,
+                                ActivityCompat.requestPermissions(MapsActivity.this,
                                         new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION},
                                         REQUEST_CODE_ACCESS_COARSE_LOCATION);
                             }
@@ -64,7 +62,7 @@ public class MainActivity extends AppCompatActivity  implements OnMapReadyCallba
                         .setNegativeButton(R.string.permission_button_deny, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                Toast.makeText(MainActivity.this,
+                                Toast.makeText(MapsActivity.this,
                                         R.string.location_permission_denied_message,
                                         Toast.LENGTH_LONG).show();
                             }

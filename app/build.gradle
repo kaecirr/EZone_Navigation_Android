@@ -34,6 +34,7 @@ dependencies {
     testCompile 'junit:junit:4.12'
 }
 
+
 repositories {
     maven {
         url "http://indooratlas-ltd.bintray.com/mvn-public"

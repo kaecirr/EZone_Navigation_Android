@@ -7,4 +7,10 @@
     <string name="permission_button_accept">Sure</string>
     <string name="permission_button_deny">Deny</string>
     <string name="button_close">Close</string>
+    <string name="title_activity_main2">Main2Activity</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
 </resources>
