@@ -487,12 +487,17 @@ public class MenuActivity extends AppCompatActivity
                         JSONObject sourceJSON = (JSONObject) path.get(i);
                         JSONObject targetJSON = (JSONObject) path.get(i + 1);
                         if (sourceJSON.has("latitude") && sourceJSON.has("longitude") && targetJSON.has("latitude") && targetJSON.has("longitude")) {
-                            LatLng source = new LatLng(Double.parseDouble((String) sourceJSON.get("latitude")), Double.parseDouble((String) sourceJSON.get("longitude")));
-                            LatLng target = new LatLng(Double.parseDouble((String) targetJSON.get("latitude")), Double.parseDouble((String) targetJSON.get("longitude")));
+                            Log.d("help", (String) sourceJSON.get("latitude"));
+                            Log.d("help2", (String) sourceJSON.get("longitude"));
+                            Log.d("help3",  String.valueOf(Double.valueOf((String) targetJSON.get("latitude"))));
+                            double t = 115.81637409;
+                            LatLng source = new LatLng(Double.valueOf((String) sourceJSON.get("longitude")), Double.valueOf((String) sourceJSON.get("latitude"))); //Need to fix this!!!!!
+                            LatLng target = new LatLng(Double.valueOf((String) targetJSON.get("longitude")), Double.valueOf((String) targetJSON.get("latitude")));
                             final PolylineOptions rectOptions = new PolylineOptions();
                             rectOptions.add(source, target).color(Color.RED);
                             polyline.add(mMap.addPolyline(rectOptions));
-                            Log.d("wtf2", polyline.toString());
+                            Polyline u = (Polyline) polyline.toArray()[0];
+                            Log.d("wtf2", String.valueOf(source.latitude));
                         }
                     }
                 }
