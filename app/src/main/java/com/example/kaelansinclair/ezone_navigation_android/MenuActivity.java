@@ -466,6 +466,7 @@ public class MenuActivity extends AppCompatActivity
     };
 
     public static void drawPolyline(String response) {
+        Log.d("quickDebug", response);
         try {
             JSONObject jsonObject = new JSONObject(response);
 
@@ -490,9 +491,8 @@ public class MenuActivity extends AppCompatActivity
                             Log.d("help", (String) sourceJSON.get("latitude"));
                             Log.d("help2", (String) sourceJSON.get("longitude"));
                             Log.d("help3",  String.valueOf(Double.valueOf((String) targetJSON.get("latitude"))));
-                            double t = 115.81637409;
-                            LatLng source = new LatLng(Double.valueOf((String) sourceJSON.get("longitude")), Double.valueOf((String) sourceJSON.get("latitude"))); //Need to fix this!!!!!
-                            LatLng target = new LatLng(Double.valueOf((String) targetJSON.get("longitude")), Double.valueOf((String) targetJSON.get("latitude")));
+                            LatLng source = new LatLng(Double.valueOf((String) sourceJSON.get("latitude")), Double.valueOf((String) sourceJSON.get("longitude")));
+                            LatLng target = new LatLng(Double.valueOf((String) targetJSON.get("latitude")), Double.valueOf((String) targetJSON.get("longitude")));
                             final PolylineOptions rectOptions = new PolylineOptions();
                             rectOptions.add(source, target).color(Color.RED);
                             polyline.add(mMap.addPolyline(rectOptions));
@@ -561,7 +561,7 @@ public class MenuActivity extends AppCompatActivity
         @Override
         public void onMapClick(LatLng latLng) {
             if (mMap != null) {
-
+/*
                 if (mPoint == null && mPoint2 == null) {
                     // first location, add marker
 
@@ -570,13 +570,14 @@ public class MenuActivity extends AppCompatActivity
                     mPoint = mMap.addMarker(new MarkerOptions().position(latLng).icon(markerIcon).zIndex(100));
 
                 }
+                */
 
-                else if (mPoint2 == null) {
+                if (mPoint2 == null) {
                     mPoint2 = mMap.addMarker(new MarkerOptions().position(latLng)
                             .icon(BitmapDescriptorFactory.defaultMarker(HUE_IAGRN)));
 
                     if (mPoint2 != null && mPoint2.isVisible()) {
-
+/*
                         try {
                             jsonInner.put("startLongitude", String.valueOf(mPoint.getPosition().longitude));
                             jsonInner.put("startLatitude", String.valueOf(mPoint.getPosition().latitude));
@@ -587,16 +588,17 @@ public class MenuActivity extends AppCompatActivity
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-
+                        Log.d("quickDebug", json.toString());
                         TestRequest t = new TestRequest("http://52.64.190.66:8080/springMVC-1.0-SNAPSHOT/path", json.toString());
 
                         t.execute();
+                        */
                     }
                 }
                 else if (mPoint2 != null) {
                     if (mPoint2.isVisible()) {
                         mPoint2.setVisible(false);
-                        mPoint.setPosition(latLng);
+                        //mPoint.setPosition(latLng);
                         if (polyline != null) {
                             Iterator<Polyline> pol = polyline.iterator();
                             while (pol.hasNext()) pol.next().remove();;
@@ -609,7 +611,7 @@ public class MenuActivity extends AppCompatActivity
                         //mMap.setMyLocationEnabled(false);
 
                         if (mPoint2 != null && mPoint2.isVisible()) {
-
+/*
                             try {
                                 jsonInner.put("startLongitude", String.valueOf(mPoint.getPosition().longitude));
                                 jsonInner.put("startLatitude", String.valueOf(mPoint.getPosition().latitude));
@@ -620,10 +622,11 @@ public class MenuActivity extends AppCompatActivity
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
-
+                            Log.d("quickDebug", json.toString());
                             TestRequest t = new TestRequest("http://52.64.190.66:8080/springMVC-1.0-SNAPSHOT/path", json.toString());
 
                             t.execute();
+                            */
                         }
                     }
                 }
