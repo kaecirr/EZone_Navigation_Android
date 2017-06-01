@@ -84,7 +84,27 @@ As a developer, I want to utilize the A* as the pathfinding algorithm so that th
 
 ***Storing node information and meta-data for rooms in database***: As a developer, I want to store the information so that I can use them to present data to the users.
 
-## **USE CASES**
+## **SOME USE CASES**
+
+<p align="center">
+  <img  src="https://github.com/kaecirr/EZone_Navigation_Android/blob/master/gifs/LoginNavigation.png">
+</p>
+
+<p align="center">
+  <img src="https://github.com/kaecirr/EZone_Navigation_Android/blob/master/gifs/GetRoomInformation.png">
+</p>
+
+<p align="center">
+  <img src="https://github.com/kaecirr/EZone_Navigation_Android/blob/master/gifs/StartTracking.png">
+</p>
+
+<p align="center">
+  <img src="https://github.com/kaecirr/EZone_Navigation_Android/blob/master/gifs/NavigateSingleFloor.png">
+</p>
+
+<p align="center">
+  <img src="https://github.com/kaecirr/EZone_Navigation_Android/blob/master/gifs/NavigateMultipleFloor.png">
+</p>
 
 ## **DESIGN CONSTRAINTS**
 
