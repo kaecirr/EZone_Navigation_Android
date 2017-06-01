@@ -9,12 +9,17 @@ Brian Lee (21492167)
 **GOAL**
 
 **USER ROLES**
+
 *Users*:
+
 The users could be students, university staffs or visitors that can use this application.
+
 *Developers*:
+
 The developers are those who design and develop this indoor navigation application.
 
 **USER STORIES**
+
 *Single floor navigation*: As a user, I want to select a location (or input a room number) as a destination on a single floor plan so that it can show the path and guide me to that destination.
 
 *Multiple floor navigation*: As a user, I want to choose a different floor and select a location (or input a room number) on that floor so that it can show the path and guide me to the destination. 
@@ -36,32 +41,26 @@ The developers are those who design and develop this indoor navigation applicati
 *Buttons for switch floors*: As a user, I want to have buttons which allow me to switch floor plans in a building so that I can select locations on different floors.
 
 *A-star pathfinding*: 
+
 As a user, I want the path to be updated with a fast response time so that the application feels responsive.
+
 As a developer, I want to utilize the A* as the pathfinding algorithm so that the time for calculating a viable path is reduced.
 
-*Current location button*: 
-As a user, I want to have a positioning button for me to press so that I can know my current location.
+*Current location button*: As a user, I want to have a positioning button for me to press so that I can know my current location.
 
-*Start tracking button*:
-As a user, I want to have a start tracking button for me to press so that it can guide me to the destination step by step. 
+*Start tracking button*: As a user, I want to have a start tracking button for me to press so that it can guide me to the destination step by step. 
 
-*Points-of-interest*:
-As a user, I want to have some points-of-interest marked on the floor plan so that I can choose the neatest one.
+*Points-of-interest*: As a user, I want to have some points-of-interest marked on the floor plan so that I can choose the neatest one.
 
-*Favourites and recent location list*:
-As a user, I want to save my favourite locations or recent paths so that it will be convenient for my later use.
+*Favourites and recent location list*: As a user, I want to save my favourite locations or recent paths so that it will be convenient for my later use.
 
-*Functional login system*:
-As a user, I want to be able to login so that I can have access to my user data.
+*Functional login system*: As a user, I want to be able to login so that I can have access to my user data.
 
-*Syncing with the server*:
-As a user, I want to sync my favourite or recent locations to the backend server so that I can access it from multiple devices.
+*Syncing with the server*: As a user, I want to sync my favourite or recent locations to the backend server so that I can access it from multiple devices.
 
-*Determining user’s closest node*:
-As a developer, I want to to add the user current location to the nearest reference point so that the graph can be constructed and the shortest path can be computed.
+*Determining user’s closest node*: As a developer, I want to to add the user current location to the nearest reference point so that the graph can be constructed and the shortest path can be computed.
 
-*Store node information and meta-data for rooms in database*:
-As a developer, I want to store the information so that I can use them to present data to the users.
+*Store node information and meta-data for rooms in database*: As a developer, I want to store the information so that I can use them to present data to the users.
 
 **USE CASES**
 
