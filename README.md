@@ -87,27 +87,32 @@ As a developer, I want to utilize the A* as the pathfinding algorithm so that th
 ## **SOME USE CASES**
 
 <p align="center">
-  <img  width="800"
+  <img  width="750"
   src="https://github.com/kaecirr/EZone_Navigation_Android/blob/master/gifs/LoginNavigation.png">
 </p>
 
 <p align="center">
-  <img width="800"
+  <img width="750"
+  src="https://github.com/kaecirr/EZone_Navigation_Android/blob/master/gifs/SearchRoom.png">
+</p>
+
+<p align="center">
+  <img width="750"
   src="https://github.com/kaecirr/EZone_Navigation_Android/blob/master/gifs/GetRoomInformation.png">
 </p>
 
 <p align="center">
-  <img width="800"
+  <img width="750"
   src="https://github.com/kaecirr/EZone_Navigation_Android/blob/master/gifs/StartTracking.png">
 </p>
 
 <p align="center">
-  <img width="800"
+  <img width="750"
   src="https://github.com/kaecirr/EZone_Navigation_Android/blob/master/gifs/NavigateSingleFloor.png">
 </p>
 
 <p align="center">
-  <img width="800"
+  <img width="750"
   src="https://github.com/kaecirr/EZone_Navigation_Android/blob/master/gifs/NavigateMultipleFloor.png">
 </p>
 
