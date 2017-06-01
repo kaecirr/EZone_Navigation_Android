@@ -29,6 +29,10 @@ These mock-ups are designed to represent the general placement of buttons and sh
 
 ![Basic Map Screen Layout](https://github.com/kaecirr/EZone_Navigation_Android/blob/master/gifs/button%20func.png)
 
+<p align="center">
+  <img width="460" height="300" src="https://github.com/kaecirr/EZone_Navigation_Android/blob/master/gifs/button%20func.png">
+</p>
+
 When the user opens the app, they will be greeted by the splash screen. After a moment, it transitions to the map screen. 
 
 ![Starting App](https://github.com/kaecirr/EZone_Navigation_Android/blob/master/gifs/splash_screen_to_first_screen.gif) 
@@ -44,7 +48,7 @@ The user can login by tapping ‘Sign In’. This pulls up the login page which 
 
 If the credentials are entered incorrectly, the user is notified that they have entered the ‘incorrect login details’. 
 
-![Incorrect Login Details](https://github.com/kaecirr/EZone_Navigation_Android/blob/master/gifs/incorrect_login.png)
+![Incorrect Login Details](https://github.com/kaecirr/EZone_Navigation_Android/blob/master/gifs/incorrect_login_resized.png)
 
 If the credentials were correct, it just goes back to the map screen. Pressing the menu button again, we can see that the ‘Visitor’ label has now changed to the username of the user. 
 
@@ -64,7 +68,7 @@ Back on the map screen, users can tap the search bar and enter a room that they 
 
 The search will show the results that most likely correspond to what was entered. If the search does not correspond to any room, it will display ‘No search results’.
 
-![No Search Results](https://github.com/kaecirr/EZone_Navigation_Android/blob/master/gifs/no search results.png)
+![No Search Results](https://github.com/kaecirr/EZone_Navigation_Android/blob/master/gifs/no_search_results_resized.png)
 
 If the user searches for ‘CSSE Lab’ for example, it brings up all the labs in the CSSE building. Tapping on one of the results, leads to a screen that shows where the room is and some details about it. 
 
