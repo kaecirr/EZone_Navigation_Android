@@ -127,8 +127,9 @@ public class MenuActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                //Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                      //  .setAction("Action", null).show();
+                if (mMap != null && mMarker != null) mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(mMarker.getPosition(), 17.5f));
             }
         });
 
@@ -529,9 +530,9 @@ public class MenuActivity extends AppCompatActivity
                     mGroundOverlay.setTransparency(0.0f);
                 }
             }
-            showInfo("Enter " + (region.getType() == IARegion.TYPE_VENUE
-                    ? "VENUE "
-                    : "FLOOR_PLAN ") + region.getId());
+           // showInfo("Enter " + (region.getType() == IARegion.TYPE_VENUE
+             //       ? "VENUE "
+               //     : "FLOOR_PLAN ") + region.getId());
         }
 
         @Override
@@ -541,9 +542,9 @@ public class MenuActivity extends AppCompatActivity
                 // If we enter another floor plan, this one will be removed and another one loaded
                 mGroundOverlay.setTransparency(0.5f);
             }
-            showInfo("Enter " + (region.getType() == IARegion.TYPE_VENUE
-                    ? "VENUE "
-                    : "FLOOR_PLAN ") + region.getId());
+           // showInfo("Enter " + (region.getType() == IARegion.TYPE_VENUE
+             //       ? "VENUE "
+               //     : "FLOOR_PLAN ") + region.getId());
         }
 
     };
@@ -650,9 +651,9 @@ public class MenuActivity extends AppCompatActivity
                 mGroundOverlay.setTransparency(0.0f);
             }
         }
-        showInfo("Enter " + (region.getType() == IARegion.TYPE_VENUE
-                ? "VENUE "
-                : "FLOOR_PLAN ") + region.getId());
+       // showInfo("Enter " + (region.getType() == IARegion.TYPE_VENUE
+         //       ? "VENUE "
+           //     : "FLOOR_PLAN ") + region.getId());
     }
 
     /**
@@ -709,10 +710,10 @@ public class MenuActivity extends AppCompatActivity
             ensurePermissions();
         }
         else {
-            map.setMyLocationEnabled(true);
+            map.setMyLocationEnabled(false);
         }
 
-        map.getUiSettings().setMyLocationButtonEnabled(true);
+        map.getUiSettings().setMyLocationButtonEnabled(false);
         map.setOnMapClickListener(mClickListener);
         mMap = map;
     }
