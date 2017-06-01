@@ -172,13 +172,13 @@ Tapping ‘Read more’ brings the user to a screen that gives further details a
   <img width="268" height="400" src="https://github.com/kaecirr/EZone_Navigation_Android/blob/master/gifs/getting_room_details.gif">
 </p>
 
-Tapping ‘Navigate To Here’ draws the shortest path from the user’s closest node to the chosen end destination. 
+Tapping ‘Navigate To Here’ draws a viable path from the user’s closest node to the chosen end destination. 
 
 <p align="center">
   <img width="268" height="400" src="https://github.com/kaecirr/EZone_Navigation_Android/blob/master/gifs/navigate_on_same_floor.gif">
 </p>
 
-If the destination is on a different floor, a path is drawn to the stairwell that will provide the shortest path to the destination. When the user changes to the correct floor, a path will be drawn to the destination. 
+If the destination is on a different floor, a path is drawn to the stairwell that will provide a viable path to the destination. When the user changes to the correct floor, a path will be drawn to the destination. 
 
 <p align="center">
   <img width="268" height="400" src="https://github.com/kaecirr/EZone_Navigation_Android/blob/master/gifs/navigation_different_floors.gif">
@@ -190,36 +190,37 @@ If the user taps on a room on a floor, a destination marker will be placed in th
   <img width="268" height="400" src="https://github.com/kaecirr/EZone_Navigation_Android/blob/master/gifs/Placing_marker_and_starting_tracking.gif">
 </p>
 
-**FUTURE SCOPE**
+## **FUTURE SCOPE**
+
 There is a multitude of features that could be added to enhance the functionality of the Ezone application.  The following section will discuss some of these features and goals as part of the potential future scope.
 
 In the future, the application could:
 *	Allow for more complex searching of destinations
-  -The present scope of the project only covers very basic searching of destinations. Adding the ability to allow for a more complex searching algorithm would make the searching more fine-tuned and help filter out unrelated results.
+  *The present scope of the project only covers very basic searching of destinations. Adding the ability to allow for a more complex searching algorithm would make the searching more fine-tuned and help filter out unrelated results.
 
 *	Have on-device calculations 
-  -Path-finding could be improved by providing some on-device calculations used for intermediate movement. Determining the best start position for the navigation would also help in this respect. This could be achieved by considering several different nodes around the user’s position (instead of the closest node described in the minimum functionality) and selecting the node that would produce the most viable path. 
+  *Path-finding could be improved by providing some on-device calculations used for intermediate movement. Determining the best start position for the navigation would also help in this respect. This could be achieved by considering several different nodes around the user’s position (instead of the closest node described in the minimum functionality) and selecting the node that would produce the most viable path. 
 
 *	Provide navigation for different buildings and navigation between buildings
-  -With regards to navigation, mapping of other buildings could be completed so that users could use the application in different buildings. Sometimes users of the application would also like to navigate outside a building as well. Thus, navigation between buildings is a future feature to consider.
+  *With regards to navigation, mapping of other buildings could be completed so that users could use the application in different buildings. Sometimes users of the application would also like to navigate outside a building as well. Thus, navigation between buildings is a future feature to consider.
 
 *	Deal with inaccessible areas when navigating
-  -Navigation in the current scope does not deal with areas being inaccessible. Most doors are accessible during the day, but at night and in the early hours of the morning, there are certain doors that lock.  Adding a feature that deals with this problem would help to strengthen the functionality of the application.
+  *Navigation in the current scope does not deal with areas being inaccessible. Most doors are accessible during the day, but at night and in the early hours of the morning, there are certain doors that lock.  Adding a feature that deals with this problem would help to strengthen the functionality of the application.
 
 *	Provide further details about floors and points-of-interest
-  -Providing extra detail about floors and points-of-interest could also be beneficial. Details, such as if a water fountain or a cafe is on the current floor, provides useful information for users. The locations of toilets would also be something that users may want to know when they load a floor. 
+  *Providing extra detail about floors and points-of-interest could also be beneficial. Details, such as if a water fountain or a cafe is on the current floor, provides useful information for users. The locations of toilets would also be something that users may want to know when they load a floor. 
 
 *	Allow for the sharing of the user’s location
-  -Adding functionality to share the user’s location would help market the application and make it more interactive and appealing to users.
+  *Adding functionality to share the user’s location would help market the application and make it more interactive and appealing to users.
 
 *	Allow for a website to maintain the backend
-  -A website that could edit the database would be useful if lecturers change offices or if a room changes its name. Adding authorization and requests for user access could be made to ensure the security of the database.
+  *A website that could edit the database would be useful if lecturers change offices or if a room changes its name. Adding authorization and requests for user access could be made to ensure the security of the database.
 
 *	Have an emergency alert notification
-  -The app could be made to respond to emergency alarms. If there is an emergency in the building, such as a fire, the application could immediately alert the user and direct them to the nearest fire exit. It could block most of the functionality of the application until the emergency is resolved.
+  *The app could be made to respond to emergency alarms. If there is an emergency in the building, such as a fire, the application could immediately alert the user and direct them to the nearest fire exit. It could block most of the functionality of the application until the emergency is resolved.
 
 *	Allow for the usage of elevators 
-  -Sometimes, users would rather use the elevator than the stairs. So, something that could potentially be considered as part of the future scope, is the usage of the application with the elevator.
+  *Sometimes, users would rather use the elevator than the stairs. So, something that could potentially be considered as part of the future scope, is the usage of the application with the elevator.
 
 It should be emphasised that these features and goals are not part of our current project scope or in our minimum requirements, but may be added if time permits. These future scope goals are provided to show how the application could be extended past the minimum requirements we hope to deliver.
 
