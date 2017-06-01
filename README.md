@@ -8,7 +8,62 @@ Brian Lee (21492167)
 
 **GOAL**
 
+**USER ROLES**
+*Users*:
+The users could be students, university staffs or visitors that can use this application.
+*Developers*:
+The developers are those who design and develop this indoor navigation application.
+
 **USER STORIES**
+*Single floor navigation*: As a user, I want to select a location (or input a room number) as a destination on a single floor plan so that it can show the path and guide me to that destination.
+
+*Multiple floor navigation*: As a user, I want to choose a different floor and select a location (or input a room number) on that floor so that it can show the path and guide me to the destination. 
+
+*Tracking user’s position*: As a user, I want the application can show my real-time position when I am moving in the building so that I can know my current location.
+
+*Path updating*: As a user, I want the path to the destination can be updated automatically when I move so that I can have the correct path the destination all the time.
+
+*Searching destination*: As a user, I want to find a specific room by entering the room number so that it will tell me the location of that room.
+
+*Placing a marker on destination*: As a user, I want to select a location as the destination by pressing that location on the floor plan so that it will place a marker on that location.
+
+*Putting a starting point*: As a user, I want to select a location as a starting point so that I can see a viable path from that starting point to a destination.
+
+*Determining viable path*: As a user, I want to have a viable path between my starting location and destination so that I can reach my destination directly and quickly.
+
+*More information for a room*: As a user, I want to get more information about a specific room when I select that room so that I can know it in more details.
+
+*Buttons for switch floors*: As a user, I want to have buttons which allow me to switch floor plans in a building so that I can select locations on different floors.
+
+*A-star pathfinding*: 
+As a user, I want the path to be updated with a fast response time so that the application feels responsive.
+As a developer, I want to utilize the A* as the pathfinding algorithm so that the time for calculating a viable path is reduced.
+
+*Current location button*: 
+As a user, I want to have a positioning button for me to press so that I can know my current location.
+
+*Start tracking button*:
+As a user, I want to have a start tracking button for me to press so that it can guide me to the destination step by step. 
+
+*Points-of-interest*:
+As a user, I want to have some points-of-interest marked on the floor plan so that I can choose the neatest one.
+
+*Favourites and recent location list*:
+As a user, I want to save my favourite locations or recent paths so that it will be convenient for my later use.
+
+*Functional login system*:
+As a user, I want to be able to login so that I can have access to my user data.
+
+*Syncing with the server*:
+As a user, I want to sync my favourite or recent locations to the backend server so that I can access it from multiple devices.
+
+*Determining user’s closest node*:
+As a developer, I want to to add the user current location to the nearest reference point so that the graph can be constructed and the shortest path can be computed.
+
+*Store node information and meta-data for rooms in database*:
+As a developer, I want to store the information so that I can use them to present data to the users.
+
+**USE CASES**
 
 **DESIGN CONSTRAINTS**
 
