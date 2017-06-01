@@ -27,36 +27,46 @@ Indoor Atlas is being used for the project as it provides with the use cases we 
 This section will discuss the user interface mock-ups. The shape and colour of the screens are not reflective of the final product.
 These mock-ups are designed to represent the general placement of buttons and show the basic functionalities.
 
-![Basic Map Screen Layout](https://github.com/kaecirr/EZone_Navigation_Android/blob/master/gifs/button%20func.png)
-
 <p align="center">
-  <img width="460" height="300" src="https://github.com/kaecirr/EZone_Navigation_Android/blob/master/gifs/button%20func.png">
+  <img width="931" height="810" src="https://github.com/kaecirr/EZone_Navigation_Android/blob/master/gifs/button%20func.png">
 </p>
 
 When the user opens the app, they will be greeted by the splash screen. After a moment, it transitions to the map screen. 
 
-![Starting App](https://github.com/kaecirr/EZone_Navigation_Android/blob/master/gifs/splash_screen_to_first_screen.gif) 
+<p align="center">
+  <img width="268" height="400" src="https://github.com/kaecirr/EZone_Navigation_Android/blob/master/gifs/splash_screen_to_first_screen.gif">
+</p>
 
 A message should appear asking for permission to use the user’s location.
 From here, the user can access the menu screen by tapping the button on the top left corner. 
 
-![Opening menu](https://github.com/kaecirr/EZone_Navigation_Android/blob/master/gifs/first_screen_to_visitor_menu.gif)
+<p align="center">
+  <img width="268" height="400" src="https://github.com/kaecirr/EZone_Navigation_Android/blob/master/gifs/first_screen_to_visitor_menu.gif">
+</p>
 
 The user can login by tapping ‘Sign In’. This pulls up the login page which allows the user to enter their credentials. 
 
-![Login](https://github.com/kaecirr/EZone_Navigation_Android/blob/master/gifs/visitor_menu_to_login_in_Screen.gif) 
+<p align="center">
+  <img width="268" height="400" src="https://github.com/kaecirr/EZone_Navigation_Android/blob/master/gifs/visitor_menu_to_login_in_Screen.gif">
+</p>
 
 If the credentials are entered incorrectly, the user is notified that they have entered the ‘incorrect login details’. 
 
-![Incorrect Login Details](https://github.com/kaecirr/EZone_Navigation_Android/blob/master/gifs/incorrect_login_resized.png)
+<p align="center">
+  <img width="268" height="400" src="https://github.com/kaecirr/EZone_Navigation_Android/blob/master/gifs/incorrect_login_resized.png">
+</p>
 
 If the credentials were correct, it just goes back to the map screen. Pressing the menu button again, we can see that the ‘Visitor’ label has now changed to the username of the user. 
 
-![Going to Map Screen after Login](https://github.com/kaecirr/EZone_Navigation_Android/blob/master/gifs/login_screen_to_signed_in_menu_screen.gif)
+<p align="center">
+  <img width="268" height="400" src="https://github.com/kaecirr/EZone_Navigation_Android/blob/master/gifs/login_screen_to_signed_in_menu_screen.gif">
+</p>
 
 The menu screen also has the functionality to view the favourite and recent locations and also the settings screen. 
 
-![Menu Options](https://github.com/kaecirr/EZone_Navigation_Android/blob/master/gifs/menu_options.gif)
+<p align="center">
+  <img width="268" height="400" src="https://github.com/kaecirr/EZone_Navigation_Android/blob/master/gifs/menu_options.gif">
+</p>
 
 ‘Favourite Locations’ shows the locations that the user has added to their favourites. 
 ‘Recent Locations’ shows the locations that the user has searched recently.
@@ -64,36 +74,51 @@ The menu screen also has the functionality to view the favourite and recent loca
 
 Back on the map screen, users can tap the search bar and enter a room that they would like to go to. 
 
-![Search Screen](https://github.com/kaecirr/EZone_Navigation_Android/blob/master/gifs/first_screen_to_search_screen.gif)  
+<p align="center">
+  <img width="268" height="400" src="https://github.com/kaecirr/EZone_Navigation_Android/blob/master/gifs/first_screen_to_search_screen.gif">
+</p>
 
 The search will show the results that most likely correspond to what was entered. If the search does not correspond to any room, it will display ‘No search results’.
 
-![No Search Results](https://github.com/kaecirr/EZone_Navigation_Android/blob/master/gifs/no_search_results_resized.png)
+<p align="center">
+  <img width="268" height="400" src="https://github.com/kaecirr/EZone_Navigation_Android/blob/master/gifs/no_search_results_resized.png">
+</p>
 
 If the user searches for ‘CSSE Lab’ for example, it brings up all the labs in the CSSE building. Tapping on one of the results, leads to a screen that shows where the room is and some details about it. 
 
-![Search_results](https://github.com/kaecirr/EZone_Navigation_Android/blob/master/gifs/Search_results_to_CSSE_Lab_screen.gif)
+<p align="center">
+  <img width="268" height="400" src="https://github.com/kaecirr/EZone_Navigation_Android/blob/master/gifs/Search_results_to_CSSE_Lab_screen.gif">
+</p>
 
 Tapping ‘Read more’ brings the user to a screen that gives further details about the searched room.
 
-![Getting Room Details](https://github.com/kaecirr/EZone_Navigation_Android/blob/master/gifs/getting_room_details.gif) 
+<p align="center">
+  <img width="268" height="400" src="https://github.com/kaecirr/EZone_Navigation_Android/blob/master/gifs/getting_room_details.gif">
+</p>
 
 Tapping ‘Navigate To Here’ draws the shortest path from the user’s closest node to the chosen end destination. 
 
-![Navigatation on the Same Floor](https://github.com/kaecirr/EZone_Navigation_Android/blob/master/gifs/navigate_on_same_floor.gif)
+<p align="center">
+  <img width="268" height="400" src="https://github.com/kaecirr/EZone_Navigation_Android/blob/master/gifs/navigate_on_same_floor.gif">
+</p>
 
 If the destination is on a different floor, a path is drawn to the stairwell that will provide the shortest path to the destination. When the user changes to the correct floor, a path will be drawn to the destination. 
 
-![Navigation on Different Floors](https://github.com/kaecirr/EZone_Navigation_Android/blob/master/gifs/navigation_different_floors.gif)
+<p align="center">
+  <img width="268" height="400" src="https://github.com/kaecirr/EZone_Navigation_Android/blob/master/gifs/navigation_different_floors.gif">
+</p>
 
 If the user taps on a room on a floor, a destination marker will be placed in that location. The user can then press the button with the marker symbol to make the app start tracking the user's location. 
 
-![Placing marker](https://github.com/kaecirr/EZone_Navigation_Android/blob/master/gifs/Placing_marker_and_starting_tracking.gif)
+<p align="center">
+  <img width="268" height="400" src="https://github.com/kaecirr/EZone_Navigation_Android/blob/master/gifs/Placing_marker_and_starting_tracking.gif">
+</p>
 
 If there is an emergency, such as a fire, the app will give an emergency alert and point to the nearest emergency exit. This function disables the searching feature. 
 
-![Emergency Alert](https://github.com/kaecirr/EZone_Navigation_Android/blob/master/gifs/emergency_alert.gif)
-
+<p align="center">
+  <img width="268" height="400" src="https://github.com/kaecirr/EZone_Navigation_Android/blob/master/gifs/emergency_alert.gif">
+</p>
 
 
 **MINIMUM FUNCTIONALITY**
