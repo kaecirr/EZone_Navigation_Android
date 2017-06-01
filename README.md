@@ -6,15 +6,41 @@ Lei Wang (21676963)
 He Yuntian (22017827)
 Brian Lee (21492167)
 
-**GOAL**
+## **GOAL**
 
-**USER ROLES**
+## **MINIMUM FUNCTIONALITY**
+
+The following is the minimum deliverables that we expect the appplication to have:
+
+*	Navigation to destination on a single floor
+*	Navigation to destination on different floor
+*	Real-time tracking of user’s position
+*	Live updating of path (of the user)
+*	Search of basic destinations
+*	User can place marker on destination
+*	User can manually put a starting location 
+*	Determines viable path
+*	Determines the user’s closest node (start position for navigation)
+*	Use A* pathfinding algorithm that returns a list of adjacent nodes
+*	Store node information and meta-data for rooms in database
+*	Further room details page
+*	App layered on top of google maps (for consistency)
+*	Buttons to change between floors
+*	Buttons to start tracking
+*	Current location button
+*	Point-of-interests 
+*	Favourites and recent location list
+*	Functional Login system
+*	Syncing with the server 
+
+
+## **USER ROLES**
 
 *Users*: The users could be students, university staffs or visitors that can use this application.
 
 *Developers*: The developers are those who design and develop this indoor navigation application.
 
-**USER STORIES**
+## **USER STORIES**
 
 ***Single floor navigation***: As a user, I want to select a location (or input a room number) as a destination on a single floor plan so that it can show the path and guide me to that destination.
 
@@ -58,9 +84,9 @@ As a developer, I want to utilize the A* as the pathfinding algorithm so that th
 
 ***Storing node information and meta-data for rooms in database***: As a developer, I want to store the information so that I can use them to present data to the users.
 
-**USE CASES**
+## **USE CASES**
 
-**DESIGN CONSTRAINTS**
+## **DESIGN CONSTRAINTS**
 
 The important requirement for EZone Indoor Navigation Project is to track indoor positioning and navigating within various buildings of the University of Western Australia Campus. There are currently various mapping technologies to do so. Some of which we took into considerations are IndoorAtlas, Google Indoor Maps, Any Place and Mazemap.
 
@@ -72,7 +98,7 @@ At the moment, the Indoor mapping technology is infantry but growing rapidly and
 
 Indoor Atlas is being used for the project as it provides with the use cases we are looking in our project. On the other hand, it does come with a high cost to implement for the real-world big project. However, we are developing the application which has various layers and in future once the new technology comes to match the requirements of the project, we will be easily able to replace it with indoor atlas. As mentioned before, Indoor Atlas is useful for our use case but not the optimal solution for the project.
 
-**UI MOCK-UPS**
+## **UI MOCK-UPS**
 
 This section will discuss the user interface mock-ups. The shape and colour of the screens are not reflective of the final product.
 These mock-ups are designed to represent the general placement of buttons and show the basic functionalities.
@@ -166,38 +192,37 @@ If the user taps on a room on a floor, a destination marker will be placed in th
 
 **FUTURE SCOPE**
 There is a multitude of features that could be added to enhance the functionality of the Ezone application.  The following section will discuss some of these features and goals as part of the potential future scope.
-In the future, the application could:
 
+In the future, the application could:
 *	Allow for more complex searching of destinations
-The present scope of the project only covers very basic searching of destinations. Adding the ability to allow for a more complex searching algorithm would make the searching more fine-tuned and help filter out unrelated results.
+  -The present scope of the project only covers very basic searching of destinations. Adding the ability to allow for a more complex searching algorithm would make the searching more fine-tuned and help filter out unrelated results.
 
 *	Have on-device calculations 
-Path-finding could be improved by providing some on-device calculations used for intermediate movement. Determining the best start position for the navigation would also help in this respect. This could be achieved by considering several different nodes around the user’s position (instead of the closest node described in the minimum functionality) and selecting the node that would produce the most viable path. 
+  -Path-finding could be improved by providing some on-device calculations used for intermediate movement. Determining the best start position for the navigation would also help in this respect. This could be achieved by considering several different nodes around the user’s position (instead of the closest node described in the minimum functionality) and selecting the node that would produce the most viable path. 
 
 *	Provide navigation for different buildings and navigation between buildings
-With regards to navigation, mapping of other buildings could be completed so that users could use the application in different buildings. Sometimes users of the application would also like to navigate outside a building as well. Thus, navigation between buildings is a future feature to consider.
+  -With regards to navigation, mapping of other buildings could be completed so that users could use the application in different buildings. Sometimes users of the application would also like to navigate outside a building as well. Thus, navigation between buildings is a future feature to consider.
 
 *	Deal with inaccessible areas when navigating
-Navigation in the current scope does not deal with areas being inaccessible. Most doors are accessible during the day, but at night and in the early hours of the morning, there are certain doors that lock.  Adding a feature that deals with this problem would help to strengthen the functionality of the application.
+  -Navigation in the current scope does not deal with areas being inaccessible. Most doors are accessible during the day, but at night and in the early hours of the morning, there are certain doors that lock.  Adding a feature that deals with this problem would help to strengthen the functionality of the application.
 
 *	Provide further details about floors and points-of-interest
-Providing extra detail about floors and points-of-interest could also be beneficial. Details, such as if a water fountain or a cafe is on the current floor, provides useful information for users. The locations of toilets would also be something that users may want to know when they load a floor. 
+  -Providing extra detail about floors and points-of-interest could also be beneficial. Details, such as if a water fountain or a cafe is on the current floor, provides useful information for users. The locations of toilets would also be something that users may want to know when they load a floor. 
 
 *	Allow for the sharing of the user’s location
-Adding functionality to share the user’s location would help market the application and make it more interactive and appealing to users.
+  -Adding functionality to share the user’s location would help market the application and make it more interactive and appealing to users.
 
 *	Allow for a website to maintain the backend
-A website that could edit the database would be useful if lecturers change offices or if a room changes its name. Adding authorization and requests for user access could be made to ensure the security of the database.
+  -A website that could edit the database would be useful if lecturers change offices or if a room changes its name. Adding authorization and requests for user access could be made to ensure the security of the database.
 
 *	Have an emergency alert notification
-The app could be made to respond to emergency alarms. If there is an emergency in the building, such as a fire, the application could immediately alert the user and direct them to the nearest fire exit. It could block most of the functionality of the application until the emergency is resolved.
+  -The app could be made to respond to emergency alarms. If there is an emergency in the building, such as a fire, the application could immediately alert the user and direct them to the nearest fire exit. It could block most of the functionality of the application until the emergency is resolved.
 
 *	Allow for the usage of elevators 
-Sometimes, users would rather use the elevator than the stairs. So, something that could potentially be considered as part of the future scope, is the usage of the application with the elevator.
+  -Sometimes, users would rather use the elevator than the stairs. So, something that could potentially be considered as part of the future scope, is the usage of the application with the elevator.
+
 It should be emphasised that these features and goals are not part of our current project scope or in our minimum requirements, but may be added if time permits. These future scope goals are provided to show how the application could be extended past the minimum requirements we hope to deliver.
 
-
-**MINIMUM FUNCTIONALITY**
 
 
 
