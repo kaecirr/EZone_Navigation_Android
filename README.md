@@ -40,13 +40,13 @@ The following is the minimum deliverables that we expect the appplication to hav
 *	Syncing with the server 
 
 
-## **USER ROLES**
+### **USER ROLES**
 
 *Users*: The users could be students, university staffs or visitors that can use this application.
 
 *Developers*: The developers are those who design and develop this indoor navigation application.
 
-## **USER STORIES**
+### **USER STORIES**
 
 ***Single floor navigation***: As a user, I want to select a location (or input a room number) as a destination on a single floor plan so that it can show the path and guide me to that destination.
 
@@ -90,7 +90,7 @@ As a developer, I want to utilize the A* as the pathfinding algorithm so that th
 
 ***Storing node information and meta-data for rooms in database***: As a developer, I want to store the information so that I can use them to present data to the users.
 
-## **SOME USE CASES**
+### **SOME USE CASES**
 
 <p align="center">
   <img  width="750"
