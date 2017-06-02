@@ -8,11 +8,10 @@ Brian Lee (21492167)
 
 ## **SUMMARY**
 
-The design team has been engaged by the Faculty of Engineering, Computing and Mathematics to develop an Ezone app which is an indoor navigation in UWA buildings. This application will enable UWA students or teachers to find a shortest path from start position to end position in one building. For users not from UWA, we will also provide a path finding function, but not all the Ezone app functions is open to them. Currently, we just provide the path navigation in Computer Science building, and we will expand our target navigation buildings in the near future. This document outlines the functional and non-functional requirements developed during the project discovery phase and will serve as a guide for client acceptance following delivery of the product. 
+The design team has been engaged by the Faculty of Engineering, Computing and Mathematics to develop an EZone application which can perform indoor navigation in UWA buildings. This application will enable UWA students or teachers to find a shortest path from the starting position to the destination in a building. For visitors, we will also provide a path finding function, but not all the EZone application functions will be available to them. Currently, we only provide the path navigation in the Computer Science building, but we will expand our target navigation buildings in the near future. This document outlines the functional and non-functional requirements developed during the project discovery phase and will serve as a guide for client acceptance following delivery of the product. 
 
 ## **GOAL OF EZONE PROJECT** 
-The Ezone project was conceptualized following the proposal of indoor navigation for users in different buildings at the University of Western Australia. A requirement of Ezone project is from UWA staff that it is not convenient for students and teachers to find a destination in UWA buildings since they are not familiar with the structure and layout of rooms as well as difficult for visitors to find a right way in UWA indoor buildings. The goal of Ezone project is that it allows users to get a shortest path from start location to destination. The user will open Ezone app, then the floor map of building based on the current location of user will display in the mobile phone. Then, users could choose which room or destination he/she wants to head for. After choosing the destination, a shortest path will show on the floor map. Our aim for now is to provide the indoor navigation service for users in UWA buildings. Since we manage to offer the indoor navigation just in computer science building in this period, we will think through how to expand our service to other campus building, and how to use a more proper and efficient way to store our data in database and provide a real time service with minimal lag. Our goal for the near future is about implementing a new technology into Ezone project which could be a camera capture navigation, augmented reality map or voice identification of destination location.
-
+The EZone project aims to provide indoor navigation to users at the University of Western Australia. Users of the application may have difficulties in finding their way around inside buildings since they are not familiar with the interior layout. Thus, our requirements for this project is to help users to navigate within the buildings. The goal of the EZone project is to allow users to get the shortest path from the starting location to the destination. The user will open the EZone application and the floor plan of the building based on the current location of the user will display on the mobile phone. Users could then choose which room or destination he/she would like to head to. After choosing the destination, the shortest path will show on the floor map. Our aim is to provide the indoor navigation service for users in UWA buildings. We will consider expanding our service to other campus buildings and consider using a more proper and efficient way to store our data in the database to provide real time service with minimal lag. A future goal to consider is the implementation of new technolgies into the EZone project. These include camera capture navigation, augmented reality maps or voice identification of a destination.
 
 ## **MINIMUM FUNCTIONALITY**
 
@@ -35,16 +34,16 @@ The following is the minimum deliverables that we expect the appplication to hav
 *	Buttons to start tracking
 *	Current location button
 *	Points-of-interest 
-*	Favourites and recent location list
+*	Favourites and recent location lists
 *	Functional Login system
 *	Syncing with the server 
 
 
 ### **USER ROLES**
 
-*Users*: The users could be students, university staffs or visitors that can use this application.
+*Users*: The users could be students, university staff members or visitors that can use this application.
 
-*Developers*: The developers are those who design and develop this indoor navigation application.
+*Developers*: The developers are those who design and develop the indoor navigation application.
 
 ### **USER STORIES**
 
@@ -52,9 +51,9 @@ The following is the minimum deliverables that we expect the appplication to hav
 
 ***Multiple floor navigation***: As a user, I want to choose a different floor and select a location (or input a room number) on that floor so that it can show the path and guide me to the destination. 
 
-***Tracking user’s position***: As a user, I want the application can show my real-time position when I am moving in the building so that I can know my current location.
+***Tracking user’s position***: As a user, I want the application to show my real-time position when I am moving in the building so that I can know my current location.
 
-***Path updating***: As a user, I want the path to the destination can be updated automatically when I move so that I can have the correct path the destination all the time.
+***Path updating***: As a user, I want the path to the destination to be updated automatically when I move so that I can have the correct path to the destination at all times.
 
 ***Searching destination***: As a user, I want to find a specific room by entering the room number so that it will tell me the location of that room.
 
@@ -64,21 +63,21 @@ The following is the minimum deliverables that we expect the appplication to hav
 
 ***Determining viable path***: As a user, I want to have a viable path between my starting location and destination so that I can reach my destination directly and quickly.
 
-***More information for a room***: As a user, I want to get more information about a specific room when I select that room so that I can know it in more details.
+***More information for a room***: As a user, I want to get more information about a specific room when I select that room so that I can find more details about it.
 
 ***Buttons for switch floors***: As a user, I want to have buttons which allow me to switch floor plans in a building so that I can select locations on different floors.
 
 ***A-star pathfinding***: 
 
-As a user, I want the path to be updated with a fast response time so that the application feels responsive.
+As a user, I want the path to be updated within a fast response time so that the application feels responsive.
 
-As a developer, I want to utilize the A* as the pathfinding algorithm so that the time for calculating a viable path is reduced.
+As a developer, I want to utilize A* as the pathfinding algorithm so that the time for calculating a viable path is reduced.
 
 ***Current location button***: As a user, I want to have a positioning button for me to press so that I can know my current location.
 
 ***Start tracking button***: As a user, I want to have a start tracking button for me to press so that it can guide me to the destination step by step. 
 
-***Points-of-interest***: As a user, I want to have some points-of-interest marked on the floor plan so that I can choose the neatest one.
+***Points-of-interest***: As a user, I want to have some points-of-interest marked on the floor plan so that I can see what's on the floor.
 
 ***Favourites and recent location list***: As a user, I want to save my favourite locations or recent paths so that it will be convenient for my later use.
 
@@ -86,7 +85,7 @@ As a developer, I want to utilize the A* as the pathfinding algorithm so that th
 
 ***Syncing with the server***: As a user, I want to sync my favourite or recent locations to the backend server so that I can access it from multiple devices.
 
-***Determining user’s closest node***: As a developer, I want to to add the user current location to the nearest reference point so that the graph can be constructed and the shortest path can be computed.
+***Determining user’s closest node***: As a developer, I want to to add the user's current location to the nearest reference point so that the graph can be constructed and the shortest path can be computed.
 
 ***Storing node information and meta-data for rooms in database***: As a developer, I want to store the information so that I can use them to present data to the users.
 
@@ -124,20 +123,20 @@ As a developer, I want to utilize the A* as the pathfinding algorithm so that th
 
 ## **DESIGN CONSTRAINTS**
 
-The important requirement for EZone Indoor Navigation Project is to track indoor positioning and navigating within various buildings of the University of Western Australia Campus. There are currently various mapping technologies to do so. Some of which we took into considerations are IndoorAtlas, Google Indoor Maps, Any Place and Mazemap.
+The important requirement for the EZone Indoor Navigation Project, is to perform indoor positioning and navigating within various buildings of the University of Western Australia. There are currently various mapping technologies to do so. Some of which we took into consideration are IndoorAtlas, Google Indoor Maps, AnyPlace and Mazemap.
 
-Indoor Atlas uses geomagnetic fields, inertial sensor data, barometric pressure and radio signals to detect and track an indoor position. Indoor Atlas has higher accuracy than Wi-Fi technology and Beacons (BLE) devices. It doesn’t cost for hardware and it gives a real-time location.
+IndoorAtlas uses geomagnetic fields, inertial sensor data, barometric pressure and radio signals to detect and track the user's indoor position. IndoorAtlas has higher accuracy than Wi-Fi technology and Beacon (BLE) devices. There is no additional hardware cost and it gives a real-time location.
 
-Google Indoor Maps is being used at limited places at the moment and is still under development for public use. Google Indoor Maps uses Wi-Fi, GPS, mobile accelerometer and Gyroscope to detect person’s indoor location. On the other hand, Any Place mapping technology is open source community which uses similar tracking features like Google indoor maps and indoor atlas but doesn’t currently have iOS support.
+Google Indoor Maps is being used in limited places at the moment and is still under development for public use. Google Indoor Maps uses Wi-Fi, GPS, mobile accelerometer and the gyroscope to detect a user’s indoor location. On the other hand, AnyPlace mapping technology is open source which uses similar tracking features like Google Indoor Maps and IndoorAtlas but doesn’t currently have iOS support.
 
-At the moment, the Indoor mapping technology is infantry but growing rapidly and evolving with various technologies to support indoor mapping. Google is currently working on its Indoor Maps and similar is the case with other technologies. Thus comparing various technologies, Indoor Atlas has support for the kind of indoor navigation we want to implement for the project. Also, it’s available for iOS and Android. Indoor Atlas uses Google maps as the base mapping technology and floor plans of the buildings are added using their own interface on top of Google maps. We will be integrating indoor atlas in our application with keeping modularity in mind. Indoor Atlas provides a good amount of accuracy in compared to other mapping technologies available in the market. Also, our application will be flexible and future-proof, allowing for the replacement of indoor atlas with more widespread and advanced indoor mapping technology as the future advancement, once the technology is matured. It will be fairly simple to add new features like adding new buildings.
+At the moment, the indoor mapping technology is in its infancy but growing rapidly and evolving with various technologies to support indoor mapping. Google is currently working on its Indoor Maps and this is the case with other technologies as well. Thus comparing various technologies, IndoorAtlas has support for the kind of indoor navigation we want to implement for the project. Also, it’s available for iOS and Android. IndoorAtlas uses Google Maps as the base mapping technology and floor plans of the buildings are added using their own interface on top of Google Maps. We will be integrating IndoorAtlas in our application while keeping modularity in mind. IndoorAtlas provides a good amount of accuracy compared with other mapping technologies available in the market. Also, our application will be flexible and future-proof, allowing for the replacement of IndoorAtlas with a more widespread and advanced indoor mapping technology. It will then be fairly simple to add new features like adding new buildings.
 
-Indoor Atlas is being used for the project as it provides with the use cases we are looking for our project. On the other hand, it does come with a high cost to implement the real-world big project. However, we are developing the application which has various layers and in future, once the new technology comes to match the requirements of the project, we will be easily able to replace it with indoor atlas. As mentioned before, Indoor Atlas is useful for our use case but not the optimal solution for the project.
+IndoorAtlas is being used for the project as it provides the use cases we are looking for our project. On the other hand, it does come with a high cost to implement it within the real-world project. However, we are developing the application which has various layers and once the new technology comes to match the requirements of the project, we will easily be able to replace IndoorAtlas. As mentioned before, Indoor Atlas is useful for our use case but not the optimal solution for the project.
 
 ## **UI MOCK-UPS**
 
 This section will discuss the user interface mock-ups. The shape and colour of the screens are not reflective of the final product.
-These mock-ups are designed to represent the general placement of buttons and show the basic functionalities.
+These mock-ups are designed to represent the general placement of buttons and show the basic functionalities of what we aim to deliver
 
 <p align="center">
   <img width="931" height="810" src="https://github.com/kaecirr/EZone_Navigation_Android/blob/master/gifs/button%20func.png">
@@ -228,7 +227,7 @@ If the user taps on a room on a floor, a destination marker will be placed in th
 
 ## **FUTURE SCOPE**
 
-There is a multitude of features that could be added to enhance the functionality of the Ezone application.  The following section will discuss some of these features and goals as part of the potential future scope.
+There is a multitude of features that could be added to enhance the functionality of the EZone application.  The following section will discuss some of these features and goals as part of the potential future scope.
 
 In the future, the application could:
 *	Allow for more complex searching of destinations
@@ -270,7 +269,7 @@ In our prototype, we managed to perform navigation to a room on a single floor.
 
 ## **Conclusion**
 
-This requirements document states the minimum requirements that the team will deliver. The team asks that the client read through the document and discuss any changes that need to be made. Once an agreement has been made, the team will commence the official development of the Ezone application.
+This requirements document states the minimum requirements that the team will deliver. The team asks that the client read through the document and discuss any changes that need to be made. Once an agreement has been made, the team will commence the official development of the EZone application.
 
 ## **References**
 
