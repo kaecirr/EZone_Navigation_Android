@@ -3,7 +3,7 @@
 Kaelan Sinclair (21292916) 
 Keyur Modi (21845191)
 Lei Wang (21676963)
-He Yuntian (22017827)
+Yuntian He (22017827)
 Brian Lee (21492167)
 
 ## **SUMMARY**
@@ -260,6 +260,9 @@ In the future, the application could:
 
 It should be emphasised that these features and goals are not part of our current project scope or in our minimum requirements, but may be added if time permits. These future scope goals are provided to show how the application could be extended past the minimum requirements we hope to deliver.
 
+## **Conclusion**
+
+This requirements document states the minimum requirements that the team will deliver. The team asks that the client read through the document and discuss any changes that need to be made. Once an agreement has been made, the team will commence the official development of the Ezone application.
 
 
 
