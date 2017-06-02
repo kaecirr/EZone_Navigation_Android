@@ -71,7 +71,7 @@ The following is the minimum deliverables that we expect the appplication to hav
 
 As a user, I want the path to be updated within a fast response time so that the application feels responsive.
 
-As a developer, I want to utilize A* as the pathfinding algorithm so that the time for calculating a viable path is reduced.
+As a developer, I want to utilise A* as the pathfinding algorithm so that the time for calculating a viable path is reduced.
 
 ***Current location button***: As a user, I want to have a positioning button for me to press so that I can know my current location.
 
@@ -138,6 +138,8 @@ IndoorAtlas is being used for the project as it provides the use cases we are lo
 This section will discuss the user interface mock-ups. The shape and colour of the screens are not reflective of the final product.
 These mock-ups are designed to represent the general placement of buttons and show the basic functionalities of what we aim to deliver
 
+For more details (gifs, source code, etc) see the github page.
+
 <p align="center">
   <img width="931" height="810" src="https://github.com/kaecirr/EZone_Navigation_Android/blob/master/gifs/button%20func.png">
 </p>
@@ -164,7 +166,7 @@ The user can login by tapping ‘Sign In’. This pulls up the login page which 
 If the credentials are entered incorrectly, the user is notified that they have entered the ‘incorrect login details’. 
 
 <p align="center">
-  <img width="269" height="400" src="https://github.com/kaecirr/EZone_Navigation_Android/blob/master/gifs/incorrect_login_resized.png">
+  <img width="268" height="400" src="https://github.com/kaecirr/EZone_Navigation_Android/blob/master/gifs/incorrect_login_resized.png">
 </p>
 
 If the credentials were correct, it just goes back to the map screen. Pressing the menu button again, we can see that the ‘Visitor’ label has now changed to the username of the user. 
@@ -192,7 +194,7 @@ Back on the map screen, users can tap the search bar and enter a room that they 
 The search will show the results that most likely correspond to what was entered. If the search does not correspond to any room, it will display ‘No search results’.
 
 <p align="center">
-  <img width="269" height="400" src="https://github.com/kaecirr/EZone_Navigation_Android/blob/master/gifs/no_search_results_resized.png">
+  <img width="268" height="400" src="https://github.com/kaecirr/EZone_Navigation_Android/blob/master/gifs/no_search_results_resized.png">
 </p>
 
 If the user searches for ‘CSSE Lab’ for example, it brings up all the labs in the CSSE building. Tapping on one of the results, leads to a screen that shows where the room is and some details about it. 
@@ -231,7 +233,7 @@ There is a multitude of features that could be added to enhance the functionalit
 
 In the future, the application could:
 *	Allow for more complex searching of destinations
-    - The present scope of the project only covers very basic searching of destinations. Adding the ability to allow for a more complex searching algorithm would make the searching more fine-tuned and help filter out unrelated results.
+    - The present scope of the project only covers very basic searching of destinations. Adding a more complex searching algorithm would make the searching more fine-tuned and help filter out unrelated results.
 
 *	Have on-device calculations 
     - Path-finding could be improved by providing some on-device calculations used for intermediate movement. Determining the best start position for the navigation would also help in this respect. This could be achieved by considering several different nodes around the user’s position (instead of the closest node described in the minimum functionality) and selecting the node that would produce the most viable path. 
@@ -255,7 +257,7 @@ In the future, the application could:
     - The app could be made to respond to emergency alarms. If there is an emergency in the building, such as a fire, the application could immediately alert the user and direct them to the nearest fire exit. It could block most of the functionality of the application until the emergency is resolved.
 
 *	Allow for the usage of elevators 
-    - Sometimes, users would rather use the elevator than the stairs. So, something that could potentially be considered as part of the future scope, is the usage of the application with the elevator.
+    - Sometimes, users may have disabilities or would just rather use the elevator than the stairs. So, something that could potentially be considered as part of the future scope, is the usage of the application with the elevator.
 
 It should be emphasised that these features and goals are not part of our current project scope or in our minimum requirements, but may be added if time permits. These future scope goals are provided to show how the application could be extended past the minimum requirements we hope to deliver.
 
@@ -263,9 +265,13 @@ It should be emphasised that these features and goals are not part of our curren
 
 In our prototype, we managed to perform navigation to a room on a single floor.
 
+The following shows a user selecting an room and then navigating to it:
+
 <p align="center">
   <img width="268" height="476" src="https://github.com/kaecirr/EZone_Navigation_Android/blob/master/prototypeGif/prototype.gif">
 </p>
+
+For more details (gifs, source code, etc) see the github page.
 
 ## **Conclusion**
 
