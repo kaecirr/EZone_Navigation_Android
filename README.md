@@ -10,7 +10,7 @@ Brian Lee (21492167)
 
 The design team has been engaged by the Faculty of Engineering, Computing and Mathematics to develop an Ezone app which is an indoor navigation in UWA buildings. This application will enable UWA students or teachers to find a shortest path from start position to end position in one building. For users not from UWA, we will also provide a path finding function, but not all the Ezone app functions is open to them. Currently, we just provide the path navigation in Computer Science building, and we will expand our target navigation buildings in the near future. This document outlines the functional and non-functional requirements developed during the project discovery phase and will serve as a guide for client acceptance following delivery of the product. 
 
-## **Goal of Ezone Project** 
+## **GOAL OF EZONE PROJECT** 
 The Ezone project was conceptualized following the proposal of indoor navigation for users in different buildings at the University of Western Australia. A requirement of Ezone project is from UWA staff that it is not convenient for students and teachers to find a destination in UWA buildings since they are not familiar with the structure and layout of rooms as well as difficult for visitors to find a right way in UWA indoor buildings. The goal of Ezone project is that it allows users to get a shortest path from start location to destination. The user will open Ezone app, then the floor map of building based on the current location of user will display in the mobile phone. Then, users could choose which room or destination he/she wants to head for. After choosing the destination, a shortest path will show on the floor map. Our aim for now is to provide the indoor navigation service for users in UWA buildings. Since we manage to offer the indoor navigation just in computer science building in this period, we will think through how to expand our service to other campus building, and how to use a more proper and efficient way to store our data in database and provide a real time service with minimal lag. Our goal for the near future is about implementing a new technology into Ezone project which could be a camera capture navigation, augmented reality map or voice identification of destination location.
 
 
@@ -34,7 +34,7 @@ The following is the minimum deliverables that we expect the appplication to hav
 *	Buttons to change between floors
 *	Buttons to start tracking
 *	Current location button
-*	Point-of-interests 
+*	Points-of-interest 
 *	Favourites and recent location list
 *	Functional Login system
 *	Syncing with the server 
