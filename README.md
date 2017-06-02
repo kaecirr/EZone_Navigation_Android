@@ -250,10 +250,10 @@ In the future, the application could:
     - Adding functionality to share the user’s location would help market the application and make it more interactive and appealing to users.
 
 *	Allow for a website to maintain the backend
-  - A website that could edit the database would be useful if lecturers change offices or if a room changes its name. Adding authorization and requests for user access could be made to ensure the security of the database.
+    - A website that could edit the database would be useful if lecturers change offices or if a room changes its name. Adding authorization and requests for user access could be made to ensure the security of the database.
 
 *	Have an emergency alert notification
-  - The app could be made to respond to emergency alarms. If there is an emergency in the building, such as a fire, the application could immediately alert the user and direct them to the nearest fire exit. It could block most of the functionality of the application until the emergency is resolved.
+    - The app could be made to respond to emergency alarms. If there is an emergency in the building, such as a fire, the application could immediately alert the user and direct them to the nearest fire exit. It could block most of the functionality of the application until the emergency is resolved.
 
 *	Allow for the usage of elevators 
     - Sometimes, users would rather use the elevator than the stairs. So, something that could potentially be considered as part of the future scope, is the usage of the application with the elevator.
