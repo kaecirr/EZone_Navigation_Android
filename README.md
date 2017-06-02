@@ -260,6 +260,14 @@ In the future, the application could:
 
 It should be emphasised that these features and goals are not part of our current project scope or in our minimum requirements, but may be added if time permits. These future scope goals are provided to show how the application could be extended past the minimum requirements we hope to deliver.
 
+## **PROTOTYPE**
+
+In our prototype, we managed to perform navigation to a room on a single floor.
+
+<p align="center">
+  <img width="268" height="476" src="https://github.com/kaecirr/EZone_Navigation_Android/blob/master/prototypeGif/prototype.gif">
+</p>
+
 ## **Conclusion**
 
 This requirements document states the minimum requirements that the team will deliver. The team asks that the client read through the document and discuss any changes that need to be made. Once an agreement has been made, the team will commence the official development of the Ezone application.
