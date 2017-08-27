@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.kaelansinclair.ezone_navigation_android.MenuActivity">
+    tools:context="com.example.kaelansinclair.ezone_navigation_android.MainActivity">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -28,6 +28,6 @@
         android:layout_margin="@dimen/fab_margin"
         app:srcCompat="@android:drawable/ic_menu_mylocation" />
 
-    <include layout="@layout/activity_maps" />
+    <include layout="@layout/map" />
 
 </android.support.design.widget.CoordinatorLayout>

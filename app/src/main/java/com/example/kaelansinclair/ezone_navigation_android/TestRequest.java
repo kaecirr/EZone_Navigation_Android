@@ -1,23 +1,16 @@
 package com.example.kaelansinclair.ezone_navigation_android;
 
-import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import org.apache.commons.io.IOUtils;
-import org.json.JSONObject;
-
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import static com.example.kaelansinclair.ezone_navigation_android.MenuActivity.drawPolyline;
+import static com.example.kaelansinclair.ezone_navigation_android.Map.drawPolyline;
 
 /**
  * Created by kaelan on 29/05/17.
