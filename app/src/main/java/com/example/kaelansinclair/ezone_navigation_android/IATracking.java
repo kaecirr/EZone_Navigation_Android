@@ -82,6 +82,7 @@ public class IATracking {
         @Override
         public void onEnterRegion(IARegion region) {
             if (region.getType() == IARegion.TYPE_FLOOR_PLAN) {
+
                 final String newId = region.getId();
                 // Are we entering a new floor plan or coming back the floor plan we just left?
                 if (mGroundOverlay == null || !region.equals(mOverlayFloorPlan)) {
@@ -92,7 +93,7 @@ public class IATracking {
                         mGroundOverlay = null;
                     }
                     mOverlayFloorPlan = region; // overlay will be this (unless error in loading)
-                    fetchFloorPlan(newId);
+                    fetchFloorPlan(newId, mGroundOverlay);
                 } else {
                     mGroundOverlay.setTransparency(0.0f);
                 }
@@ -118,20 +119,21 @@ public class IATracking {
 
     public IARegion.Listener getRegionListener() {return mRegionListener;}
 
-    public void test(IARegion region) {
+    public void test(IARegion region, GroundOverlay groundOverlay) {
         if (region.getType() == IARegion.TYPE_FLOOR_PLAN) {
             final String newId = region.getId();
             // Are we entering a new floor plan or coming back the floor plan we just left?
-            if (mGroundOverlay == null || !region.equals(mOverlayFloorPlan)) {
+            if (groundOverlay == null || !region.equals(mOverlayFloorPlan)) {
                 map.setCameraPositionNeedsUpdating(true);
-                if (mGroundOverlay != null) {
-                    mGroundOverlay.remove();
-                    mGroundOverlay = null;
+                if (groundOverlay != null) {
+                    groundOverlay.remove();
+                    groundOverlay = null;
                 }
                 mOverlayFloorPlan = region; // overlay will be this (unless error in loading)
-                fetchFloorPlan(newId);
+
+                fetchFloorPlan(newId, groundOverlay);
             } else {
-                mGroundOverlay.setTransparency(0.0f);
+                groundOverlay.setTransparency(0.0f);
             }
         }
         // showInfo("Enter " + (region.getType() == IARegion.TYPE_VENUE
@@ -142,10 +144,10 @@ public class IATracking {
     /**
      * Sets bitmap of floor plan as ground overlay on Google Maps
      */
-    private void setupGroundOverlay(IAFloorPlan floorPlan, Bitmap bitmap) {
+    private void setupGroundOverlay(IAFloorPlan floorPlan, Bitmap bitmap, GroundOverlay groundOverlay) {
 
-        if (mGroundOverlay != null) {
-            mGroundOverlay.remove();
+        if (groundOverlay != null) {
+            groundOverlay.remove();
         }
 
         if (map.getMap() != null) {
@@ -158,13 +160,15 @@ public class IATracking {
                     .bearing(floorPlan.getBearing());
 
             mGroundOverlay = map.getMap().addGroundOverlay(fpOverlay);
+            mGroundOverlay.setClickable(true);
+            mGroundOverlay.setTransparency(0.5f);
         }
     }
 
     /**
      * Download floor plan using Picasso library.
      */
-    private void fetchFloorPlanBitmap(final IAFloorPlan floorPlan) {
+    private void fetchFloorPlanBitmap(final IAFloorPlan floorPlan, final GroundOverlay groundOverlay) {
 
         final String url = floorPlan.getUrl();
 
@@ -175,7 +179,7 @@ public class IATracking {
                 public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
                     Log.d(TAG, "onBitmap loaded with dimensions: " + bitmap.getWidth() + "x"
                             + bitmap.getHeight());
-                    setupGroundOverlay(floorPlan, bitmap);
+                    setupGroundOverlay(floorPlan, bitmap, groundOverlay);
                 }
 
                 @Override
@@ -208,7 +212,7 @@ public class IATracking {
     /**
      * Fetches floor plan data from IndoorAtlas server.
      */
-    private void fetchFloorPlan(String id) {
+    private void fetchFloorPlan(String id, final GroundOverlay groundOverlay) {
 
         // if there is already running task, cancel it
         cancelPendingNetworkCalls();
@@ -222,7 +226,7 @@ public class IATracking {
 
                 if (result.isSuccess() && result.getResult() != null) {
                     // retrieve bitmap for this floor plan metadata
-                    fetchFloorPlanBitmap(result.getResult());
+                    fetchFloorPlanBitmap(result.getResult(), groundOverlay);
                 } else {
                     // ignore errors if this task was already canceled
                     if (!task.isCancelled()) {

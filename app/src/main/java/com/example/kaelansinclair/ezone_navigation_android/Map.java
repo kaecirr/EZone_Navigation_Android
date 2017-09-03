@@ -15,6 +15,7 @@ import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
+import com.google.android.gms.maps.model.GroundOverlay;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -47,6 +48,7 @@ public class Map implements OnMapReadyCallback {
     private Circle mMarkerError;
     private Marker mPoint;
     private Marker mPoint2;
+    private GroundOverlay focusedGroundOverlay = null;
 
     private JSONObject jsonInner;
 
@@ -152,6 +154,7 @@ public class Map implements OnMapReadyCallback {
 
         map.getUiSettings().setMyLocationButtonEnabled(false);
         map.setOnMapClickListener(mClickListener);
+        map.setOnGroundOverlayClickListener(mGroundOverlayClickListener);
         mMap = map;
     }
 
@@ -162,6 +165,16 @@ public class Map implements OnMapReadyCallback {
         drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
         drawable.draw(canvas);
         return BitmapDescriptorFactory.fromBitmap(bitmap);
+    }
+
+    //credit: https://stackoverflow.com/questions/12665022/java-rotate-a-point-around-an-other-using-google-maps-coordinates
+    private LatLng rotateCoordinate(LatLng centre, LatLng point, double degree) {
+        double cLat = centre.latitude;
+        double cLng = centre.longitude;
+        double bearing = Math.toRadians(degree);
+        double newLat = cLat + (Math.sin(bearing) * (point.longitude - cLng) * Math.abs(Math.cos(Math.toRadians(cLat))) + Math.cos(bearing) * (point.latitude - cLat));
+        double newLng = cLng + (Math.cos(bearing) * (point.longitude - cLng) - Math.sin(bearing) * (point.latitude - cLat) / Math.abs(Math.cos(Math.toRadians(cLat))));
+        return new LatLng(newLat, newLng);
     }
 
     private GoogleMap.OnMapClickListener mClickListener = new GoogleMap.OnMapClickListener() {
@@ -179,46 +192,20 @@ public class Map implements OnMapReadyCallback {
                 }
                 */
 
-                if (mPoint2 == null) {
-                    mPoint2 = mMap.addMarker(new MarkerOptions().position(latLng)
-                            .icon(BitmapDescriptorFactory.defaultMarker(HUE_IAGRN)));
-
-                    if (mPoint2 != null && mPoint2.isVisible()) {
-/*
-                        try {
-                            jsonInner.put("startLongitude", String.valueOf(mPoint.getPosition().longitude));
-                            jsonInner.put("startLatitude", String.valueOf(mPoint.getPosition().latitude));
-                            jsonInner.put("endLongitude", String.valueOf(mPoint2.getPosition().longitude));
-                            jsonInner.put("endLatitude", String.valueOf(mPoint2.getPosition().latitude));
-
-                            json.put("mapDataRequest", jsonInner);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        Log.d("quickDebug", json.toString());
-                        TestRequest t = new TestRequest("http://52.64.190.66:8080/springMVC-1.0-SNAPSHOT/path", json.toString());
-
-                        t.execute();
-                        */
+                if (focusedGroundOverlay != null) {
+                    LatLng rLatLng = rotateCoordinate(focusedGroundOverlay.getPosition(), latLng, focusedGroundOverlay.getBearing());
+                    if (!focusedGroundOverlay.getBounds().contains(rLatLng)) {
+                        focusedGroundOverlay.setTransparency(0.5f);
+                        focusedGroundOverlay.setClickable(true);
+                        focusedGroundOverlay = null;
+                        if (mPoint2 != null) mPoint2.setAlpha(0.5f);
                     }
-                }
-                else if (mPoint2 != null) {
-                    if (mPoint2.isVisible()) {
-                        mPoint2.setVisible(false);
-                        //mPoint.setPosition(latLng);
-                        if (polyline != null) {
-                            Iterator<Polyline> pol = polyline.iterator();
-                            while (pol.hasNext()) pol.next().remove();;
-                        }
-                    }
-                    else {
-                        // move existing markers position to received location
-                        mPoint2.setPosition(latLng);
-                        mPoint2.setVisible(true);
-                        //mMap.setMyLocationEnabled(false);
+                    else if (mPoint2 == null) {
+                        mPoint2 = mMap.addMarker(new MarkerOptions().position(latLng)
+                                .icon(BitmapDescriptorFactory.defaultMarker(HUE_IAGRN)));
 
                         if (mPoint2 != null && mPoint2.isVisible()) {
-/*
+    /*
                             try {
                                 jsonInner.put("startLongitude", String.valueOf(mPoint.getPosition().longitude));
                                 jsonInner.put("startLatitude", String.valueOf(mPoint.getPosition().latitude));
@@ -234,6 +221,41 @@ public class Map implements OnMapReadyCallback {
 
                             t.execute();
                             */
+                        }
+                    }
+                    else if (mPoint2 != null) {
+                        if (mPoint2.isVisible()) {
+                            mPoint2.setVisible(false);
+                            //mPoint.setPosition(latLng);
+                            if (polyline != null) {
+                                Iterator<Polyline> pol = polyline.iterator();
+                                while (pol.hasNext()) pol.next().remove();
+                                ;
+                            }
+                        } else {
+                            // move existing markers position to received location
+                            mPoint2.setPosition(latLng);
+                            mPoint2.setVisible(true);
+                            //mMap.setMyLocationEnabled(false);
+
+                            if (mPoint2 != null && mPoint2.isVisible()) {
+    /*
+                                try {
+                                    jsonInner.put("startLongitude", String.valueOf(mPoint.getPosition().longitude));
+                                    jsonInner.put("startLatitude", String.valueOf(mPoint.getPosition().latitude));
+                                    jsonInner.put("endLongitude", String.valueOf(mPoint2.getPosition().longitude));
+                                    jsonInner.put("endLatitude", String.valueOf(mPoint2.getPosition().latitude));
+
+                                    json.put("mapDataRequest", jsonInner);
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                                Log.d("quickDebug", json.toString());
+                                TestRequest t = new TestRequest("http://52.64.190.66:8080/springMVC-1.0-SNAPSHOT/path", json.toString());
+
+                                t.execute();
+                                */
+                            }
                         }
                     }
                 }
@@ -282,5 +304,19 @@ public class Map implements OnMapReadyCallback {
             e.printStackTrace();
         }
     }
+
+    private GoogleMap.OnGroundOverlayClickListener mGroundOverlayClickListener = new GoogleMap.OnGroundOverlayClickListener() {
+        @Override
+        public void onGroundOverlayClick(GroundOverlay groundOverlay) {
+            if (focusedGroundOverlay != null && !groundOverlay.equals(focusedGroundOverlay)) {
+                focusedGroundOverlay.setTransparency(0.5f);
+                focusedGroundOverlay.setClickable(true);
+            }
+            focusedGroundOverlay = groundOverlay;
+            focusedGroundOverlay.setTransparency(0.0f);
+            focusedGroundOverlay.setClickable(false);
+            if (mPoint2 != null) mPoint2.setAlpha(1);
+        }
+    };
 
 }

@@ -30,6 +30,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.GroundOverlay;
 import com.indooratlas.android.sdk.IALocationRequest;
 import com.indooratlas.android.sdk.IARegion;
 
@@ -123,9 +124,11 @@ public class MainActivity extends AppCompatActivity
 
         tracker = new IATracking(map, this);
 
-        //IARegion r = IARegion.floorPlan("208ae45e-8d22-4faa-bfb2-e245f956de3b");
+        IARegion r = IARegion.floorPlan("208ae45e-8d22-4faa-bfb2-e245f956de3b");
 
-        //tracker.test(r);
+        GroundOverlay test1 = null;
+
+        tracker.test(r, test1);
     }
 
     @Override
@@ -156,7 +159,7 @@ public class MainActivity extends AppCompatActivity
     public void onPause() {
         super.onPause();
         tracker.getIALocationManager().removeLocationUpdates(tracker.getIALocationListener());
-        tracker.getIALocationManager().registerRegionListener(tracker.getRegionListener());
+        tracker.getIALocationManager().unregisterRegionListener(tracker.getRegionListener());
     }
 
     @Override
