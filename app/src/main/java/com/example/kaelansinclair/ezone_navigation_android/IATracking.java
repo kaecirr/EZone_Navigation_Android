@@ -39,7 +39,8 @@ public class IATracking {
     private Map map;
 
     private IARegion mOverlayFloorPlan = null;
-    private GroundOverlay mGroundOverlay = null;
+
+    //private GroundOverlay mGroundOverlay = null;
     private IATask<IAFloorPlan> mFetchFloorPlanTask;
     private IALocationManager mIALocationManager;
     private IAResourceManager mResourceManager;
@@ -58,6 +59,8 @@ public class IATracking {
     public IALocationManager getIALocationManager() {return mIALocationManager;}
 
     public IAResourceManager getResourceManager() {return mResourceManager;}
+
+    public IARegion getOverlayFloorPlan() {return mOverlayFloorPlan;}
 
     private IALocationListener mListener = new IALocationListenerSupport() {
 
@@ -85,17 +88,17 @@ public class IATracking {
 
                 final String newId = region.getId();
                 // Are we entering a new floor plan or coming back the floor plan we just left?
-                if (mGroundOverlay == null || !region.equals(mOverlayFloorPlan)) {
+                if (map.getFocusedGroundOverlay() == null || !region.equals(mOverlayFloorPlan)) {
                     map.setCameraPositionNeedsUpdating(true);
-                    if (mGroundOverlay != null) {
+                    if (map.getFocusedGroundOverlay() != null) {
                         map.setCameraPositionNeedsUpdating(false);
-                        mGroundOverlay.remove();
-                        mGroundOverlay = null;
+                        map.getFocusedGroundOverlay().remove();
+                        map.setFocusedGroundOverlay(null);
                     }
                     mOverlayFloorPlan = region; // overlay will be this (unless error in loading)
-                    fetchFloorPlan(newId, mGroundOverlay);
+                    fetchFloorPlan(newId, map.getFocusedGroundOverlay());
                 } else {
-                    mGroundOverlay.setTransparency(0.0f);
+                    map.getFocusedGroundOverlay().setTransparency(0.0f);
                 }
             }
             // showInfo("Enter " + (region.getType() == IARegion.TYPE_VENUE
@@ -105,10 +108,10 @@ public class IATracking {
 
         @Override
         public void onExitRegion(IARegion region) {
-            if (mGroundOverlay != null) {
+            if (map.getFocusedGroundOverlay() != null) {
                 // Indicate we left this floor plan but leave it there for reference
                 // If we enter another floor plan, this one will be removed and another one loaded
-                mGroundOverlay.setTransparency(0.5f);
+                map.getFocusedGroundOverlay().setTransparency(0.5f);
             }
             // showInfo("Enter " + (region.getType() == IARegion.TYPE_VENUE
             //       ? "VENUE "
@@ -159,9 +162,9 @@ public class IATracking {
                     .position(center, floorPlan.getWidthMeters(), floorPlan.getHeightMeters())
                     .bearing(floorPlan.getBearing());
 
-            mGroundOverlay = map.getMap().addGroundOverlay(fpOverlay);
-            mGroundOverlay.setClickable(true);
-            mGroundOverlay.setTransparency(0.5f);
+            groundOverlay = map.getMap().addGroundOverlay(fpOverlay);
+            groundOverlay.setClickable(true);
+            groundOverlay.setTransparency(0.5f);
         }
     }
 

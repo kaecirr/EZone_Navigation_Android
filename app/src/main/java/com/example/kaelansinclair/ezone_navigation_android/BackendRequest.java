@@ -10,20 +10,25 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import static com.example.kaelansinclair.ezone_navigation_android.Map.setFloorPlans;
 import static com.example.kaelansinclair.ezone_navigation_android.Map.drawPolyline;
+import static com.example.kaelansinclair.ezone_navigation_android.Map.mapInitialisation;
 
 /**
  * Created by kaelan on 29/05/17.
  */
 
-public class TestRequest extends AsyncTask<Void, Void, String> {
+public class BackendRequest extends AsyncTask<Void, Void, String> {
+
+    private String URL = "http://52.64.190.66:8080/springMVC-1.0-SNAPSHOT/";
+
     private Exception exception;
 
-    private String urlin;
+    private String apiCall;
     private String query;
 
-    public TestRequest(String u, String q) {
-        urlin = u;
+    public BackendRequest(String u, String q) {
+        apiCall = u;
         query = q;
     }
 
@@ -36,7 +41,7 @@ public class TestRequest extends AsyncTask<Void, Void, String> {
     protected String doInBackground(Void... params) {
 
         try {
-            String response = makePostRequest(urlin, query);
+            String response = makePostRequest(URL + apiCall, query);
             Log.d("INFO", response);
             return response;
         } catch (IOException ex) {
@@ -50,7 +55,9 @@ public class TestRequest extends AsyncTask<Void, Void, String> {
         if(response == null) {
             response = "THERE WAS AN ERROR";
         }
-        else drawPolyline(response);
+        else if (apiCall.equals("path")) drawPolyline(response);
+        else if (apiCall.equals("initialise")) mapInitialisation(response);
+        else if (apiCall.equals("floorplans")) setFloorPlans(response);
 
         Log.d("INFO5", response);
     }

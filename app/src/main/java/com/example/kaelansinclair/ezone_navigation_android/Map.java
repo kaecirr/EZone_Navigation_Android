@@ -21,11 +21,14 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.indooratlas.android.sdk.IARegion;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -37,10 +40,11 @@ import java.util.Set;
 public class Map implements OnMapReadyCallback {
 
     private static GoogleMap mMap;
+    private static String pathResponse;
     private static Set<Polyline> polyline;
     private static final float HUE_IAGRN = 133.0f;
 
-    private MainActivity mActivity;
+    private static MainActivity mActivity;
     private boolean mCameraPositionNeedsUpdating = true; // update on first location
 
     private Marker mMarker;
@@ -48,21 +52,60 @@ public class Map implements OnMapReadyCallback {
     private Circle mMarkerError;
     private Marker mPoint;
     private Marker mPoint2;
-    private GroundOverlay focusedGroundOverlay = null;
+
+    private static GroundOverlay focusedGroundOverlay = null;
+    private String focusedBuilding;
+    private int focusedFloor;
+
+    private static HashMap<GroundOverlay, String> buildingOverlays;
+
+    private static ArrayList<String> focusedBuildingFloorPlans;
+    private static int groundReference;
 
     private JSONObject jsonInner;
 
     private JSONObject json;
 
     public Map(MainActivity mActivity) {
-        this.mActivity = mActivity;
-        this.json = mActivity.json;
-        this.jsonInner = mActivity.jsonInner;
+        this.mActivity = mActivity;;
 
+        jsonInner = new JSONObject();
+        try {
+            jsonInner.put("startBuilding", "computerScience");
+            jsonInner.put("startFloor", "second");
+            jsonInner.put("startLongitude", "-31.97444473");
+            jsonInner.put("startLatitude", "115.8599");
+            jsonInner.put("endBuilding", "computerScience");
+            jsonInner.put("endFloor", "second");
+            jsonInner.put("endLongitude", "-31.97222274");
+            jsonInner.put("endLatitude", "115.823");
+            jsonInner.put("algorithm", "DJ");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        json = new JSONObject();
+        try {
+            json.put("requestMessage", "");
+            json.put("mapDataRequest", jsonInner);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        pathResponse = "";
         polyline = new HashSet<Polyline>();
+        buildingOverlays = new HashMap<GroundOverlay, String>();
+        focusedBuildingFloorPlans = new ArrayList<String>();
+        focusedBuilding = "";
+        focusedFloor = 0;
+        groundReference = 0;
     }
 
     public static GoogleMap getMap() {return mMap;}
+
+    public GroundOverlay getFocusedGroundOverlay() {return focusedGroundOverlay;}
+
+    public void setFocusedGroundOverlay(GroundOverlay newGroundOverlay) {focusedGroundOverlay = newGroundOverlay;}
 
     public void setCameraPositionNeedsUpdating(Boolean needsUpdating) {mCameraPositionNeedsUpdating = needsUpdating;}
 
@@ -99,12 +142,13 @@ public class Map implements OnMapReadyCallback {
                     jsonInner.put("endLongitude", String.valueOf(mPoint2.getPosition().longitude));
                     jsonInner.put("endLatitude", String.valueOf(mPoint2.getPosition().latitude));
 
+                    json.put("requestMessage", "");
                     json.put("mapDataRequest", jsonInner);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
 
-                TestRequest t = new TestRequest("http://52.64.190.66:8080/springMVC-1.0-SNAPSHOT/path", json.toString());
+                BackendRequest t = new BackendRequest("path", json.toString());
 
                 t.execute();
             }
@@ -124,12 +168,13 @@ public class Map implements OnMapReadyCallback {
                     jsonInner.put("endLongitude", String.valueOf(mPoint2.getPosition().longitude));
                     jsonInner.put("endLatitude", String.valueOf(mPoint2.getPosition().latitude));
 
+                    json.put("requestMessage", "");
                     json.put("mapDataRequest", jsonInner);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
 
-                TestRequest t = new TestRequest("http://52.64.190.66:8080/springMVC-1.0-SNAPSHOT/path", json.toString());
+                BackendRequest t = new BackendRequest("path", json.toString());
 
                 t.execute();
             }
@@ -156,6 +201,76 @@ public class Map implements OnMapReadyCallback {
         map.setOnMapClickListener(mClickListener);
         map.setOnGroundOverlayClickListener(mGroundOverlayClickListener);
         mMap = map;
+
+        try {
+            json.put("requestMessage", "initialCalling");
+            json.put("mapDataRequest", "");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        BackendRequest initial = new BackendRequest("path", json.toString());
+
+        initial.execute();
+    }
+
+    public static void mapInitialisation(String response) {
+        Log.d("quickDebug", response);
+        try {
+            JSONObject jsonObject = new JSONObject(response);
+
+            if (jsonObject.has("DataResponse")) {
+                JSONObject jsonObject2 = jsonObject.getJSONObject("DataResponse");
+                if (jsonObject2.has("initial"))  {
+
+                    JSONArray initial = jsonObject2.getJSONArray("initial");
+                    Log.d("wtf", initial.toString());
+
+                    for (int i = 0; i < initial.length(); i++) {
+                        JSONObject buildingGround = initial.getJSONObject(i);
+                        IARegion r = IARegion.floorPlan(buildingGround.getString("floorPlanID"));
+
+                        GroundOverlay buildingOverlay = null;
+
+                        mActivity.getTracker().test(r, buildingOverlay);
+
+                        buildingOverlays.put(buildingOverlay, buildingGround.getString("building"));
+                    }
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void setFloorPlans(String response) {
+        Log.d("quickDebug", response);
+        try {
+            JSONObject jsonObject = new JSONObject(response);
+
+            if (jsonObject.has("DataResponse")) {
+                JSONObject jsonObject2 = jsonObject.getJSONObject("DataResponse");
+                if (jsonObject2.has("floorPlans"))  {
+
+                    JSONArray floorPlans = jsonObject2.getJSONArray("floorPlans");
+                    Log.d("wtf", floorPlans.toString());
+
+                    for (int i = 0; i < floorPlans.length(); i++) {
+                        JSONObject buildingGround = floorPlans.getJSONObject(i);
+                        String floorPlanID = buildingGround.getString("floorPlanID");
+                        if (floorPlanID.equals(mActivity.getTracker().getOverlayFloorPlan())) groundReference = i;
+                        focusedBuildingFloorPlans.add(floorPlanID);
+                    }
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void changeFloorPlans(String floorPlanID) {
+        IARegion r = IARegion.floorPlan(floorPlanID);
+        mActivity.getTracker().test(r, focusedGroundOverlay);
     }
 
     private BitmapDescriptor getMarkerIconFromDrawable(Drawable drawable) {
@@ -197,6 +312,8 @@ public class Map implements OnMapReadyCallback {
                     if (!focusedGroundOverlay.getBounds().contains(rLatLng)) {
                         focusedGroundOverlay.setTransparency(0.5f);
                         focusedGroundOverlay.setClickable(true);
+                        if (focusedFloor != 0) changeFloorPlans(focusedBuildingFloorPlans.get(groundReference));
+                        buildingOverlays.put(focusedGroundOverlay, focusedBuilding);
                         focusedGroundOverlay = null;
                         if (mPoint2 != null) mPoint2.setAlpha(0.5f);
                     }
@@ -212,12 +329,13 @@ public class Map implements OnMapReadyCallback {
                                 jsonInner.put("endLongitude", String.valueOf(mPoint2.getPosition().longitude));
                                 jsonInner.put("endLatitude", String.valueOf(mPoint2.getPosition().latitude));
 
+                                json.put("requestMessage", "");
                                 json.put("mapDataRequest", jsonInner);
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
                             Log.d("quickDebug", json.toString());
-                            TestRequest t = new TestRequest("http://52.64.190.66:8080/springMVC-1.0-SNAPSHOT/path", json.toString());
+                            BackendRequest t = new BackendRequest("path", json.toString());
 
                             t.execute();
                             */
@@ -246,12 +364,13 @@ public class Map implements OnMapReadyCallback {
                                     jsonInner.put("endLongitude", String.valueOf(mPoint2.getPosition().longitude));
                                     jsonInner.put("endLatitude", String.valueOf(mPoint2.getPosition().latitude));
 
+                                    json.put("requestMessage", "");
                                     json.put("mapDataRequest", jsonInner);
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
                                 Log.d("quickDebug", json.toString());
-                                TestRequest t = new TestRequest("http://52.64.190.66:8080/springMVC-1.0-SNAPSHOT/path", json.toString());
+                                BackendRequest t = new BackendRequest("path", json.toString());
 
                                 t.execute();
                                 */
@@ -265,11 +384,12 @@ public class Map implements OnMapReadyCallback {
 
     public static void drawPolyline(String response) {
         Log.d("quickDebug", response);
+        pathResponse = response;
         try {
             JSONObject jsonObject = new JSONObject(response);
 
             if (jsonObject.has("mapDataResponse")) {
-                JSONObject jsonObject2 = (JSONObject) jsonObject.get("mapDataResponse");
+                JSONObject jsonObject2 = jsonObject.getJSONObject("mapDataResponse");
                 if (jsonObject2.has("path"))  {
 
                     JSONArray path = jsonObject2.getJSONArray("path");
@@ -283,19 +403,25 @@ public class Map implements OnMapReadyCallback {
                     Log.d("wtf3", String.valueOf(path.length()));
                     for (int i = 0; i < path.length() - 1; i++) {
                         Log.d("wtf", path.get(i).toString());
-                        JSONObject sourceJSON = (JSONObject) path.get(i);
-                        JSONObject targetJSON = (JSONObject) path.get(i + 1);
-                        if (sourceJSON.has("latitude") && sourceJSON.has("longitude") && targetJSON.has("latitude") && targetJSON.has("longitude")) {
-                            Log.d("help", (String) sourceJSON.get("latitude"));
-                            Log.d("help2", (String) sourceJSON.get("longitude"));
-                            Log.d("help3",  String.valueOf(Double.valueOf((String) targetJSON.get("latitude"))));
-                            LatLng source = new LatLng(Double.valueOf((String) sourceJSON.get("latitude")), Double.valueOf((String) sourceJSON.get("longitude")));
-                            LatLng target = new LatLng(Double.valueOf((String) targetJSON.get("latitude")), Double.valueOf((String) targetJSON.get("longitude")));
-                            final PolylineOptions rectOptions = new PolylineOptions();
-                            rectOptions.add(source, target).color(Color.RED);
-                            polyline.add(mMap.addPolyline(rectOptions));
-                            Polyline u = (Polyline) polyline.toArray()[0];
-                            Log.d("wtf2", String.valueOf(source.latitude));
+                        JSONObject sourceJSON = path.getJSONObject(i);
+                        JSONObject targetJSON = path.getJSONObject(i + 1);
+                        if (sourceJSON.has("floor") && targetJSON.has("floor")) {
+                            String sourceFloor = sourceJSON.getString("floor");
+                            String targetFloor = targetJSON.getString("floor");
+                            if (sourceFloor.equals(targetFloor)) {
+                                if (sourceJSON.has("latitude") && sourceJSON.has("longitude") && targetJSON.has("latitude") && targetJSON.has("longitude")) {
+                                    Log.d("help", (String) sourceJSON.get("latitude"));
+                                    Log.d("help2", (String) sourceJSON.get("longitude"));
+                                    Log.d("help3", String.valueOf(Double.valueOf((String) targetJSON.get("latitude"))));
+                                    LatLng source = new LatLng(Double.valueOf(sourceJSON.getString("latitude")), Double.valueOf(sourceJSON.getString("longitude")));
+                                    LatLng target = new LatLng(Double.valueOf(targetJSON.getString("latitude")), Double.valueOf(targetJSON.getString("longitude")));
+                                    final PolylineOptions rectOptions = new PolylineOptions();
+                                    rectOptions.add(source, target).color(Color.RED);
+                                    polyline.add(mMap.addPolyline(rectOptions));
+                                    Polyline u = (Polyline) polyline.toArray()[0];
+                                    Log.d("wtf2", String.valueOf(source.latitude));
+                                }
+                            }
                         }
                     }
                 }
@@ -308,14 +434,21 @@ public class Map implements OnMapReadyCallback {
     private GoogleMap.OnGroundOverlayClickListener mGroundOverlayClickListener = new GoogleMap.OnGroundOverlayClickListener() {
         @Override
         public void onGroundOverlayClick(GroundOverlay groundOverlay) {
+            //Moving focus from one building directly to another
             if (focusedGroundOverlay != null && !groundOverlay.equals(focusedGroundOverlay)) {
                 focusedGroundOverlay.setTransparency(0.5f);
                 focusedGroundOverlay.setClickable(true);
+                if (focusedFloor != 0) changeFloorPlans(focusedBuildingFloorPlans.get(groundReference));
+                buildingOverlays.put(focusedGroundOverlay, focusedBuilding);
             }
             focusedGroundOverlay = groundOverlay;
             focusedGroundOverlay.setTransparency(0.0f);
             focusedGroundOverlay.setClickable(false);
+            //Need to make request to get floorplan information
             if (mPoint2 != null) mPoint2.setAlpha(1);
+            focusedBuilding = buildingOverlays.get(focusedGroundOverlay);
+            focusedFloor = 0;
+            buildingOverlays.remove(focusedGroundOverlay);
         }
     };
 
