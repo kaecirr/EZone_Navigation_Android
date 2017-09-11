@@ -26,10 +26,12 @@ public class BackendRequest extends AsyncTask<Void, Void, String> {
 
     private String apiCall;
     private String query;
+    private boolean init;
 
-    public BackendRequest(String u, String q) {
+    public BackendRequest(String u, String q, boolean init) {
         apiCall = u;
         query = q;
+        this.init = init;
     }
 
     @Override
@@ -56,8 +58,10 @@ public class BackendRequest extends AsyncTask<Void, Void, String> {
             response = "THERE WAS AN ERROR";
         }
         else if (apiCall.equals("path")) drawPolyline(response);
-        else if (apiCall.equals("initialise")) mapInitialisation(response);
-        else if (apiCall.equals("floorplans")) setFloorPlans(response);
+        else if (apiCall.equals("FloorPlan")) {
+            if (init) mapInitialisation(response);
+            else setFloorPlans(response);
+        }
 
         Log.d("INFO5", response);
     }

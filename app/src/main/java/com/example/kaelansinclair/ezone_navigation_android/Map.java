@@ -62,32 +62,50 @@ public class Map implements OnMapReadyCallback {
     private static ArrayList<String> focusedBuildingFloorPlans;
     private static int groundReference;
 
-    private JSONObject jsonInner;
+    private JSONObject jsonInnerMapData;
+    private JSONObject jsonInnerFloorPlan;
+    private JSONObject jsonMapData;
+    private JSONObject jsonFloorPlan;
 
-    private JSONObject json;
 
     public Map(MainActivity mActivity) {
         this.mActivity = mActivity;;
 
-        jsonInner = new JSONObject();
+        jsonInnerMapData = new JSONObject();
         try {
-            jsonInner.put("startBuilding", "computerScience");
-            jsonInner.put("startFloor", "second");
-            jsonInner.put("startLongitude", "-31.97444473");
-            jsonInner.put("startLatitude", "115.8599");
-            jsonInner.put("endBuilding", "computerScience");
-            jsonInner.put("endFloor", "second");
-            jsonInner.put("endLongitude", "-31.97222274");
-            jsonInner.put("endLatitude", "115.823");
-            jsonInner.put("algorithm", "DJ");
+            jsonInnerMapData.put("startBuilding", "computerScience");
+            jsonInnerMapData.put("startFloor", "second");
+            jsonInnerMapData.put("startLongitude", "-31.97444473");
+            jsonInnerMapData.put("startLatitude", "115.8599");
+            jsonInnerMapData.put("endBuilding", "computerScience");
+            jsonInnerMapData.put("endFloor", "second");
+            jsonInnerMapData.put("endLongitude", "-31.97222274");
+            jsonInnerMapData.put("endLatitude", "115.823");
+            jsonInnerMapData.put("algorithm", "DJ");
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        json = new JSONObject();
+        jsonMapData = new JSONObject();
         try {
-            json.put("requestMessage", "");
-            json.put("mapDataRequest", jsonInner);
+            jsonMapData.put("requestMessage", "");
+            jsonMapData.put("mapDataRequest", jsonInnerMapData);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        jsonInnerFloorPlan = new JSONObject();
+        try {
+            jsonInnerFloorPlan.put("buildingName", "computerScience");
+            //jsonInnerFloorPlan.put("floor", "2");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        jsonFloorPlan = new JSONObject();
+        try {
+            jsonFloorPlan.put("requestMessage", "");
+            jsonFloorPlan.put("floorPlan", jsonInnerFloorPlan);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -137,18 +155,18 @@ public class Map implements OnMapReadyCallback {
             if (mPoint2 != null && mPoint2.isVisible()) {
 
                 try {
-                    jsonInner.put("startLongitude", String.valueOf(mMarker.getPosition().longitude));
-                    jsonInner.put("startLatitude", String.valueOf(mMarker.getPosition().latitude));
-                    jsonInner.put("endLongitude", String.valueOf(mPoint2.getPosition().longitude));
-                    jsonInner.put("endLatitude", String.valueOf(mPoint2.getPosition().latitude));
+                    jsonInnerMapData.put("startLongitude", String.valueOf(mMarker.getPosition().longitude));
+                    jsonInnerMapData.put("startLatitude", String.valueOf(mMarker.getPosition().latitude));
+                    jsonInnerMapData.put("endLongitude", String.valueOf(mPoint2.getPosition().longitude));
+                    jsonInnerMapData.put("endLatitude", String.valueOf(mPoint2.getPosition().latitude));
 
-                    json.put("requestMessage", "");
-                    json.put("mapDataRequest", jsonInner);
+                    jsonMapData.put("requestMessage", "");
+                    jsonMapData.put("mapDataRequest", jsonInnerMapData);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
 
-                BackendRequest t = new BackendRequest("path", json.toString());
+                BackendRequest t = new BackendRequest("path", jsonMapData.toString(), false);
 
                 t.execute();
             }
@@ -163,18 +181,18 @@ public class Map implements OnMapReadyCallback {
 
 
                 try {
-                    jsonInner.put("startLongitude", String.valueOf(mMarker.getPosition().longitude));
-                    jsonInner.put("startLatitude", String.valueOf(mMarker.getPosition().latitude));
-                    jsonInner.put("endLongitude", String.valueOf(mPoint2.getPosition().longitude));
-                    jsonInner.put("endLatitude", String.valueOf(mPoint2.getPosition().latitude));
+                    jsonInnerMapData.put("startLongitude", String.valueOf(mMarker.getPosition().longitude));
+                    jsonInnerMapData.put("startLatitude", String.valueOf(mMarker.getPosition().latitude));
+                    jsonInnerMapData.put("endLongitude", String.valueOf(mPoint2.getPosition().longitude));
+                    jsonInnerMapData.put("endLatitude", String.valueOf(mPoint2.getPosition().latitude));
 
-                    json.put("requestMessage", "");
-                    json.put("mapDataRequest", jsonInner);
+                    jsonMapData.put("requestMessage", "");
+                    jsonMapData.put("mapDataRequest", jsonInnerMapData);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
 
-                BackendRequest t = new BackendRequest("path", json.toString());
+                BackendRequest t = new BackendRequest("path", jsonMapData.toString(), false);
 
                 t.execute();
             }
@@ -203,13 +221,13 @@ public class Map implements OnMapReadyCallback {
         mMap = map;
 
         try {
-            json.put("requestMessage", "initialCalling");
-            json.put("mapDataRequest", "");
+            jsonFloorPlan.put("requestMessage", "initialCalling");
+            jsonFloorPlan.put("floorPlan", "");
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        BackendRequest initial = new BackendRequest("path", json.toString());
+        BackendRequest initial = new BackendRequest("floorPlan", jsonFloorPlan.toString(), true);
 
         initial.execute();
     }
@@ -219,22 +237,25 @@ public class Map implements OnMapReadyCallback {
         try {
             JSONObject jsonObject = new JSONObject(response);
 
-            if (jsonObject.has("DataResponse")) {
-                JSONObject jsonObject2 = jsonObject.getJSONObject("DataResponse");
-                if (jsonObject2.has("initial"))  {
+            if (jsonObject.has("floorPlanResponse")) {
+                JSONObject jsonObject2 = jsonObject.getJSONObject("floorPlanResponse");
+                if (jsonObject2.has("floorPlan"))  {
 
-                    JSONArray initial = jsonObject2.getJSONArray("initial");
-                    Log.d("wtf", initial.toString());
+                    JSONArray floorPlans = jsonObject2.getJSONArray("floorPlan");
+                    Log.d("wtf", floorPlans.toString());
 
-                    for (int i = 0; i < initial.length(); i++) {
-                        JSONObject buildingGround = initial.getJSONObject(i);
-                        IARegion r = IARegion.floorPlan(buildingGround.getString("floorPlanID"));
+                    for (int i = 0; i < floorPlans.length(); i++) {
+                        JSONObject buildingGround = floorPlans.getJSONObject(i);
 
-                        GroundOverlay buildingOverlay = null;
+                        if (buildingGround.has("floorPlanID") && buildingGround.has("buildingName")) {
+                            IARegion r = IARegion.floorPlan(buildingGround.getString("floorPlanID"));
 
-                        mActivity.getTracker().test(r, buildingOverlay);
+                            GroundOverlay buildingOverlay = null;
 
-                        buildingOverlays.put(buildingOverlay, buildingGround.getString("building"));
+                            mActivity.getTracker().test(r, buildingOverlay);
+
+                            buildingOverlays.put(buildingOverlay, buildingGround.getString("building"));
+                        }
                     }
                 }
             }
@@ -248,18 +269,22 @@ public class Map implements OnMapReadyCallback {
         try {
             JSONObject jsonObject = new JSONObject(response);
 
-            if (jsonObject.has("DataResponse")) {
-                JSONObject jsonObject2 = jsonObject.getJSONObject("DataResponse");
-                if (jsonObject2.has("floorPlans"))  {
+            if (jsonObject.has("floorPlanResponse")) {
+                JSONObject jsonObject2 = jsonObject.getJSONObject("floorPlanResponse");
+                if (jsonObject2.has("floorPlan"))  {
 
-                    JSONArray floorPlans = jsonObject2.getJSONArray("floorPlans");
+                    JSONArray floorPlans = jsonObject2.getJSONArray("floorPlan");
                     Log.d("wtf", floorPlans.toString());
 
                     for (int i = 0; i < floorPlans.length(); i++) {
-                        JSONObject buildingGround = floorPlans.getJSONObject(i);
-                        String floorPlanID = buildingGround.getString("floorPlanID");
-                        if (floorPlanID.equals(mActivity.getTracker().getOverlayFloorPlan())) groundReference = i;
-                        focusedBuildingFloorPlans.add(floorPlanID);
+                        JSONObject buildingStore = floorPlans.getJSONObject(i);
+                        if (buildingStore.has("floorPlanID") && buildingStore.has("floor")) {
+                            String floorPlanID = buildingStore.getString("floorPlanID");
+                            int floor = buildingStore.getInt("floor");
+                            if (floor == 0)
+                                groundReference = i;
+                            focusedBuildingFloorPlans.add(floorPlanID);
+                        }
                     }
                 }
             }
@@ -449,6 +474,22 @@ public class Map implements OnMapReadyCallback {
             focusedBuilding = buildingOverlays.get(focusedGroundOverlay);
             focusedFloor = 0;
             buildingOverlays.remove(focusedGroundOverlay);
+
+            try {
+
+                jsonInnerFloorPlan.put("buildingName", focusedBuilding);
+                //jsonInnerFloorPlan.put("floor", "2");
+
+                jsonFloorPlan.put("requestMessage", "");
+                jsonFloorPlan.put("floorPlan", jsonInnerFloorPlan);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            BackendRequest initial = new BackendRequest("floorPlan", jsonFloorPlan.toString(), false);
+
+            initial.execute();
+
         }
     };
 
