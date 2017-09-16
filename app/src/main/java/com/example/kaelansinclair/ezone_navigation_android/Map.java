@@ -47,16 +47,20 @@ public class Map implements OnMapReadyCallback {
     private static MainActivity mActivity;
     private boolean mCameraPositionNeedsUpdating = true; // update on first location
 
-    private Marker mMarker;
+    private static Marker mMarker;
+    private static IARegion mMarkerRegion;
     private CircleOptions mMarkerErrorOptions;
     private Circle mMarkerError;
     private Marker mPoint;
     private Marker mPoint2;
+    private int mPoint2Floor;
+    private String mPoint2Building;
 
     private static GroundOverlay focusedGroundOverlay = null;
     private String focusedBuilding;
+    private static IARegion focusedRegion = null;
     private int focusedFloor;
-    private boolean isFocused;
+    private static boolean isFocused;
 
     private static HashMap<GroundOverlay, String> buildingOverlays;
 
@@ -119,6 +123,8 @@ public class Map implements OnMapReadyCallback {
         focusedFloor = 0;
         groundReference = 0;
         isFocused = false;
+        mPoint2Floor = 0;
+        mPoint2Building = "";
     }
 
     public static GoogleMap getMap() {return mMap;}
@@ -138,7 +144,7 @@ public class Map implements OnMapReadyCallback {
         }
     }
 
-    public void updateLocation(LatLng latLng, double accuracy) {
+    public void updateLocation(LatLng latLng, double accuracy, IARegion region) {
         if (mMap == null) {
             // location received before map is initialized, ignoring update here
             return;
@@ -152,6 +158,7 @@ public class Map implements OnMapReadyCallback {
             Drawable circleDrawable = mActivity.getResources().getDrawable(R.drawable.marker_circle);
             BitmapDescriptor markerIcon = getMarkerIconFromDrawable(circleDrawable);
             mMarker = mMap.addMarker(new MarkerOptions().position(latLng).icon(markerIcon).zIndex(100).anchor(0.5f,0.5f));
+            mMarkerRegion = region;
 
             mMarkerErrorOptions = new CircleOptions().center(latLng).radius(accuracy).strokeColor(Color.argb(255, 8, 0, 255)).strokeWidth(5).fillColor(Color.argb(128, 0, 170, 255)).zIndex(99);
             mMarkerError = mMap.addCircle(mMarkerErrorOptions);
@@ -179,7 +186,7 @@ public class Map implements OnMapReadyCallback {
             mMarkerError.setCenter(latLng);
             mMarkerError.setRadius(accuracy);
             mMarker.setPosition(latLng);
-
+            mMarkerRegion = region;
 
             if (mPoint2 != null && mPoint2.isVisible()) {
 
@@ -200,6 +207,12 @@ public class Map implements OnMapReadyCallback {
 
                 t.execute();
             }
+        }
+
+        if (focusedRegion != null) {
+            if ((!focusedRegion.equals(mMarkerRegion) && isFocused) || !isFocused)
+                mMarker.setAlpha(0.5f);
+            else mMarker.setAlpha(1);
         }
 
         // our camera position needs updating if location has significantly changed
@@ -256,9 +269,7 @@ public class Map implements OnMapReadyCallback {
 
                             GroundOverlay buildingOverlay = null;
 
-                            mActivity.getTracker().test(r, buildingOverlay);
-
-                            buildingOverlays.put(buildingOverlay, buildingGround.getString("building"));
+                            mActivity.getTracker().test(r, buildingOverlay, true, buildingGround.getString("building"));
                         }
                     }
                 }
@@ -267,6 +278,8 @@ public class Map implements OnMapReadyCallback {
             e.printStackTrace();
         }
     }
+
+    public HashMap<GroundOverlay, String> getBuildingOverlays() {return buildingOverlays;}
 
     public static void setFloorPlans(String response) {
         Log.d("quickDebug", response);
@@ -285,8 +298,17 @@ public class Map implements OnMapReadyCallback {
                         if (buildingStore.has("floorPlanID") && buildingStore.has("floor")) {
                             String floorPlanID = buildingStore.getString("floorPlanID");
                             int floor = buildingStore.getInt("floor");
-                            if (floor == 0)
+                            if (floor == 0) {
+                                focusedRegion = IARegion.floorPlan(floorPlanID);
+
+                                if (mMarkerRegion != null) {
+                                    if (!focusedRegion.equals(mMarkerRegion))
+                                        mMarker.setAlpha(0.5f);
+                                    else mMarker.setAlpha(1);
+                                }
+
                                 groundReference = i;
+                            }
                             focusedBuildingFloorPlans.add(floorPlanID);
                         }
                     }
@@ -300,13 +322,25 @@ public class Map implements OnMapReadyCallback {
     public void changeFloor(int change) {
         if (focusedFloor + change >= 0 && focusedFloor + change < focusedBuildingFloorPlans.size()) {
             focusedFloor += change;
+            focusedRegion = IARegion.floorPlan(focusedBuildingFloorPlans.get(focusedFloor));
+
+            if (mMarkerRegion != null) {
+                if (!focusedRegion.equals(mMarkerRegion))
+                    mMarker.setAlpha(0.5f);
+                else mMarker.setAlpha(1);
+            }
+
             changeFloorPlans(focusedBuildingFloorPlans.get(focusedFloor));
+            if (mPoint2 != null) {
+                if (mPoint2.isVisible() && focusedFloor == mPoint2Floor && focusedBuilding.equals(mPoint2Building)) mPoint2.setAlpha(1);
+                else mPoint2.setAlpha(0.5f);
+            }
         }
     }
 
     private void changeFloorPlans(String floorPlanID) {
-        IARegion r = IARegion.floorPlan(floorPlanID);
-        mActivity.getTracker().test(r, focusedGroundOverlay);
+        focusedRegion = IARegion.floorPlan(floorPlanID);
+        mActivity.getTracker().test(focusedRegion, focusedGroundOverlay, false, "");
     }
 
     private BitmapDescriptor getMarkerIconFromDrawable(Drawable drawable) {
@@ -355,11 +389,16 @@ public class Map implements OnMapReadyCallback {
                         mActivity.getFabUp().hide();
                         mActivity.getFabDown().hide();
                         isFocused = false;
-                        if (mPoint2 != null) mPoint2.setAlpha(0.5f);
+                        if (mPoint2 != null) {
+                            if (mPoint2.isVisible()) mPoint2.setAlpha(0.5f);
+                            if (mMarker != null) mMarker.setAlpha(0.5f);
+                        }
                     }
                     else if (mPoint2 == null) {
                         mPoint2 = mMap.addMarker(new MarkerOptions().position(latLng)
                                 .icon(BitmapDescriptorFactory.defaultMarker(HUE_IAGRN)));
+                        mPoint2Floor = focusedFloor;
+                        mPoint2Building = focusedBuilding;
 
                         if (mPoint2 != null && mPoint2.isVisible()) {
     /*
@@ -394,6 +433,9 @@ public class Map implements OnMapReadyCallback {
                             // move existing markers position to received location
                             mPoint2.setPosition(latLng);
                             mPoint2.setVisible(true);
+                            mPoint2.setAlpha(1);
+                            mPoint2Floor = focusedFloor;
+                            mPoint2Building = focusedBuilding;
                             //mMap.setMyLocationEnabled(false);
 
                             if (mPoint2 != null && mPoint2.isVisible()) {
@@ -485,9 +527,13 @@ public class Map implements OnMapReadyCallback {
             focusedGroundOverlay.setTransparency(0.0f);
             focusedGroundOverlay.setClickable(false);
             //Need to make request to get floorplan information
-            if (mPoint2 != null) mPoint2.setAlpha(1);
             focusedBuilding = buildingOverlays.get(focusedGroundOverlay);
             focusedFloor = 0;
+            Log.d("building", focusedBuilding);
+            Log.d("building2", mPoint2Building);
+            if (mPoint2 != null) {
+                if (mPoint2.isVisible() && focusedFloor == mPoint2Floor && focusedBuilding.equals(mPoint2Building)) mPoint2.setAlpha(1);
+            }
             buildingOverlays.remove(focusedGroundOverlay);
 
             try {
@@ -501,9 +547,10 @@ public class Map implements OnMapReadyCallback {
                 e.printStackTrace();
             }
 
-            BackendRequest initial = new BackendRequest("floorPlan", jsonFloorPlan.toString(), false);
+            BackendRequest retrieveFloorPlans = new BackendRequest("floorPlan", jsonFloorPlan.toString(), false);
 
-            initial.execute();
+            retrieveFloorPlans.execute();
+
 
             focusedBuildingFloorPlans.add("0dc8358c-9e1e-4afa-8adb-3bdfb7154a88");
             focusedBuildingFloorPlans.add("6ee5ef62-e5e9-499e-9f8a-3f2c9c6e2d91");

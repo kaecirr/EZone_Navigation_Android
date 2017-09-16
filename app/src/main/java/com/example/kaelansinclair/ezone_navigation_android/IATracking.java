@@ -69,8 +69,7 @@ public class IATracking {
 
             Log.d(TAG, "new location received with coordinates: " + location.getLatitude()
                     + "," + location.getLongitude());
-
-            map.updateLocation(new LatLng(location.getLatitude(), location.getLongitude()), location.getAccuracy());
+            map.updateLocation(new LatLng(location.getLatitude(), location.getLongitude()), location.getAccuracy(), location.getRegion());
        }
 
     };
@@ -96,7 +95,7 @@ public class IATracking {
                         map.setFocusedGroundOverlay(null);
                     }
                     mOverlayFloorPlan = region; // overlay will be this (unless error in loading)
-                    fetchFloorPlan(newId);
+                    fetchFloorPlan(newId, false, "");
                 } else {
                     map.getFocusedGroundOverlay().setTransparency(0.0f);
                 }
@@ -122,7 +121,7 @@ public class IATracking {
 
     public IARegion.Listener getRegionListener() {return mRegionListener;}
 
-    public void test(IARegion region, GroundOverlay groundOverlay) {
+    public void test(IARegion region, GroundOverlay groundOverlay, boolean initialise, String building) {
         if (region.getType() == IARegion.TYPE_FLOOR_PLAN) {
             final String newId = region.getId();
             // Are we entering a new floor plan or coming back the floor plan we just left?
@@ -134,7 +133,7 @@ public class IATracking {
                 }
                 mOverlayFloorPlan = region; // overlay will be this (unless error in loading)
 
-                fetchFloorPlan(newId);
+                fetchFloorPlan(newId, initialise, building);
             } else {
                 groundOverlay.setTransparency(0.0f);
             }
@@ -147,7 +146,7 @@ public class IATracking {
     /**
      * Sets bitmap of floor plan as ground overlay on Google Maps
      */
-    private void setupGroundOverlay(IAFloorPlan floorPlan, Bitmap bitmap) {
+    private void setupGroundOverlay(IAFloorPlan floorPlan, Bitmap bitmap, boolean initialise, String building) {
 
         Log.d(TAG, "removeBlah2");
         if (map.getFocusedGroundOverlay() != null) {
@@ -170,12 +169,14 @@ public class IATracking {
                 map.getFocusedGroundOverlay().setTransparency(0.5f);
             }
         }
+
+        if (initialise) map.getBuildingOverlays().put(map.getFocusedGroundOverlay(), building);
     }
 
     /**
      * Download floor plan using Picasso library.
      */
-    private void fetchFloorPlanBitmap(final IAFloorPlan floorPlan) {
+    private void fetchFloorPlanBitmap(final IAFloorPlan floorPlan, final boolean initialise, final String building) {
 
         final String url = floorPlan.getUrl();
 
@@ -186,7 +187,7 @@ public class IATracking {
                 public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
                     Log.d(TAG, "onBitmap loaded with dimensions: " + bitmap.getWidth() + "x"
                             + bitmap.getHeight());
-                    setupGroundOverlay(floorPlan, bitmap);
+                    setupGroundOverlay(floorPlan, bitmap, initialise, building);
                 }
 
                 @Override
@@ -219,7 +220,7 @@ public class IATracking {
     /**
      * Fetches floor plan data from IndoorAtlas server.
      */
-    private void fetchFloorPlan(String id) {
+    private void fetchFloorPlan(String id, final boolean initialise, final String building) {
 
         // if there is already running task, cancel it
         cancelPendingNetworkCalls();
@@ -233,7 +234,7 @@ public class IATracking {
 
                 if (result.isSuccess() && result.getResult() != null) {
                     // retrieve bitmap for this floor plan metadata
-                    fetchFloorPlanBitmap(result.getResult());
+                    fetchFloorPlanBitmap(result.getResult(), initialise, building);
                 } else {
                     // ignore errors if this task was already canceled
                     if (!task.isCancelled()) {

@@ -125,7 +125,7 @@ public class MainActivity extends AppCompatActivity
 
         GroundOverlay test1 = null;
 
-        tracker.test(r, test1);
+        tracker.test(r, test1, true, "compSciBuilding");
     }
 
     @Override
