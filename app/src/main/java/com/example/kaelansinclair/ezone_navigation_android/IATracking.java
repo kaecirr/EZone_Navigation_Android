@@ -1,5 +1,6 @@
 package com.example.kaelansinclair.ezone_navigation_android;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Looper;
@@ -39,8 +40,7 @@ public class IATracking {
     private Map map;
 
     private IARegion mOverlayFloorPlan = null;
-
-    //private GroundOverlay mGroundOverlay = null;
+    private GroundOverlay mGroundOverlay = null;
     private IATask<IAFloorPlan> mFetchFloorPlanTask;
     private IALocationManager mIALocationManager;
     private IAResourceManager mResourceManager;
@@ -59,8 +59,6 @@ public class IATracking {
     public IALocationManager getIALocationManager() {return mIALocationManager;}
 
     public IAResourceManager getResourceManager() {return mResourceManager;}
-
-    public IARegion getOverlayFloorPlan() {return mOverlayFloorPlan;}
 
     private IALocationListener mListener = new IALocationListenerSupport() {
 
@@ -85,20 +83,21 @@ public class IATracking {
         @Override
         public void onEnterRegion(IARegion region) {
             if (region.getType() == IARegion.TYPE_FLOOR_PLAN) {
-
                 final String newId = region.getId();
                 // Are we entering a new floor plan or coming back the floor plan we just left?
-                if (map.getFocusedGroundOverlay() == null || !region.equals(mOverlayFloorPlan)) {
+                if (mGroundOverlay == null || !region.equals(mOverlayFloorPlan)) {
+                   // mCameraPositionNeedsUpdating = true; // entering new fp, need to move camera
                     map.setCameraPositionNeedsUpdating(true);
-                    if (map.getFocusedGroundOverlay() != null) {
+                    if (mGroundOverlay != null) {
+                      //  mCameraPositionNeedsUpdating = false;
                         map.setCameraPositionNeedsUpdating(false);
-                        map.getFocusedGroundOverlay().remove();
-                        map.setFocusedGroundOverlay(null);
+                        mGroundOverlay.remove();
+                        mGroundOverlay = null;
                     }
                     mOverlayFloorPlan = region; // overlay will be this (unless error in loading)
-                    fetchFloorPlan(newId, map.getFocusedGroundOverlay());
+                    fetchFloorPlan(newId);
                 } else {
-                    map.getFocusedGroundOverlay().setTransparency(0.0f);
+                    mGroundOverlay.setTransparency(0.0f);
                 }
             }
             // showInfo("Enter " + (region.getType() == IARegion.TYPE_VENUE
@@ -108,10 +107,10 @@ public class IATracking {
 
         @Override
         public void onExitRegion(IARegion region) {
-            if (map.getFocusedGroundOverlay() != null) {
+            if (mGroundOverlay != null) {
                 // Indicate we left this floor plan but leave it there for reference
                 // If we enter another floor plan, this one will be removed and another one loaded
-                map.getFocusedGroundOverlay().setTransparency(0.5f);
+                mGroundOverlay.setTransparency(0.5f);
             }
             // showInfo("Enter " + (region.getType() == IARegion.TYPE_VENUE
             //       ? "VENUE "
@@ -122,21 +121,21 @@ public class IATracking {
 
     public IARegion.Listener getRegionListener() {return mRegionListener;}
 
-    public void test(IARegion region, GroundOverlay groundOverlay) {
+    public void test(IARegion region) {
         if (region.getType() == IARegion.TYPE_FLOOR_PLAN) {
             final String newId = region.getId();
             // Are we entering a new floor plan or coming back the floor plan we just left?
-            if (groundOverlay == null || !region.equals(mOverlayFloorPlan)) {
+            if (mGroundOverlay == null || !region.equals(mOverlayFloorPlan)) {
+              //  mCameraPositionNeedsUpdating = true; // entering new fp, need to move camera
                 map.setCameraPositionNeedsUpdating(true);
-                if (groundOverlay != null) {
-                    groundOverlay.remove();
-                    groundOverlay = null;
+                if (mGroundOverlay != null) {
+                    mGroundOverlay.remove();
+                    mGroundOverlay = null;
                 }
                 mOverlayFloorPlan = region; // overlay will be this (unless error in loading)
-
-                fetchFloorPlan(newId, groundOverlay);
+                fetchFloorPlan(newId);
             } else {
-                groundOverlay.setTransparency(0.0f);
+                mGroundOverlay.setTransparency(0.0f);
             }
         }
         // showInfo("Enter " + (region.getType() == IARegion.TYPE_VENUE
@@ -147,10 +146,10 @@ public class IATracking {
     /**
      * Sets bitmap of floor plan as ground overlay on Google Maps
      */
-    private void setupGroundOverlay(IAFloorPlan floorPlan, Bitmap bitmap, GroundOverlay groundOverlay) {
+    private void setupGroundOverlay(IAFloorPlan floorPlan, Bitmap bitmap) {
 
-        if (groundOverlay != null) {
-            groundOverlay.remove();
+        if (mGroundOverlay != null) {
+            mGroundOverlay.remove();
         }
 
         if (map.getMap() != null) {
@@ -162,16 +161,14 @@ public class IATracking {
                     .position(center, floorPlan.getWidthMeters(), floorPlan.getHeightMeters())
                     .bearing(floorPlan.getBearing());
 
-            groundOverlay = map.getMap().addGroundOverlay(fpOverlay);
-            groundOverlay.setClickable(true);
-            groundOverlay.setTransparency(0.5f);
+            mGroundOverlay = map.getMap().addGroundOverlay(fpOverlay);
         }
     }
 
     /**
      * Download floor plan using Picasso library.
      */
-    private void fetchFloorPlanBitmap(final IAFloorPlan floorPlan, final GroundOverlay groundOverlay) {
+    private void fetchFloorPlanBitmap(final IAFloorPlan floorPlan) {
 
         final String url = floorPlan.getUrl();
 
@@ -182,7 +179,7 @@ public class IATracking {
                 public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
                     Log.d(TAG, "onBitmap loaded with dimensions: " + bitmap.getWidth() + "x"
                             + bitmap.getHeight());
-                    setupGroundOverlay(floorPlan, bitmap, groundOverlay);
+                    setupGroundOverlay(floorPlan, bitmap);
                 }
 
                 @Override
@@ -215,7 +212,7 @@ public class IATracking {
     /**
      * Fetches floor plan data from IndoorAtlas server.
      */
-    private void fetchFloorPlan(String id, final GroundOverlay groundOverlay) {
+    private void fetchFloorPlan(String id) {
 
         // if there is already running task, cancel it
         cancelPendingNetworkCalls();
@@ -229,7 +226,7 @@ public class IATracking {
 
                 if (result.isSuccess() && result.getResult() != null) {
                     // retrieve bitmap for this floor plan metadata
-                    fetchFloorPlanBitmap(result.getResult(), groundOverlay);
+                    fetchFloorPlanBitmap(result.getResult());
                 } else {
                     // ignore errors if this task was already canceled
                     if (!task.isCancelled()) {
