@@ -30,11 +30,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.GroundOverlay;
 import com.indooratlas.android.sdk.IALocationRequest;
 import com.indooratlas.android.sdk.IARegion;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -54,33 +52,14 @@ public class MainActivity extends AppCompatActivity
 
     private IATracking tracker;
 
-    JSONObject jsonInner;
+    private boolean navigationMode = false;
 
-    JSONObject json;
+    public IATracking getTracker() {
+        return tracker;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
-        jsonInner = new JSONObject();
-        try {
-            jsonInner.put("building", "computerScience");
-            jsonInner.put("floor", "second");
-            jsonInner.put("startLongitude", "-31.97444473");
-            jsonInner.put("startLatitude", "115.8599");
-            jsonInner.put("endLongitude", "-31.97222274");
-            jsonInner.put("endLatitude", "115.823");
-            jsonInner.put("algorithm", "DJ");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        json = new JSONObject();
-        try {
-            json.put("requestMessage", "");
-            json.put("mapDataRequest", jsonInner);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
 
         map = new Map(this);
         super.onCreate(savedInstanceState);
@@ -123,9 +102,11 @@ public class MainActivity extends AppCompatActivity
 
         tracker = new IATracking(map, this);
 
-        //IARegion r = IARegion.floorPlan("208ae45e-8d22-4faa-bfb2-e245f956de3b");
+        IARegion r = IARegion.floorPlan("208ae45e-8d22-4faa-bfb2-e245f956de3b");
 
-        //tracker.test(r);
+        GroundOverlay test1 = null;
+
+        tracker.test(r, test1);
     }
 
     @Override
@@ -147,7 +128,7 @@ public class MainActivity extends AppCompatActivity
         }
 
         tracker.getIALocationManager().requestLocationUpdates(IALocationRequest.create(), tracker.getIALocationListener());
-        tracker.getIALocationManager().registerRegionListener(tracker.getRegionListener());
+        if (navigationMode) tracker.getIALocationManager().registerRegionListener(tracker.getRegionListener());
 
         map.updateCameraPosition();
     }
@@ -156,7 +137,7 @@ public class MainActivity extends AppCompatActivity
     public void onPause() {
         super.onPause();
         tracker.getIALocationManager().removeLocationUpdates(tracker.getIALocationListener());
-        tracker.getIALocationManager().registerRegionListener(tracker.getRegionListener());
+        if (navigationMode) tracker.getIALocationManager().unregisterRegionListener(tracker.getRegionListener());
     }
 
     @Override
