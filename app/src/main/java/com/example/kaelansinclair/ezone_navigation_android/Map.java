@@ -351,6 +351,7 @@ public class Map implements OnMapReadyCallback {
                         if (focusedFloor != 0) changeFloorPlans(focusedBuildingFloorPlans.get(groundReference));
                         buildingOverlays.put(focusedGroundOverlay, focusedBuilding);
                         focusedGroundOverlay = null;
+                        focusedBuildingFloorPlans.clear();
                         mActivity.getFabUp().hide();
                         mActivity.getFabDown().hide();
                         isFocused = false;

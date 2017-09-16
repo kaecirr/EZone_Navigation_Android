@@ -96,7 +96,7 @@ public class IATracking {
                         map.setFocusedGroundOverlay(null);
                     }
                     mOverlayFloorPlan = region; // overlay will be this (unless error in loading)
-                    fetchFloorPlan(newId, map.getFocusedGroundOverlay());
+                    fetchFloorPlan(newId);
                 } else {
                     map.getFocusedGroundOverlay().setTransparency(0.0f);
                 }
@@ -134,7 +134,7 @@ public class IATracking {
                 }
                 mOverlayFloorPlan = region; // overlay will be this (unless error in loading)
 
-                fetchFloorPlan(newId, groundOverlay);
+                fetchFloorPlan(newId);
             } else {
                 groundOverlay.setTransparency(0.0f);
             }
@@ -147,12 +147,12 @@ public class IATracking {
     /**
      * Sets bitmap of floor plan as ground overlay on Google Maps
      */
-    private void setupGroundOverlay(IAFloorPlan floorPlan, Bitmap bitmap, GroundOverlay groundOverlay) {
+    private void setupGroundOverlay(IAFloorPlan floorPlan, Bitmap bitmap) {
 
         Log.d(TAG, "removeBlah2");
-        if (groundOverlay != null) {
+        if (map.getFocusedGroundOverlay() != null) {
             Log.d(TAG, "friggenHeck");
-            groundOverlay.remove();
+            map.getFocusedGroundOverlay().remove();
         }
 
         if (map.getMap() != null) {
@@ -164,18 +164,18 @@ public class IATracking {
                     .position(center, floorPlan.getWidthMeters(), floorPlan.getHeightMeters())
                     .bearing(floorPlan.getBearing());
 
-            groundOverlay = map.getMap().addGroundOverlay(fpOverlay);
+            map.setFocusedGroundOverlay(map.getMap().addGroundOverlay(fpOverlay));
             if (!map.getIsFocused()) {
-                groundOverlay.setClickable(true);
+                map.getFocusedGroundOverlay().setClickable(true);
+                map.getFocusedGroundOverlay().setTransparency(0.5f);
             }
-            groundOverlay.setTransparency(0.5f);
         }
     }
 
     /**
      * Download floor plan using Picasso library.
      */
-    private void fetchFloorPlanBitmap(final IAFloorPlan floorPlan, final GroundOverlay groundOverlay) {
+    private void fetchFloorPlanBitmap(final IAFloorPlan floorPlan) {
 
         final String url = floorPlan.getUrl();
 
@@ -186,7 +186,7 @@ public class IATracking {
                 public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
                     Log.d(TAG, "onBitmap loaded with dimensions: " + bitmap.getWidth() + "x"
                             + bitmap.getHeight());
-                    setupGroundOverlay(floorPlan, bitmap, groundOverlay);
+                    setupGroundOverlay(floorPlan, bitmap);
                 }
 
                 @Override
@@ -219,7 +219,7 @@ public class IATracking {
     /**
      * Fetches floor plan data from IndoorAtlas server.
      */
-    private void fetchFloorPlan(String id, final GroundOverlay groundOverlay) {
+    private void fetchFloorPlan(String id) {
 
         // if there is already running task, cancel it
         cancelPendingNetworkCalls();
@@ -233,7 +233,7 @@ public class IATracking {
 
                 if (result.isSuccess() && result.getResult() != null) {
                     // retrieve bitmap for this floor plan metadata
-                    fetchFloorPlanBitmap(result.getResult(), groundOverlay);
+                    fetchFloorPlanBitmap(result.getResult());
                 } else {
                     // ignore errors if this task was already canceled
                     if (!task.isCancelled()) {
