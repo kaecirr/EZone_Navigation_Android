@@ -47,6 +47,9 @@ public class MainActivity extends AppCompatActivity
 
     private Map map;
 
+    private FloatingActionButton fabUp;
+    private FloatingActionButton fabDown;
+
     private static final int REQUEST_CODE_ACCESS_COARSE_LOCATION = 1;
     private static final String TAG = "IADemo";
 
@@ -77,6 +80,22 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+        fabUp = (FloatingActionButton) findViewById(R.id.fab_up);
+        fabUp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                map.changeFloor(1);
+            }
+        });
+
+        fabDown = (FloatingActionButton) findViewById(R.id.fab_down);
+        fabDown.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                map.changeFloor(-1);
+            }
+        });
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -102,7 +121,7 @@ public class MainActivity extends AppCompatActivity
 
         tracker = new IATracking(map, this);
 
-        IARegion r = IARegion.floorPlan("208ae45e-8d22-4faa-bfb2-e245f956de3b");
+        IARegion r = IARegion.floorPlan("0dc8358c-9e1e-4afa-8adb-3bdfb7154a88");
 
         GroundOverlay test1 = null;
 
@@ -246,6 +265,9 @@ public class MainActivity extends AppCompatActivity
         //
     }
 
+    public FloatingActionButton getFabUp() {return fabUp;}
+
+    public FloatingActionButton getFabDown() {return fabDown;}
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override

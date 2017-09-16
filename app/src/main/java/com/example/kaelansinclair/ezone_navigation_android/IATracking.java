@@ -149,7 +149,9 @@ public class IATracking {
      */
     private void setupGroundOverlay(IAFloorPlan floorPlan, Bitmap bitmap, GroundOverlay groundOverlay) {
 
+        Log.d(TAG, "removeBlah2");
         if (groundOverlay != null) {
+            Log.d(TAG, "friggenHeck");
             groundOverlay.remove();
         }
 
@@ -163,7 +165,9 @@ public class IATracking {
                     .bearing(floorPlan.getBearing());
 
             groundOverlay = map.getMap().addGroundOverlay(fpOverlay);
-            groundOverlay.setClickable(true);
+            if (!map.getIsFocused()) {
+                groundOverlay.setClickable(true);
+            }
             groundOverlay.setTransparency(0.5f);
         }
     }

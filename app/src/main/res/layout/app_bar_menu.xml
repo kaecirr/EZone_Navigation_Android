@@ -20,14 +20,41 @@
 
     </android.support.design.widget.AppBarLayout>
 
+    <include layout="@layout/map"
+        android:id="@+id/include" />
+
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
+        android:layout_gravity="top|left"
         android:layout_margin="@dimen/fab_margin"
+        app:layout_anchor="@+id/include"
+        app:layout_anchorGravity="bottom|right"
         app:srcCompat="@android:drawable/ic_menu_mylocation" />
 
-    <include layout="@layout/map" />
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_up"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|left"
+        android:layout_marginTop = "@dimen/fab_up_margin_top"
+        android:layout_marginRight = "@dimen/fab_margin"
+        android:visibility="gone"
+        app:layout_anchor="@+id/include"
+        app:layout_anchorGravity="top|right"
+        app:srcCompat="@android:drawable/arrow_up_float" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_down"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|left"
+        android:layout_marginTop = "@dimen/fab_down_margin_top"
+        android:layout_marginRight = "@dimen/fab_margin"
+        android:visibility="gone"
+        app:layout_anchor="@+id/include"
+        app:layout_anchorGravity="top|right"
+        app:srcCompat="@android:drawable/arrow_down_float" />
 
 </android.support.design.widget.CoordinatorLayout>

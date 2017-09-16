@@ -56,6 +56,7 @@ public class Map implements OnMapReadyCallback {
     private static GroundOverlay focusedGroundOverlay = null;
     private String focusedBuilding;
     private int focusedFloor;
+    private boolean isFocused;
 
     private static HashMap<GroundOverlay, String> buildingOverlays;
 
@@ -117,11 +118,14 @@ public class Map implements OnMapReadyCallback {
         focusedBuilding = "";
         focusedFloor = 0;
         groundReference = 0;
+        isFocused = false;
     }
 
     public static GoogleMap getMap() {return mMap;}
 
     public GroundOverlay getFocusedGroundOverlay() {return focusedGroundOverlay;}
+
+    public boolean getIsFocused() {return isFocused;}
 
     public void setFocusedGroundOverlay(GroundOverlay newGroundOverlay) {focusedGroundOverlay = newGroundOverlay;}
 
@@ -293,6 +297,13 @@ public class Map implements OnMapReadyCallback {
         }
     }
 
+    public void changeFloor(int change) {
+        if (focusedFloor + change >= 0 && focusedFloor + change < focusedBuildingFloorPlans.size()) {
+            focusedFloor += change;
+            changeFloorPlans(focusedBuildingFloorPlans.get(focusedFloor));
+        }
+    }
+
     private void changeFloorPlans(String floorPlanID) {
         IARegion r = IARegion.floorPlan(floorPlanID);
         mActivity.getTracker().test(r, focusedGroundOverlay);
@@ -340,6 +351,9 @@ public class Map implements OnMapReadyCallback {
                         if (focusedFloor != 0) changeFloorPlans(focusedBuildingFloorPlans.get(groundReference));
                         buildingOverlays.put(focusedGroundOverlay, focusedBuilding);
                         focusedGroundOverlay = null;
+                        mActivity.getFabUp().hide();
+                        mActivity.getFabDown().hide();
+                        isFocused = false;
                         if (mPoint2 != null) mPoint2.setAlpha(0.5f);
                     }
                     else if (mPoint2 == null) {
@@ -489,6 +503,15 @@ public class Map implements OnMapReadyCallback {
             BackendRequest initial = new BackendRequest("floorPlan", jsonFloorPlan.toString(), false);
 
             initial.execute();
+
+            focusedBuildingFloorPlans.add("0dc8358c-9e1e-4afa-8adb-3bdfb7154a88");
+            focusedBuildingFloorPlans.add("6ee5ef62-e5e9-499e-9f8a-3f2c9c6e2d91");
+            focusedBuildingFloorPlans.add("208ae45e-8d22-4faa-bfb2-e245f956de3b");
+
+            mActivity.getFabUp().show();
+            mActivity.getFabDown().show();
+
+            isFocused = true;
 
         }
     };
