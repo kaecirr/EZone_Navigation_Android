@@ -1,6 +1,8 @@
 package com.example.kaelansinclair.ezone_navigation_android;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -126,6 +128,9 @@ public class MainActivity extends AppCompatActivity
         GroundOverlay test1 = null;
 
         tracker.test(r, test1, true, "compSciBuilding");
+
+       // testBottomDialog dialog = new testBottomDialog();
+       // dialog.show(getSupportFragmentManager(), "tag");
     }
 
     @Override
