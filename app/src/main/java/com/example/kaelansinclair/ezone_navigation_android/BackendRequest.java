@@ -13,6 +13,7 @@ import java.net.URL;
 import static com.example.kaelansinclair.ezone_navigation_android.Map.setFloorPlans;
 import static com.example.kaelansinclair.ezone_navigation_android.Map.drawPolyline;
 import static com.example.kaelansinclair.ezone_navigation_android.Map.mapInitialisation;
+import static com.example.kaelansinclair.ezone_navigation_android.Map.setRooms;
 
 /**
  * Created by kaelan on 29/05/17.
@@ -58,10 +59,11 @@ public class BackendRequest extends AsyncTask<Void, Void, String> {
             response = "THERE WAS AN ERROR";
         }
         else if (apiCall.equals("path")) drawPolyline(response);
-        else if (apiCall.equals("FloorPlan")) {
+        else if (apiCall.equals("floorPlan")) {
             if (init) mapInitialisation(response);
             else setFloorPlans(response);
         }
+        else if (apiCall.equals("rooms")) setRooms(response);
 
         Log.d("INFO5", response);
     }

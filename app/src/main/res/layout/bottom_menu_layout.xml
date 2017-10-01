@@ -13,32 +13,28 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAppearance="@style/TextAppearance.AppCompat"
-        android:textSize="18sp"
-        android:visibility="gone" />
+        android:textSize="18sp" />
 
     <TextView
         android:id="@+id/room_number"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAppearance="@style/TextAppearance.AppCompat"
-        android:textSize="18sp"
-        android:visibility="gone" />
+        android:textSize="18sp" />
 
     <TextView
         android:id="@+id/floor"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAppearance="@style/TextAppearance.AppCompat"
-        android:textSize="18sp"
-        android:visibility="gone" />
+        android:textSize="18sp" />
 
     <TextView
-        android:id="@+id/latlng"
+        android:id="@+id/building"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAppearance="@style/TextAppearance.AppCompat"
-        android:textSize="18sp"
-        android:visibility="gone" />
+        android:textSize="18sp" />
 
     <LinearLayout
         android:id="@+id/nav_button_layout"

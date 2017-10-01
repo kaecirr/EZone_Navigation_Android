@@ -1,8 +1,6 @@
 package com.example.kaelansinclair.ezone_navigation_android;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
-import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -35,6 +33,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.GroundOverlay;
 import com.indooratlas.android.sdk.IALocationRequest;
 import com.indooratlas.android.sdk.IARegion;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -48,6 +47,8 @@ public class MainActivity extends AppCompatActivity
     private EditText edtSeach;
 
     private Map map;
+
+    private SlidingUpPanelLayout mBottomMenuLayout;
 
     private FloatingActionButton fabUp;
     private FloatingActionButton fabDown;
@@ -129,8 +130,9 @@ public class MainActivity extends AppCompatActivity
 
         tracker.test(r, test1, true, "compSciBuilding");
 
-       // testBottomDialog dialog = new testBottomDialog();
-       // dialog.show(getSupportFragmentManager(), "tag");
+        mBottomMenuLayout = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
+        mBottomMenuLayout.setTouchEnabled(false);
+        mBottomMenuLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
     }
 
     @Override
@@ -273,6 +275,8 @@ public class MainActivity extends AppCompatActivity
     public FloatingActionButton getFabUp() {return fabUp;}
 
     public FloatingActionButton getFabDown() {return fabDown;}
+
+    public SlidingUpPanelLayout getBottomMenuLayout() {return mBottomMenuLayout;}
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
