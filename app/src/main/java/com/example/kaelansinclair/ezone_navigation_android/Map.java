@@ -108,7 +108,7 @@ public class Map implements OnMapReadyCallback {
 
         jsonInnerFloorPlan = new JSONObject();
         try {
-            jsonInnerFloorPlan.put("buildingName", "computerScience");
+            jsonInnerFloorPlan.put("buildingName", "ComputerScience");
             //jsonInnerFloorPlan.put("floor", "2");
         } catch (JSONException e) {
             e.printStackTrace();
@@ -117,14 +117,14 @@ public class Map implements OnMapReadyCallback {
         jsonFloorPlan = new JSONObject();
         try {
             jsonFloorPlan.put("requestMessage", "");
-            jsonFloorPlan.put("floorPlan", jsonInnerFloorPlan);
+            jsonFloorPlan.put("floorData", jsonInnerFloorPlan);
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
         jsonInnerRooms = new JSONObject();
         try {
-            jsonInnerFloorPlan.put("buildingName", "computerScience");
+            jsonInnerRooms.put("buildingName", "ComputerScience");
             //jsonInnerFloorPlan.put("floor", "2");
         } catch (JSONException e) {
             e.printStackTrace();
@@ -264,7 +264,7 @@ public class Map implements OnMapReadyCallback {
 
         try {
             jsonFloorPlan.put("requestMessage", "initialCalling");
-            jsonFloorPlan.put("floorPlan", "");
+            jsonFloorPlan.put("floorData", new JSONArray());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -279,22 +279,18 @@ public class Map implements OnMapReadyCallback {
         try {
             JSONObject jsonObject = new JSONObject(response);
 
-            if (jsonObject.has("floorPlanResponse")) {
-                JSONObject jsonObject2 = jsonObject.getJSONObject("floorPlanResponse");
-                if (jsonObject2.has("floorPlan"))  {
+            if (jsonObject.has("floorPlanData")) {
+                JSONArray floorPlans = jsonObject.getJSONArray("floorPlanData");
+                Log.d("wtf", floorPlans.toString());
 
-                    JSONArray floorPlans = jsonObject2.getJSONArray("floorPlan");
-                    Log.d("wtf", floorPlans.toString());
+                for (int i = 0; i < floorPlans.length(); i++) {
+                    JSONObject buildingGround = floorPlans.getJSONObject(i);
 
-                    for (int i = 0; i < floorPlans.length(); i++) {
-                        JSONObject buildingGround = floorPlans.getJSONObject(i);
-
-                        if (buildingGround.has("floorPlanID") && buildingGround.has("buildingName")) {
-                            IARegion r = IARegion.floorPlan(buildingGround.getString("floorPlanID"));
-
+                    if (buildingGround.has("floorPlanID") && buildingGround.has("buildingName")) {
+                        IARegion r = IARegion.floorPlan(buildingGround.getString("floorPlanID"));
+                        if (!buildingGround.getString("buildingName").equals("ECM")) {
                             GroundOverlay buildingOverlay = null;
-
-                            mActivity.getTracker().test(r, buildingOverlay, true, buildingGround.getString("building"));
+                            mActivity.getTracker().test(r, buildingOverlay, true, buildingGround.getString("buildingName"));
                         }
                     }
                 }
@@ -311,31 +307,26 @@ public class Map implements OnMapReadyCallback {
         try {
             JSONObject jsonObject = new JSONObject(response);
 
-            if (jsonObject.has("floorPlanResponse")) {
-                JSONObject jsonObject2 = jsonObject.getJSONObject("floorPlanResponse");
-                if (jsonObject2.has("floorPlan"))  {
+            if (jsonObject.has("floorPlanData")) {
+                JSONArray floorPlans = jsonObject.getJSONArray("floorPlanData");
+                Log.d("wtf", floorPlans.toString());
+                for (int i = 0; i < floorPlans.length(); i++) {
+                    JSONObject buildingStore = floorPlans.getJSONObject(i);
+                    if (buildingStore.has("floorPlanID") && buildingStore.has("floor")) {
+                        String floorPlanID = buildingStore.getString("floorPlanID");
+                        int floor = buildingStore.getInt("floor");
+                        if (floor == 0) {
+                            focusedRegion = IARegion.floorPlan(floorPlanID);
 
-                    JSONArray floorPlans = jsonObject2.getJSONArray("floorPlan");
-                    Log.d("wtf", floorPlans.toString());
-
-                    for (int i = 0; i < floorPlans.length(); i++) {
-                        JSONObject buildingStore = floorPlans.getJSONObject(i);
-                        if (buildingStore.has("floorPlanID") && buildingStore.has("floor")) {
-                            String floorPlanID = buildingStore.getString("floorPlanID");
-                            int floor = buildingStore.getInt("floor");
-                            if (floor == 0) {
-                                focusedRegion = IARegion.floorPlan(floorPlanID);
-
-                                if (mMarkerRegion != null) {
-                                    if (!focusedRegion.equals(mMarkerRegion))
-                                        mMarker.setAlpha(0.5f);
-                                    else mMarker.setAlpha(1);
-                                }
-
-                                groundReference = i;
+                            if (mMarkerRegion != null) {
+                                if (!focusedRegion.equals(mMarkerRegion))
+                                    mMarker.setAlpha(0.5f);
+                                else mMarker.setAlpha(1);
                             }
-                            focusedBuildingFloorPlans.add(floorPlanID);
+
+                            groundReference = i;
                         }
+                        focusedBuildingFloorPlans.add(floorPlanID);
                     }
                 }
             }
@@ -375,7 +366,7 @@ public class Map implements OnMapReadyCallback {
         try {
             JSONObject jsonObject = new JSONObject(response);
 
-            if (jsonObject.has("floorInfoData")) {
+            if (jsonObject.has("roomInfoData")) {
                 JSONArray roomsArray = jsonObject.getJSONArray("roomInfoData");
 
                 for (int i = 0; i < roomsArray.length(); i++) {
@@ -386,12 +377,11 @@ public class Map implements OnMapReadyCallback {
                         roomMap.get(newRoom.getFloor()).add(newRoom);
                     }
                 }
+                displayRooms();
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-        displayRooms();
     }
 
     private static void displayRooms() {
@@ -401,6 +391,7 @@ public class Map implements OnMapReadyCallback {
             Room room = roomMap.get(focusedFloor).get(i);
             BitmapDescriptor markerIcon = BitmapDescriptorFactory.fromResource(android.R.drawable.presence_invisible);
             room.setRoomMarker(mMap.addMarker(new MarkerOptions().position(room.getLatLng()).icon(markerIcon).zIndex(100).anchor(0.5f,0.5f)));
+            displayedRooms.add(room);
         }
     }
 
@@ -648,12 +639,16 @@ public class Map implements OnMapReadyCallback {
                 jsonInnerFloorPlan.put("buildingName", focusedBuilding);
 
                 jsonFloorPlan.put("requestMessage", "");
-                jsonFloorPlan.put("floorPlan", jsonInnerFloorPlan);
+                JSONArray floorArray = new JSONArray();
+                floorArray.put(jsonInnerFloorPlan);
+                jsonFloorPlan.put("floorData", floorArray);
 
                 jsonInnerRooms.put("buildingName", focusedBuilding);
 
                 jsonRooms.put("requestMessage", "");
-                jsonRooms.put("roomData", jsonInnerRooms);
+                JSONArray roomsArray = new JSONArray();
+                roomsArray.put(jsonInnerRooms);
+                jsonRooms.put("roomData", roomsArray);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -666,9 +661,9 @@ public class Map implements OnMapReadyCallback {
 
             retrieveRooms.execute();
 
-            focusedBuildingFloorPlans.add("0dc8358c-9e1e-4afa-8adb-3bdfb7154a88");
-            focusedBuildingFloorPlans.add("6ee5ef62-e5e9-499e-9f8a-3f2c9c6e2d91");
-            focusedBuildingFloorPlans.add("208ae45e-8d22-4faa-bfb2-e245f956de3b");
+          //  focusedBuildingFloorPlans.add("0dc8358c-9e1e-4afa-8adb-3bdfb7154a88");
+          //  focusedBuildingFloorPlans.add("6ee5ef62-e5e9-499e-9f8a-3f2c9c6e2d91");
+           // focusedBuildingFloorPlans.add("208ae45e-8d22-4faa-bfb2-e245f956de3b");
 
             mActivity.getFabUp().show();
             mActivity.getFabDown().show();

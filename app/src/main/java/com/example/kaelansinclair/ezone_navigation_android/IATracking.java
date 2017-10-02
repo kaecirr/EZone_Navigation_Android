@@ -240,6 +240,7 @@ public class IATracking {
                     if (!task.isCancelled()) {
                         // do something with error
                         showInfo("Loading floor plan failed: " + result.getError());
+                        Log.d(TAG, "onResult: " + result.getError());
                         mOverlayFloorPlan = null;
                     }
                 }

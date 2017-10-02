@@ -124,11 +124,11 @@ public class MainActivity extends AppCompatActivity
 
         tracker = new IATracking(map, this);
 
-        IARegion r = IARegion.floorPlan("0dc8358c-9e1e-4afa-8adb-3bdfb7154a88");
+        //IARegion r = IARegion.floorPlan("0dc8358c-9e1e-4afa-8adb-3bdfb7154a88");
 
-        GroundOverlay test1 = null;
+        //GroundOverlay test1 = null;
 
-        tracker.test(r, test1, true, "compSciBuilding");
+        //tracker.test(r, test1, true, "compSciBuilding");
 
         mBottomMenuLayout = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
         mBottomMenuLayout.setTouchEnabled(false);
