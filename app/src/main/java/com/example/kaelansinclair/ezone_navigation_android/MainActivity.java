@@ -256,7 +256,7 @@ public class MainActivity extends AppCompatActivity
                 @Override
                 public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                     if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                        doSearch();
+                        doSearch(v);
                         return true;
                     }
                     return false;
@@ -278,8 +278,8 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private void doSearch() {
-        //
+    private void doSearch(TextView v) {
+        //// TODO: 4/10/17
     }
 
     public FloatingActionButton getFabUp() {return fabUp;}

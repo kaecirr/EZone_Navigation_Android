@@ -12,7 +12,6 @@ public class Room {
     private int floor;
     private String description;
     private LatLng latLng;
-    private Marker roomMarker;
 
     public Room (String name, int floor, String description, LatLng latLng) {
         this.name = name;
@@ -28,8 +27,4 @@ public class Room {
     public String getDescription() {return description;}
 
     public LatLng getLatLng() {return latLng;}
-
-    public Marker getRoomMarker() {return roomMarker;}
-
-    public void setRoomMarker(Marker roomMarker) {this.roomMarker = roomMarker;}
 }
