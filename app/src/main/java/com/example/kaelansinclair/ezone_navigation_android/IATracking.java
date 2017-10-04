@@ -69,7 +69,7 @@ public class IATracking {
 
             Log.d(TAG, "new location received with coordinates: " + location.getLatitude()
                     + "," + location.getLongitude());
-            map.updateLocation(new LatLng(location.getLatitude(), location.getLongitude()), location.getAccuracy(), location.getRegion());
+            map.updateLocation(new LatLng(location.getLatitude(), location.getLongitude()), location.getAccuracy(), location.getRegion(), location.getFloorLevel());
        }
 
     };
@@ -126,7 +126,7 @@ public class IATracking {
             final String newId = region.getId();
             // Are we entering a new floor plan or coming back the floor plan we just left?
             if (groundOverlay == null || !region.equals(mOverlayFloorPlan)) {
-                map.setCameraPositionNeedsUpdating(true);
+                //map.setCameraPositionNeedsUpdating(true);
                 if (groundOverlay != null) {
                     groundOverlay.remove();
                     groundOverlay = null;

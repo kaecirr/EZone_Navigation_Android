@@ -55,6 +55,7 @@ public class BackendRequest extends AsyncTask<Void, Void, String> {
 
     @Override
     protected void onPostExecute(String response) {
+        Log.d("INFO5", response);
         if(response == null) {
             response = "THERE WAS AN ERROR";
         }
@@ -64,8 +65,6 @@ public class BackendRequest extends AsyncTask<Void, Void, String> {
             else setFloorPlans(response);
         }
         else if (apiCall.equals("rooms")) setRooms(response);
-
-        Log.d("INFO5", response);
     }
 
     public static String makePostRequest(String stringUrl, String payload) throws IOException {

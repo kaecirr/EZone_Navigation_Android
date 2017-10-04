@@ -25,6 +25,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -49,6 +50,7 @@ public class MainActivity extends AppCompatActivity
     private Map map;
 
     private SlidingUpPanelLayout mBottomMenuLayout;
+    private Button mNavigateButton;
 
     private FloatingActionButton fabUp;
     private FloatingActionButton fabDown;
@@ -133,6 +135,14 @@ public class MainActivity extends AppCompatActivity
         mBottomMenuLayout = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
         mBottomMenuLayout.setTouchEnabled(false);
         mBottomMenuLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
+
+        mNavigateButton = (Button) findViewById(R.id.navigate_here);
+        mNavigateButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                map.getPath();
+            }
+        });
     }
 
     @Override
@@ -216,10 +226,10 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    protected void handleMenuSearch(){
+    protected void handleMenuSearch() {
         ActionBar action = getSupportActionBar(); //get the actionbar
 
-        if(isSearchOpened){ //test if the search is open
+        if (isSearchOpened) { //test if the search is open
 
             action.setDisplayShowCustomEnabled(false); //disable a custom view inside the actionbar
             action.setDisplayShowTitleEnabled(true); //show the title in the action bar
@@ -239,7 +249,7 @@ public class MainActivity extends AppCompatActivity
             action.setCustomView(R.layout.search_bar);//add the custom view
             action.setDisplayShowTitleEnabled(false); //hide the title
 
-            edtSeach = (EditText)action.getCustomView().findViewById(R.id.edtSearch); //the text editor
+            edtSeach = (EditText) action.getCustomView().findViewById(R.id.edtSearch); //the text editor
 
             //this is a listener to do a search when the user clicks on search button
             edtSeach.setOnEditorActionListener(new TextView.OnEditorActionListener() {

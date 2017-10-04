@@ -51,6 +51,7 @@ public class Map implements OnMapReadyCallback {
 
     private static Marker mMarker;
     private static IARegion mMarkerRegion;
+    private static int mMarkerFloor;
     private CircleOptions mMarkerErrorOptions;
     private Circle mMarkerError;
     private Marker mPoint;
@@ -66,15 +67,15 @@ public class Map implements OnMapReadyCallback {
 
     private static HashMap<GroundOverlay, String> buildingOverlays;
 
-    private static ArrayList<String> focusedBuildingFloorPlans;
+    private static HashMap<Integer, String> focusedBuildingFloorPlans;
     private static int groundReference;
 
     private static HashMap<Integer, ArrayList<Room>> roomMap;
     private static ArrayList<Room> displayedRooms;
 
-    private JSONObject jsonInnerMapData;
+    private JSONObject jsonInnerPathData;
     private JSONObject jsonInnerFloorPlan;
-    private JSONObject jsonMapData;
+    private JSONObject jsonPathData;
     private JSONObject jsonFloorPlan;
     private JSONObject jsonRooms;
     private JSONObject jsonInnerRooms;
@@ -83,25 +84,25 @@ public class Map implements OnMapReadyCallback {
     public Map(MainActivity mActivity) {
         this.mActivity = mActivity;
 
-        jsonInnerMapData = new JSONObject();
+        jsonInnerPathData = new JSONObject();
         try {
-            jsonInnerMapData.put("startBuilding", "computerScience");
-            jsonInnerMapData.put("startFloor", "second");
-            jsonInnerMapData.put("startLongitude", "-31.97444473");
-            jsonInnerMapData.put("startLatitude", "115.8599");
-            jsonInnerMapData.put("endBuilding", "computerScience");
-            jsonInnerMapData.put("endFloor", "second");
-            jsonInnerMapData.put("endLongitude", "-31.97222274");
-            jsonInnerMapData.put("endLatitude", "115.823");
-            jsonInnerMapData.put("algorithm", "DJ");
+            jsonInnerPathData.put("startBuildingName", "computerScience");
+            jsonInnerPathData.put("startFloor", "second");
+            jsonInnerPathData.put("startLongitude", "-31.97444473");
+            jsonInnerPathData.put("startLatitude", "115.8599");
+            jsonInnerPathData.put("endBuildingName", "computerScience");
+            jsonInnerPathData.put("endFloor", "second");
+            jsonInnerPathData.put("endLongitude", "-31.97222274");
+            jsonInnerPathData.put("endLatitude", "115.823");
+            jsonInnerPathData.put("algorithm", "DJ");
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        jsonMapData = new JSONObject();
+        jsonPathData = new JSONObject();
         try {
-            jsonMapData.put("requestMessage", "");
-            jsonMapData.put("mapDataRequest", jsonInnerMapData);
+            jsonPathData.put("requestMessage", "");
+            jsonPathData.put("pathData", jsonInnerPathData);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -132,8 +133,8 @@ public class Map implements OnMapReadyCallback {
 
         jsonRooms = new JSONObject();
         try {
-            jsonFloorPlan.put("requestMessage", "");
-            jsonFloorPlan.put("roomData", jsonInnerRooms);
+            jsonRooms.put("requestMessage", "");
+            jsonRooms.put("roomData", jsonInnerRooms);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -141,12 +142,11 @@ public class Map implements OnMapReadyCallback {
         pathResponse = "";
         polyline = new HashSet<Polyline>();
         buildingOverlays = new HashMap<GroundOverlay, String>();
-        focusedBuildingFloorPlans = new ArrayList<String>();
+        focusedBuildingFloorPlans = new HashMap<Integer, String>();
         roomMap = new HashMap<Integer, ArrayList<Room>>();
         displayedRooms = new ArrayList<Room>();
         focusedBuilding = "";
         focusedFloor = 0;
-        groundReference = 0;
         isFocused = false;
         mPoint2Floor = 0;
         mPoint2Building = "";
@@ -169,12 +169,11 @@ public class Map implements OnMapReadyCallback {
         }
     }
 
-    public void updateLocation(LatLng latLng, double accuracy, IARegion region) {
+    public void updateLocation(LatLng latLng, double accuracy, IARegion region, int floorLevel) {
         if (mMap == null) {
             // location received before map is initialized, ignoring update here
             return;
         }
-
         if (mMarker == null) {
             // first location, add marker
             // mMarkerOptions = new CircleOptions().center(latLng).radius(0.3).strokeColor(Color.argb(255, 8, 0, 255)).fillColor(Color.argb(255, 0, 170, 255)).zIndex(100);
@@ -184,27 +183,28 @@ public class Map implements OnMapReadyCallback {
             BitmapDescriptor markerIcon = getMarkerIconFromDrawable(circleDrawable);
             mMarker = mMap.addMarker(new MarkerOptions().position(latLng).icon(markerIcon).zIndex(100).anchor(0.5f,0.5f));
             mMarkerRegion = region;
+            mMarkerFloor = floorLevel;
 
             mMarkerErrorOptions = new CircleOptions().center(latLng).radius(accuracy).strokeColor(Color.argb(255, 8, 0, 255)).strokeWidth(5).fillColor(Color.argb(128, 0, 170, 255)).zIndex(99);
             mMarkerError = mMap.addCircle(mMarkerErrorOptions);
 
             if (mPoint2 != null && mPoint2.isVisible()) {
 
-                try {
-                    jsonInnerMapData.put("startLongitude", String.valueOf(mMarker.getPosition().longitude));
-                    jsonInnerMapData.put("startLatitude", String.valueOf(mMarker.getPosition().latitude));
-                    jsonInnerMapData.put("endLongitude", String.valueOf(mPoint2.getPosition().longitude));
-                    jsonInnerMapData.put("endLatitude", String.valueOf(mPoint2.getPosition().latitude));
-
-                    jsonMapData.put("requestMessage", "");
-                    jsonMapData.put("mapDataRequest", jsonInnerMapData);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-                BackendRequest t = new BackendRequest("path", jsonMapData.toString(), false);
-
-                t.execute();
+//                try {
+//                    jsonInnerPathData.put("startLongitude", String.valueOf(mMarker.getPosition().longitude));
+//                    jsonInnerPathData.put("startLatitude", String.valueOf(mMarker.getPosition().latitude));
+//                    jsonInnerPathData.put("endLongitude", String.valueOf(mPoint2.getPosition().longitude));
+//                    jsonInnerPathData.put("endLatitude", String.valueOf(mPoint2.getPosition().latitude));
+//
+//                    jsonPathData.put("requestMessage", "");
+//                //    jsonPathData.put("mapDataRequest", jsonInnerPathData);
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+//
+//                BackendRequest t = new BackendRequest("path", jsonPathData.toString(), false);
+//
+//               // t.execute();
             }
         } else {
             // move existing markers position to received location
@@ -212,25 +212,26 @@ public class Map implements OnMapReadyCallback {
             mMarkerError.setRadius(accuracy);
             mMarker.setPosition(latLng);
             mMarkerRegion = region;
+            mMarkerFloor = floorLevel;
 
             if (mPoint2 != null && mPoint2.isVisible()) {
 
 
-                try {
-                    jsonInnerMapData.put("startLongitude", String.valueOf(mMarker.getPosition().longitude));
-                    jsonInnerMapData.put("startLatitude", String.valueOf(mMarker.getPosition().latitude));
-                    jsonInnerMapData.put("endLongitude", String.valueOf(mPoint2.getPosition().longitude));
-                    jsonInnerMapData.put("endLatitude", String.valueOf(mPoint2.getPosition().latitude));
+//                try {
+//                //    jsonInnerPathData.put("startLongitude", String.valueOf(mMarker.getPosition().longitude));
+//                    jsonInnerPathData.put("startLatitude", String.valueOf(mMarker.getPosition().latitude));
+//                    jsonInnerPathData.put("endLongitude", String.valueOf(mPoint2.getPosition().longitude));
+//                    jsonInnerPathData.put("endLatitude", String.valueOf(mPoint2.getPosition().latitude));
+//
+//                    jsonPathData.put("requestMessage", "");
+//                //    jsonPathData.put("mapDataRequest", jsonInnerPathData);
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+//
+//                BackendRequest t = new BackendRequest("path", jsonPathData.toString(), false);
 
-                    jsonMapData.put("requestMessage", "");
-                    jsonMapData.put("mapDataRequest", jsonInnerMapData);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-                BackendRequest t = new BackendRequest("path", jsonMapData.toString(), false);
-
-                t.execute();
+              //  t.execute();
             }
         }
 
@@ -268,7 +269,7 @@ public class Map implements OnMapReadyCallback {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
+        Log.d("test", jsonFloorPlan.toString());
         BackendRequest initial = new BackendRequest("floorPlan", jsonFloorPlan.toString(), true);
 
         initial.execute();
@@ -323,10 +324,8 @@ public class Map implements OnMapReadyCallback {
                                     mMarker.setAlpha(0.5f);
                                 else mMarker.setAlpha(1);
                             }
-
-                            groundReference = i;
                         }
-                        focusedBuildingFloorPlans.add(floorPlanID);
+                        focusedBuildingFloorPlans.put(floor, floorPlanID);
                     }
                 }
             }
@@ -546,14 +545,39 @@ public class Map implements OnMapReadyCallback {
         }
     };
 
+    public void getPath() {
+        jsonInnerPathData = new JSONObject();
+        try {
+            jsonInnerPathData.put("startBuildingName", "ComputerScience");
+            jsonInnerPathData.put("startFloor", Integer.toString(mMarkerFloor));
+            jsonInnerPathData.put("startLongitude", Double.toString(mMarker.getPosition().longitude));
+            jsonInnerPathData.put("startLatitude", Double.toString(mMarker.getPosition().latitude));
+            jsonInnerPathData.put("endBuildingName", mPoint2Building);
+            jsonInnerPathData.put("endFloor", Integer.toString(mPoint2Floor));
+            jsonInnerPathData.put("endLongitude", Double.toString(mPoint2.getPosition().longitude));
+            jsonInnerPathData.put("endLatitude", Double.toString(mPoint2.getPosition().latitude));
+            jsonInnerPathData.put("algorithm", "DJ");
+
+            jsonPathData.put("requestMessage", "");
+            jsonPathData.put("pathData", jsonInnerPathData);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        Log.d("thing", jsonPathData.toString());
+        BackendRequest t = new BackendRequest("path", jsonPathData.toString(), false);
+
+        t.execute();
+    }
+
     public static void drawPolyline(String response) {
         Log.d("quickDebug", response);
         pathResponse = response;
         try {
             JSONObject jsonObject = new JSONObject(response);
 
-            if (jsonObject.has("mapDataResponse")) {
-                JSONObject jsonObject2 = jsonObject.getJSONObject("mapDataResponse");
+            if (jsonObject.has("mapData")) {
+                JSONObject jsonObject2 = jsonObject.getJSONObject("mapData");
                 if (jsonObject2.has("path"))  {
 
                     JSONArray path = jsonObject2.getJSONArray("path");
