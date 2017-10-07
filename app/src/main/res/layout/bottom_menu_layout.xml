@@ -6,7 +6,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@drawable/bottom_menu_background">
+
 
     <TextView
         android:id="@+id/name"
@@ -48,6 +50,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Read More"
+            android:textColor="#ffffff"
+            app:backgroundTint="#546bec"
             android:visibility="gone"
             app:layout_constraintBaseline_toBaselineOf="@+id/navigate_here"
             tools:layout_constraintBaseline_creator="1"
@@ -59,6 +63,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Navigate Here"
+            android:textColor="#ffffff"
+            app:backgroundTint="#546bec"
             tools:layout_editor_absoluteX="204dp"
             tools:layout_editor_absoluteY="4dp" />
     </LinearLayout>

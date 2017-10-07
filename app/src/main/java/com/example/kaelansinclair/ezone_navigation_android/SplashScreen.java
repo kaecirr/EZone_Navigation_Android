@@ -10,21 +10,22 @@ public class SplashScreen extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         // TODO Auto-generated method stub
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.splash);
+        //setContentView(R.layout.splash);
 
-        Thread timerThread = new Thread(){
-            public void run(){
-                try{
-                    sleep(3000);
-                }catch(InterruptedException e){
-                    e.printStackTrace();
-                }finally{
+        //Thread timerThread = new Thread(){
+          //  public void run(){
+            //    try{
+              //      sleep(3000);
+                //}catch(InterruptedException e){
+                  //  e.printStackTrace();
+                //}finally{
                     Intent intent = new Intent(SplashScreen.this,MainActivity.class);
                     startActivity(intent);
-                }
-            }
-        };
-        timerThread.start();
+                //}
+            //}
+        //};
+        //timerThread.start();
+        finish();
     }
 
     @Override

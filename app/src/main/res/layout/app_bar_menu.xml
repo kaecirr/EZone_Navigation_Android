@@ -68,20 +68,6 @@
             app:layout_anchorGravity="top|right"
             app:srcCompat="@drawable/down_button"/>
 
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fab_down_grey"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="top|left"
-            android:layout_marginTop = "@dimen/fab_down_margin_top"
-            android:layout_marginRight = "@dimen/fab_margin"
-            android:visibility="gone"
-            android:tint="@android:color/white"
-            app:layout_anchor="@+id/include"
-            app:layout_anchorGravity="top|right"
-            app:srcCompat="@drawable/down_button"
-            app:backgroundTint="@android:color/darker_gray"/>
-
     </android.support.design.widget.CoordinatorLayout>
 
     <include

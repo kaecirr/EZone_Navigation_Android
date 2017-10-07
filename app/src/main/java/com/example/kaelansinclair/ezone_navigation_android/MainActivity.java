@@ -56,7 +56,6 @@ public class MainActivity extends AppCompatActivity
 
     private FloatingActionButton fabUp;
     private FloatingActionButton fabDown;
-    private FloatingActionButton fabDownGrey;
 
     private static final int REQUEST_CODE_ACCESS_COARSE_LOCATION = 1;
     private static final String TAG = "IADemo";
