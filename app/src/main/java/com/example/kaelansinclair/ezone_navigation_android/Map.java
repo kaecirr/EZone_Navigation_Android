@@ -153,6 +153,10 @@ public class Map implements OnMapReadyCallback {
         mPoint2Building = "";
     }
 
+    public int getFocusedFloor() {return focusedFloor;}
+
+    public int getNumFloors() {return focusedBuildingFloorPlans.size();}
+
     public static GoogleMap getMap() {return mMap;}
 
     public GroundOverlay getFocusedGroundOverlay() {return focusedGroundOverlay;}

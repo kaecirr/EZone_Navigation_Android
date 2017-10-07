@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
@@ -54,6 +56,7 @@ public class MainActivity extends AppCompatActivity
 
     private FloatingActionButton fabUp;
     private FloatingActionButton fabDown;
+    private FloatingActionButton fabDownGrey;
 
     private static final int REQUEST_CODE_ACCESS_COARSE_LOCATION = 1;
     private static final String TAG = "IADemo";
@@ -90,16 +93,77 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 map.changeFloor(1);
+                //If current floor is the top floor then make up icon grey.
+                if(map.getFocusedFloor() > 0){
+                    int[][] states = {
+                            {android.R.attr.state_enabled},
+                            {android.R.attr.state_pressed},
+                    };
+
+                    int[] colors = {
+                            Color.parseColor("#546bec")
+                    };
+
+                    ColorStateList colorStateList = new ColorStateList(states, colors);
+                    fabDown.setBackgroundTintList(colorStateList);
+                    if(map.getFocusedFloor() == map.getNumFloors()-1){
+                        int[] colors2 = {
+                                Color.GRAY
+                        };
+                        colorStateList = new ColorStateList(states, colors2);
+                        fabUp.setBackgroundTintList(colorStateList);
+                    }
+                }
             }
         });
 
+
         fabDown = (FloatingActionButton) findViewById(R.id.fab_down);
         fabDown.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                map.changeFloor(-1);
-            }
+                @Override
+                public void onClick(View view) {
+                    map.changeFloor(-1);
+                    //If current floor is the ground floor then make down icon grey.
+                    if(map.getFocusedFloor() < map.getNumFloors()-1){
+                        int[][] states = {
+                                {android.R.attr.state_enabled},
+                                {android.R.attr.state_pressed},
+                        };
+
+                        int[] colors = {
+                                Color.parseColor("#546bec")
+                        };
+
+                        ColorStateList colorStateList = new ColorStateList(states, colors);
+                        fabUp.setBackgroundTintList(colorStateList);
+                        if(map.getFocusedFloor() == 0){
+                            int[] colors2 = {
+                                    Color.GRAY
+                            };
+                            colorStateList = new ColorStateList(states, colors2);
+                            fabDown.setBackgroundTintList(colorStateList);
+                        }
+                    }
+
+                }
         });
+
+        //Makes down icon grey since each building starts with the ground floor
+        if(map.getFocusedFloor() == 0){
+            int[][] states = {
+                    {android.R.attr.state_enabled},
+                    {android.R.attr.state_pressed},
+            };
+
+            int[] colors = {
+                    Color.GRAY
+            };
+
+            ColorStateList colorStateList = new ColorStateList(states, colors);
+            fabDown.setBackgroundTintList(colorStateList);
+        }
+
+
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
