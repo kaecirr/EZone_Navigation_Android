@@ -61,6 +61,8 @@ public class Map implements OnMapReadyCallback {
     private int mPoint2Floor;
     private String mPoint2Building;
 
+    private Room markedRoom;
+
     private static GroundOverlay focusedGroundOverlay = null;
     private String focusedBuilding;
     private static IARegion focusedRegion = null;
@@ -73,6 +75,12 @@ public class Map implements OnMapReadyCallback {
 
     private static HashMap<Integer, ArrayList<Room>> roomMap;
     private static HashMap<Marker, Room> displayedRooms;
+
+    public static ArrayList<Room> getSearchRooms() {
+        return searchRooms;
+    }
+
+    private static ArrayList<Room> searchRooms;
 
     private JSONObject jsonInnerPathData;
     private JSONObject jsonInnerFloorPlan;
@@ -151,6 +159,8 @@ public class Map implements OnMapReadyCallback {
         isFocused = false;
         mPoint2Floor = 0;
         mPoint2Building = "";
+
+        searchRooms = new ArrayList<Room>();
     }
 
     public static GoogleMap getMap() {return mMap;}
@@ -276,6 +286,22 @@ public class Map implements OnMapReadyCallback {
 
         initial.execute();
 
+        // Temporary code to get comp sci rooms so that on device search can be done.
+        try {
+            jsonInnerRooms.put("buildingName", "ComputerScience");
+
+            jsonRooms.put("requestMessage", "");
+            JSONArray roomsArray = new JSONArray();
+            roomsArray.put(jsonInnerRooms);
+            jsonRooms.put("roomData", roomsArray);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        BackendRequest retrieveRooms = new BackendRequest("rooms", jsonRooms.toString(), true);
+
+        retrieveRooms.execute();
+
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(-31.977646, 115.816227), 20.0f));
     }
 
@@ -297,6 +323,27 @@ public class Map implements OnMapReadyCallback {
                             GroundOverlay buildingOverlay = null;
                             mActivity.getTracker().test(r, buildingOverlay, true, buildingGround.getString("buildingName"));
                         }
+                    }
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void setRoomsInit(String response) {
+        Log.d("quickDebug", response);
+        try {
+            JSONObject jsonObject = new JSONObject(response);
+
+            if (jsonObject.has("roomInfoData")) {
+                JSONArray roomsArray = jsonObject.getJSONArray("roomInfoData");
+
+                for (int i = 0; i < roomsArray.length(); i++) {
+                    JSONObject roomStore = roomsArray.getJSONObject(i);
+                    if (roomStore.has("roomName") && roomStore.has("floor") && roomStore.has("roomDescription") && roomStore.has("latitude") && roomStore.has("longitude")) {
+                        Room newRoom = new Room(roomStore.getString("roomName"), roomStore.getInt("floor"), roomStore.getString("roomDescription"), new LatLng(roomStore.getDouble("latitude"), roomStore.getDouble("longitude")));
+                        searchRooms.add(newRoom);
                     }
                 }
             }
@@ -453,7 +500,7 @@ public class Map implements OnMapReadyCallback {
                             if (mPoint2.isVisible()) mPoint2.setAlpha(0.5f);
                             if (mMarker != null) mMarker.setAlpha(0.5f);
                         }
-                        mActivity.getBottomMenuLayout().setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
+                        mActivity.bottomMenuMarkerClose(false);
                     }
                     else if (mPoint2 == null) {
                         mPoint2 = mMap.addMarker(new MarkerOptions().position(latLng)
@@ -461,19 +508,7 @@ public class Map implements OnMapReadyCallback {
                         mPoint2Floor = focusedFloor;
                         mPoint2Building = focusedBuilding;
 
-                        mActivity.getBottomMenuLayout().setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
-
-                        TextView name = (TextView) mActivity.findViewById(R.id.name);
-                        name.setText("Latitude: " + latLng.latitude);
-
-                        TextView roomNumber = (TextView) mActivity.findViewById(R.id.room_number);
-                        roomNumber.setText("Longitude: " + latLng.longitude);
-
-                        TextView floor = (TextView) mActivity.findViewById(R.id.floor);
-                        floor.setText("Floor: " + mPoint2Floor);
-
-                        TextView building = (TextView) mActivity.findViewById(R.id.building);
-                        building.setText("Building: " + focusedBuilding);
+                        mActivity.bottomMenuMarkerOpen("Latitude: " + latLng.latitude, "Longitude: " + latLng.longitude, "Floor: " + mPoint2Floor, "Building: " + focusedBuilding, false);
 
                         if (mPoint2 != null && mPoint2.isVisible()) {
     /*
@@ -504,9 +539,8 @@ public class Map implements OnMapReadyCallback {
                                 while (pol.hasNext()) pol.next().remove();
                             }
                             pathResponse = "";
-                            mActivity.getBottomMenuLayout().setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
-                            Button readMore = (Button) mActivity.findViewById(R.id.read_more);
-                            if (readMore.getVisibility() == View.VISIBLE) readMore.setVisibility(View.GONE);
+                            markedRoom = null;
+                            mActivity.bottomMenuMarkerClose(false);
                         } else {
                             // move existing markers position to received location
                             mPoint2.setPosition(latLng);
@@ -516,19 +550,7 @@ public class Map implements OnMapReadyCallback {
                             mPoint2Building = focusedBuilding;
                             //mMap.setMyLocationEnabled(false);
 
-                            mActivity.getBottomMenuLayout().setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
-
-                            TextView name = (TextView) mActivity.findViewById(R.id.name);
-                            name.setText("Latitude: " + latLng.latitude);
-
-                            TextView roomNumber = (TextView) mActivity.findViewById(R.id.room_number);
-                            roomNumber.setText("Longitude: " + latLng.longitude);
-
-                            TextView floor = (TextView) mActivity.findViewById(R.id.floor);
-                            floor.setText("Floor: " + mPoint2Floor);
-
-                            TextView building = (TextView) mActivity.findViewById(R.id.building);
-                            building.setText("Building: " + focusedBuilding);
+                            mActivity.bottomMenuMarkerOpen("Latitude: " + latLng.latitude, "Longitude: " + latLng.longitude, "Floor: " + mPoint2Floor, "Building: " + focusedBuilding, false);
 
                             if (mPoint2 != null && mPoint2.isVisible()) {
     /*
@@ -578,22 +600,9 @@ public class Map implements OnMapReadyCallback {
                     while (pol.hasNext()) pol.next().remove();
                 }
                 pathResponse = "";
+                markedRoom = displayedRooms.get(marker);
+                mActivity.bottomMenuMarkerOpen("Name: " + displayedRooms.get(marker).getName(), "Floor: " + displayedRooms.get(marker).getFloor(), "Building: " + focusedBuilding, "", true);
 
-                if (mActivity.getBottomMenuLayout().getPanelState().equals(SlidingUpPanelLayout.PanelState.HIDDEN)) mActivity.getBottomMenuLayout().setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
-                TextView name = (TextView) mActivity.findViewById(R.id.name);
-                name.setText("Name: " + displayedRooms.get(marker).getName());
-
-                TextView roomNumber = (TextView) mActivity.findViewById(R.id.room_number);
-                roomNumber.setText("Floor: " + displayedRooms.get(marker).getFloor());
-
-                TextView floor = (TextView) mActivity.findViewById(R.id.floor);
-                floor.setText("Building: " + focusedBuilding);
-
-                TextView building = (TextView) mActivity.findViewById(R.id.building);
-                building.setText("");
-
-                Button readMore = (Button) mActivity.findViewById(R.id.read_more);
-                if (readMore.getVisibility() == View.GONE) readMore.setVisibility(View.VISIBLE);
             }
             return true;
         }
@@ -698,19 +707,9 @@ public class Map implements OnMapReadyCallback {
                 if (mPoint2.isVisible() && focusedBuilding.equals(mPoint2Building)) {
                     if (focusedFloor == mPoint2Floor) mPoint2.setAlpha(1);
 
-                    mActivity.getBottomMenuLayout().setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+                    if (markedRoom == null) mActivity.bottomMenuMarkerOpen("Latitude: " + mPoint2.getPosition().latitude, "Longitude: " + mPoint2.getPosition().longitude, "Floor: " + mPoint2Floor, "Building: " + focusedBuilding, false);
+                    else mActivity.bottomMenuMarkerOpen("Name: " + markedRoom.getName(), "Floor: " + markedRoom.getFloor(), "Building: " + focusedBuilding, "", true);
 
-                    TextView name = (TextView) mActivity.findViewById(R.id.name);
-                    name.setText("Latitude: " + mPoint2.getPosition().latitude);
-
-                    TextView roomNumber = (TextView) mActivity.findViewById(R.id.room_number);
-                    roomNumber.setText("Longitude: " + mPoint2.getPosition().longitude);
-
-                    TextView floor = (TextView) mActivity.findViewById(R.id.floor);
-                    floor.setText("Floor: " + mPoint2Floor);
-
-                    TextView building = (TextView) mActivity.findViewById(R.id.building);
-                    building.setText("Building: " + mPoint2Building);
                 }
             }
             buildingOverlays.remove(focusedGroundOverlay);

@@ -14,6 +14,7 @@ import static com.example.kaelansinclair.ezone_navigation_android.Map.setFloorPl
 import static com.example.kaelansinclair.ezone_navigation_android.Map.drawPolyline;
 import static com.example.kaelansinclair.ezone_navigation_android.Map.mapInitialisation;
 import static com.example.kaelansinclair.ezone_navigation_android.Map.setRooms;
+import static com.example.kaelansinclair.ezone_navigation_android.Map.setRoomsInit;
 
 /**
  * Created by kaelan on 29/05/17.
@@ -59,12 +60,16 @@ public class BackendRequest extends AsyncTask<Void, Void, String> {
         if(response == null) {
             response = "THERE WAS AN ERROR";
         }
+        else if (response.equals("500") || response.equals("400")) this.execute();
         else if (apiCall.equals("path")) drawPolyline(response);
         else if (apiCall.equals("floorPlan")) {
             if (init) mapInitialisation(response);
             else setFloorPlans(response);
         }
-        else if (apiCall.equals("rooms")) setRooms(response);
+        else if (apiCall.equals("rooms")) {
+            if (init) setRoomsInit(response);
+            else setRooms(response);
+        }
     }
 
     public static String makePostRequest(String stringUrl, String payload) throws IOException {

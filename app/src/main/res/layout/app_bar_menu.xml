@@ -72,5 +72,5 @@
         layout="@layout/bottom_menu_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
-    
+
 </com.sothree.slidinguppanel.SlidingUpPanelLayout>

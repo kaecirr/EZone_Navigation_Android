@@ -4,9 +4,25 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/navigation_dialog"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:layout_gravity="center"
-    android:orientation="vertical">
+    android:background="#FFFFFF"
+    android:orientation="vertical"
+    android:visibility="visible">
+
+    <ScrollView
+        android:id="@+id/scroll_navigation_dialog"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:id="@+id/scroll_linear"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone" />
+    </ScrollView>
 
     <TextView
         android:id="@+id/name"
