@@ -1,14 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/navigation_dialog"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_gravity="center"
-    android:orientation="vertical"
-    android:background="@drawable/bottom_menu_background">
 
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/scroll_navigation_dialog"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:visibility="visible"
+        android:background="#FFFFFF">
+
+    <LinearLayout
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/navigation_dialog"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="top"
+        android:orientation="vertical"
+        android:visibility="visible"
+        android:background="@drawable/bottom_menu_background">
 
     <TextView
         android:id="@+id/name"
@@ -42,11 +52,12 @@
         android:textSize="18sp"
         android:layout_marginLeft="10dp"/>
 
-    <LinearLayout
-        android:id="@+id/nav_button_layout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal">
+        <LinearLayout
+            android:id="@+id/nav_button_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:visibility="visible">
 
         <Button
             android:id="@+id/read_more"
@@ -61,16 +72,26 @@
             tools:layout_constraintBaseline_creator="1"
             tools:layout_editor_absoluteX="108dp" />
 
-        <Button
-            android:id="@+id/navigate_here"
+            <Button
+                android:id="@+id/navigate_here"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Navigate Here"
+                android:textColor="#ffffff"
+                app:backgroundTint="#546bec"
+                tools:layout_editor_absoluteX="204dp"
+                tools:layout_editor_absoluteY="4dp" />
+
+        </LinearLayout>
+
+        <ListView
+            android:id="@+id/scroll_linear"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Navigate Here"
-            android:textColor="#ffffff"
-            app:backgroundTint="#546bec"
-            tools:layout_editor_absoluteX="204dp"
-            tools:layout_editor_absoluteY="4dp" />
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:visibility="visible" />
+
     </LinearLayout>
 
 </LinearLayout>

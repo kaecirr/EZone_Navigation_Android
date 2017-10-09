@@ -27,4 +27,10 @@ public class Room {
     public String getDescription() {return description;}
 
     public LatLng getLatLng() {return latLng;}
+
+    @Override
+    public String toString() {
+        return name;
+    }
+
 }

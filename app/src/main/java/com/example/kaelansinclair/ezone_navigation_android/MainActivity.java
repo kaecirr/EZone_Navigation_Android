@@ -9,12 +9,16 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -25,10 +29,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,6 +47,12 @@ import com.google.android.gms.maps.model.GroundOverlay;
 import com.indooratlas.android.sdk.IALocationRequest;
 import com.indooratlas.android.sdk.IARegion;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+
+import info.debatty.java.stringsimilarity.LongestCommonSubsequence;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -54,6 +70,7 @@ public class MainActivity extends AppCompatActivity
     private SlidingUpPanelLayout mBottomMenuLayout;
     private Button mNavigateButton;
 
+    private FloatingActionButton fab;
     private FloatingActionButton fabUp;
     private FloatingActionButton fabDown;
 
@@ -63,6 +80,10 @@ public class MainActivity extends AppCompatActivity
     private IATracking tracker;
 
     private boolean navigationMode = false;
+
+    private int panelHeight = 0;
+
+    ArrayList<Room> roomHold;
 
     public IATracking getTracker() {
         return tracker;
@@ -78,7 +99,7 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("EZone Indoor Navigation");
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -115,7 +136,6 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         });
-
 
         fabDown = (FloatingActionButton) findViewById(R.id.fab_down);
         fabDown.setOnClickListener(new View.OnClickListener() {
@@ -170,6 +190,10 @@ public class MainActivity extends AppCompatActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
+        //Commands to disable the drawer menu. If you need to edit the menu items, just comment out these two lines.
+        toggle.setDrawerIndicatorEnabled(false);
+        drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, PRIVATE_MODE);
         if (first) {
             SharedPreferences.Editor editor = prefs.edit();
@@ -198,6 +222,7 @@ public class MainActivity extends AppCompatActivity
         mBottomMenuLayout = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
         mBottomMenuLayout.setTouchEnabled(false);
         mBottomMenuLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
+        panelHeight = mBottomMenuLayout.getPanelHeight();
 
         mNavigateButton = (Button) findViewById(R.id.navigate_here);
         mNavigateButton.setOnClickListener(new View.OnClickListener() {
@@ -206,6 +231,8 @@ public class MainActivity extends AppCompatActivity
                 map.getPath();
             }
         });
+
+        roomHold = new ArrayList<Room>();
     }
 
     @Override
@@ -221,10 +248,11 @@ public class MainActivity extends AppCompatActivity
             item.setIcon(android.R.drawable.ic_menu_revert);
         }
 
-        if (Map.getMap() == null) {
-            SupportMapFragment mapFragment = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map));
-            mapFragment.getMapAsync(map);
-        }
+        //if (map.getMap() == null) {
+        Log.d("bugger, bugger", "onResume: ");
+        SupportMapFragment mapFragment = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map));
+        mapFragment.getMapAsync(map);
+       // }
 
         tracker.getIALocationManager().requestLocationUpdates(IALocationRequest.create(), tracker.getIALocationListener());
         if (navigationMode) tracker.getIALocationManager().registerRegionListener(tracker.getRegionListener());
@@ -291,29 +319,90 @@ public class MainActivity extends AppCompatActivity
 
     protected void handleMenuSearch() {
         ActionBar action = getSupportActionBar(); //get the actionbar
+        final ListView myLayout = (ListView) findViewById(R.id.scroll_linear);
+        myLayout.setAdapter(new ArrayAdapter<Room>(getApplicationContext(), android.R.layout.simple_list_item_1, new ArrayList<Room>()));
 
         if (isSearchOpened) { //test if the search is open
-
-            action.setDisplayShowCustomEnabled(false); //disable a custom view inside the actionbar
-            action.setDisplayShowTitleEnabled(true); //show the title in the action bar
 
             //hides the keyboard
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(edtSeach.getWindowToken(), 0);
 
+            action.setDisplayShowCustomEnabled(false); //disable a custom view inside the actionbar
+            action.setDisplayShowTitleEnabled(true); //show the title in the action bar
+
             //add the search icon in the action bar
             mSearchAction.setIcon(getResources().getDrawable(android.R.drawable.ic_menu_search));
+            mBottomMenuLayout.setPanelHeight(0);
+            mBottomMenuLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
 
             isSearchOpened = false;
         } else { //open the search entry
+            TypedValue tv = new TypedValue();
 
+            bottomMenuMarkerClose(true);
+
+            if (getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true))
+            {
+                int statusBarHeight = 0;
+                int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+                if (resourceId > 0) {
+                    statusBarHeight = getResources().getDimensionPixelSize(resourceId);
+                    mBottomMenuLayout.setPanelHeight(this.getWindow().getDecorView().getHeight() - (TypedValue.complexToDimensionPixelSize(tv.data,getResources().getDisplayMetrics()) + statusBarHeight));
+                }
+            }
+            mBottomMenuLayout.setOverlayed(true);
+            mBottomMenuLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
             action.setDisplayShowCustomEnabled(true); //enable it to display a
             // custom view in the action bar.
             action.setCustomView(R.layout.search_bar);//add the custom view
             action.setDisplayShowTitleEnabled(false); //hide the title
 
             edtSeach = (EditText) action.getCustomView().findViewById(R.id.edtSearch); //the text editor
+            edtSeach.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    //mBottomMenuLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+                    if (s.length() != 0) {
+                        roomHold = map.getSearchRooms();
+                        final String chars = s.toString();
+                        Collections.sort(roomHold, new Comparator<Room>() {
+                            @Override
+                            public int compare(Room o1, Room o2) {
+                                LongestCommonSubsequence lcs = new LongestCommonSubsequence();
+                                double d1 = lcs.distance(o1.getName(), chars);
+                                double d2 = lcs.distance(o2.getName(), chars);
+                                return Double.compare(d1, d2);
+                            }
+                        });
+
+                        Log.d(TAG, "onTextChanged: " + roomHold.size());
+
+                        ArrayAdapter<Room> adapter = new ArrayAdapter<Room>(getApplicationContext(), android.R.layout.simple_list_item_1, roomHold.subList(0, 10));
+                        myLayout.setAdapter(adapter);
+                        Log.d(TAG, "onTextChanged: " + myLayout.getAdapter().getCount());
+
+                        myLayout.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                            }
+                        });
+                    }
+                    else {
+                        myLayout.setAdapter(new ArrayAdapter<Room>(getApplicationContext(), android.R.layout.simple_list_item_1, new ArrayList<Room>()));
+                    }
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                }
+            });
             //this is a listener to do a search when the user clicks on search button
             edtSeach.setOnEditorActionListener(new TextView.OnEditorActionListener() {
                 @Override
@@ -326,14 +415,11 @@ public class MainActivity extends AppCompatActivity
                 }
             });
 
-
             edtSeach.requestFocus();
 
             //open the keyboard focused in the edtSearch
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.showSoftInput(edtSeach, InputMethodManager.SHOW_IMPLICIT);
-
-
             //add the close icon
             mSearchAction.setIcon(getResources().getDrawable(android.R.drawable.ic_menu_close_clear_cancel));
 
@@ -342,7 +428,66 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void doSearch(TextView v) {
-        //// TODO: 4/10/17
+        //hides the keyboard
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(edtSeach.getWindowToken(), 0);
+
+        mBottomMenuLayout.setPanelHeight(0);
+        mBottomMenuLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
+    }
+
+    public void bottomMenuMarkerOpen(String text1, String text2, String text3, String text4, boolean room) {
+       // if (mBottomMenuLayout.getPanelState().equals(SlidingUpPanelLayout.PanelState.HIDDEN)) {
+            Log.d(TAG, "bottomMenuMarkerOpen: " + panelHeight);
+            mBottomMenuLayout.setOverlayed(false);
+            mBottomMenuLayout.setPanelHeight(panelHeight);
+            mBottomMenuLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+        //}
+        TextView name = (TextView) findViewById(R.id.name);
+        name.setVisibility(View.VISIBLE);
+        name.setText(text1);
+
+        TextView roomNumber = (TextView) findViewById(R.id.room_number);
+        roomNumber.setVisibility(View.VISIBLE);
+        roomNumber.setText(text2);
+
+        TextView floor = (TextView) findViewById(R.id.floor);
+        floor.setVisibility(View.VISIBLE);
+        floor.setText(text3);
+
+        TextView building = (TextView) findViewById(R.id.building);
+        building.setVisibility(View.VISIBLE);
+        building.setText(text4);
+
+        Button navigateHere = (Button) findViewById(R.id.navigate_here);
+        navigateHere.setVisibility(View.VISIBLE);
+
+        if(room) {
+            Button readMore = (Button) findViewById(R.id.read_more);
+            readMore.setVisibility(View.VISIBLE);
+        }
+    }
+
+    public void bottomMenuMarkerClose(boolean search) {
+        if (!search) mBottomMenuLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
+
+        TextView name = (TextView) findViewById(R.id.name);
+        name.setVisibility(View.GONE);
+
+        TextView roomNumber = (TextView) findViewById(R.id.room_number);
+        roomNumber.setVisibility(View.GONE);
+
+        TextView floor = (TextView) findViewById(R.id.floor);
+        floor.setVisibility(View.GONE);
+
+        TextView building = (TextView) findViewById(R.id.building);
+        building.setVisibility(View.GONE);
+
+        Button readMore = (Button) findViewById(R.id.read_more);
+        readMore.setVisibility(View.GONE);
+
+        Button navigateHere = (Button) findViewById(R.id.navigate_here);
+        navigateHere.setVisibility(View.GONE);
     }
 
     public FloatingActionButton getFabUp() {return fabUp;}
