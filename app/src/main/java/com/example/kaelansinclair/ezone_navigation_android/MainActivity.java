@@ -390,7 +390,13 @@ public class MainActivity extends AppCompatActivity
                         myLayout.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                             @Override
                             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
+                                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                                imm.hideSoftInputFromWindow(edtSeach.getWindowToken(), 0);
+                                Room entry = (Room) parent.getItemAtPosition(position);
+                                myLayout.setAdapter(new ArrayAdapter<Room>(getApplicationContext(), android.R.layout.simple_list_item_1, new ArrayList<Room>()));
+                                mBottomMenuLayout.setPanelHeight(panelHeight);
+                                mBottomMenuLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
+                                map.markerSearch(entry);
                             }
                         });
                     }

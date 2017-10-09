@@ -33,4 +33,28 @@ public class Room {
         return name;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Room room = (Room) o;
+
+        if (getFloor() != room.getFloor()) return false;
+        if (!getName().equals(room.getName())) return false;
+        if (!getDescription().equals(room.getDescription())) return false;
+        return getLatLng().equals(room.getLatLng());
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = getName().hashCode();
+        result = 31 * result + getFloor();
+        result = 31 * result + getDescription().hashCode();
+        result = 31 * result + getLatLng().hashCode();
+        return result;
+    }
+
+
 }
