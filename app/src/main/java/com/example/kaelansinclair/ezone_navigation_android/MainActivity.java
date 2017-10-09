@@ -30,6 +30,7 @@ import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -256,6 +257,8 @@ public class MainActivity extends AppCompatActivity
 
     protected void handleMenuSearch() {
         ActionBar action = getSupportActionBar(); //get the actionbar
+        final ListView myLayout = (ListView) findViewById(R.id.scroll_linear);
+        myLayout.setAdapter(new ArrayAdapter<Room>(getApplicationContext(), android.R.layout.simple_list_item_1, new ArrayList<Room>()));
 
         if (isSearchOpened) { //test if the search is open
 
@@ -302,8 +305,6 @@ public class MainActivity extends AppCompatActivity
 
                 @Override
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    ListView myLayout = (ListView) findViewById(R.id.scroll_linear);
-                    myLayout.removeAllViewsInLayout();
                     //mBottomMenuLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
                     if (s.length() != 0) {
                         roomHold = map.getSearchRooms();
@@ -320,18 +321,19 @@ public class MainActivity extends AppCompatActivity
 
                         Log.d(TAG, "onTextChanged: " + roomHold.size());
 
-                        ArrayList<String> roomNames = new ArrayList<String>();
-                        for (int i = 0; i < 10; i++) {
-                            TextView searchResult = new TextView(getApplicationContext());
-                            searchResult.setText(roomHold.get(i).getName());
-                            searchResult.setTextSize(18);
-                            searchResult.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT));
-                            //myLayout.addView(searchResult);
-                            roomNames.add(roomHold.get(i).getName());
-                        }
-                        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, roomNames);
+                        ArrayAdapter<Room> adapter = new ArrayAdapter<Room>(getApplicationContext(), android.R.layout.simple_list_item_1, roomHold.subList(0, 10));
                         myLayout.setAdapter(adapter);
                         Log.d(TAG, "onTextChanged: " + myLayout.getAdapter().getCount());
+
+                        myLayout.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                
+                            }
+                        });
+                    }
+                    else {
+                        myLayout.setAdapter(new ArrayAdapter<Room>(getApplicationContext(), android.R.layout.simple_list_item_1, new ArrayList<Room>()));
                     }
                 }
 

@@ -50,8 +50,9 @@
         <LinearLayout
             android:id="@+id/nav_button_layout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:visibility="visible">
 
             <Button
                 android:id="@+id/read_more"
