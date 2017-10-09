@@ -608,6 +608,29 @@ public class Map implements OnMapReadyCallback {
         }
     };
 
+    public void markerSearch(Room room) {
+        if (mPoint2 == null) {
+            mPoint2 = mMap.addMarker(new MarkerOptions().position(room.getLatLng())
+                    .icon(BitmapDescriptorFactory.defaultMarker(HUE_IAGRN)).zIndex(101));
+        }
+        else {
+            mPoint2.setPosition(room.getLatLng());
+            if (!mPoint2.isVisible()) mPoint2.setVisible(true);
+            mPoint2.setAlpha(1);
+        }
+        mPoint2Floor = focusedFloor;
+        mPoint2Building = focusedBuilding;
+
+        
+        if (polyline != null) {
+            Iterator<Polyline> pol = polyline.iterator();
+            while (pol.hasNext()) pol.next().remove();
+        }
+        pathResponse = "";
+        markedRoom = room;
+        mActivity.bottomMenuMarkerOpen("Name: " + markedRoom.getName(), "Floor: " + markedRoom.getFloor(), "Building: " + focusedBuilding, "", true);
+    }
+
     public void getPath() {
         jsonInnerPathData = new JSONObject();
         try {
