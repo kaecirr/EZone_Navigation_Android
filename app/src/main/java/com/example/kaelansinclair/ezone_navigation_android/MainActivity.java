@@ -30,9 +30,11 @@ import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -257,21 +259,24 @@ public class MainActivity extends AppCompatActivity
 
         if (isSearchOpened) { //test if the search is open
 
-            action.setDisplayShowCustomEnabled(false); //disable a custom view inside the actionbar
-            action.setDisplayShowTitleEnabled(true); //show the title in the action bar
-
             //hides the keyboard
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(edtSeach.getWindowToken(), 0);
 
+            action.setDisplayShowCustomEnabled(false); //disable a custom view inside the actionbar
+            action.setDisplayShowTitleEnabled(true); //show the title in the action bar
+
             //add the search icon in the action bar
             mSearchAction.setIcon(getResources().getDrawable(android.R.drawable.ic_menu_search));
+            mBottomMenuLayout.setPanelHeight(0);
             mBottomMenuLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
 
             isSearchOpened = false;
         } else { //open the search entry
-
             TypedValue tv = new TypedValue();
+
+            bottomMenuMarkerClose(true);
+
             if (getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true))
             {
                 int statusBarHeight = 0;
@@ -281,8 +286,6 @@ public class MainActivity extends AppCompatActivity
                     mBottomMenuLayout.setPanelHeight(this.getWindow().getDecorView().getHeight() - (TypedValue.complexToDimensionPixelSize(tv.data,getResources().getDisplayMetrics()) + statusBarHeight));
                 }
             }
-
-            bottomMenuMarkerClose(true);
             mBottomMenuLayout.setOverlayed(true);
             mBottomMenuLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
             action.setDisplayShowCustomEnabled(true); //enable it to display a
@@ -299,9 +302,9 @@ public class MainActivity extends AppCompatActivity
 
                 @Override
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    LinearLayout myLayout = (LinearLayout) findViewById(R.id.scroll_linear);
-                    ScrollView myLayoutScroll = (ScrollView) findViewById(R.id.scroll_navigation_dialog);
-                    myLayout.removeAllViews();
+                    ListView myLayout = (ListView) findViewById(R.id.scroll_linear);
+                    myLayout.removeAllViewsInLayout();
+                    //mBottomMenuLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
                     if (s.length() != 0) {
                         roomHold = map.getSearchRooms();
                         final String chars = s.toString();
@@ -316,19 +319,19 @@ public class MainActivity extends AppCompatActivity
                         });
 
                         Log.d(TAG, "onTextChanged: " + roomHold.size());
+
+                        ArrayList<String> roomNames = new ArrayList<String>();
                         for (int i = 0; i < 10; i++) {
-                            LongestCommonSubsequence lcs = new LongestCommonSubsequence();
                             TextView searchResult = new TextView(getApplicationContext());
                             searchResult.setText(roomHold.get(i).getName());
                             searchResult.setTextSize(18);
                             searchResult.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT));
-                            myLayout.addView(searchResult);
-                            myLayout.setVisibility(View.VISIBLE);
-                            myLayoutScroll.setVisibility(View.VISIBLE);
-                            mBottomMenuLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
-
-                            Log.d(TAG, "onTextChanged: " + myLayout.getChildCount());
+                            //myLayout.addView(searchResult);
+                            roomNames.add(roomHold.get(i).getName());
                         }
+                        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, roomNames);
+                        myLayout.setAdapter(adapter);
+                        Log.d(TAG, "onTextChanged: " + myLayout.getAdapter().getCount());
                     }
                 }
 
@@ -337,24 +340,22 @@ public class MainActivity extends AppCompatActivity
                 }
             });
             //this is a listener to do a search when the user clicks on search button
-//            edtSeach.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-//                @Override
-//                public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-//                    if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-//                        doSearch(v);
-//                        return true;
-//                    }
-//                    return false;
-//                }
-//            });
-
+            edtSeach.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                @Override
+                public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                    if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                        doSearch(v);
+                        return true;
+                    }
+                    return false;
+                }
+            });
 
             edtSeach.requestFocus();
 
             //open the keyboard focused in the edtSearch
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.showSoftInput(edtSeach, InputMethodManager.SHOW_IMPLICIT);
-
             //add the close icon
             mSearchAction.setIcon(getResources().getDrawable(android.R.drawable.ic_menu_close_clear_cancel));
 
@@ -363,15 +364,21 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void doSearch(TextView v) {
+        //hides the keyboard
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(edtSeach.getWindowToken(), 0);
 
+        mBottomMenuLayout.setPanelHeight(0);
+        mBottomMenuLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
     }
 
     public void bottomMenuMarkerOpen(String text1, String text2, String text3, String text4, boolean room) {
-        if (mBottomMenuLayout.getPanelState().equals(SlidingUpPanelLayout.PanelState.HIDDEN)) {
+       // if (mBottomMenuLayout.getPanelState().equals(SlidingUpPanelLayout.PanelState.HIDDEN)) {
+            Log.d(TAG, "bottomMenuMarkerOpen: " + panelHeight);
             mBottomMenuLayout.setOverlayed(false);
             mBottomMenuLayout.setPanelHeight(panelHeight);
             mBottomMenuLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
-        }
+        //}
         TextView name = (TextView) findViewById(R.id.name);
         name.setVisibility(View.VISIBLE);
         name.setText(text1);

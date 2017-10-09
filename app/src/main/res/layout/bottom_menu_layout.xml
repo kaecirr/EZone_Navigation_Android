@@ -1,28 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/navigation_dialog"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_gravity="center"
-    android:background="#FFFFFF"
-    android:orientation="vertical"
-    android:visibility="visible">
 
-    <ScrollView
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/scroll_navigation_dialog"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone">
+        android:layout_weight="1"
+        android:visibility="visible"
+        android:background="#FFFFFF">
 
-        <LinearLayout
-            android:id="@+id/scroll_linear"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:visibility="gone" />
-    </ScrollView>
+    <LinearLayout
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/navigation_dialog"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="top"
+        android:orientation="vertical"
+        android:visibility="visible">
 
     <TextView
         android:id="@+id/name"
@@ -52,31 +47,40 @@
         android:textAppearance="@style/TextAppearance.AppCompat"
         android:textSize="18sp" />
 
-    <LinearLayout
-        android:id="@+id/nav_button_layout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal">
-
-        <Button
-            android:id="@+id/read_more"
+        <LinearLayout
+            android:id="@+id/nav_button_layout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Read More"
-            android:visibility="gone"
-            app:layout_constraintBaseline_toBaselineOf="@+id/navigate_here"
-            tools:layout_constraintBaseline_creator="1"
-            tools:layout_editor_absoluteX="108dp" />
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/navigate_here"
+            <Button
+                android:id="@+id/read_more"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Read More"
+                android:visibility="gone"
+                app:layout_constraintBaseline_toBaselineOf="@+id/navigate_here"
+                tools:layout_constraintBaseline_creator="1"
+                tools:layout_editor_absoluteX="108dp" />
+
+            <Button
+                android:id="@+id/navigate_here"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Navigate Here"
+                tools:layout_editor_absoluteX="204dp"
+                tools:layout_editor_absoluteY="4dp" />
+
+        </LinearLayout>
+
+        <ListView
+            android:id="@+id/scroll_linear"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Navigate Here"
-            tools:layout_editor_absoluteX="204dp"
-            tools:layout_editor_absoluteY="4dp" />
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:visibility="visible" />
+
     </LinearLayout>
-
-</LinearLayout>
+    </LinearLayout>
