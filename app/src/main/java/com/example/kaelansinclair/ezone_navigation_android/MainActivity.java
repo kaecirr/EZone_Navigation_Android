@@ -111,78 +111,14 @@ public class MainActivity extends AppCompatActivity
         fabUp = (FloatingActionButton) findViewById(R.id.fab_up);
         fabUp.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                map.changeFloor(1);
-                //If current floor is the top floor then make up icon grey.
-                if(map.getFocusedFloor() > 0){
-                    int[][] states = {
-                            {android.R.attr.state_enabled},
-                            {android.R.attr.state_pressed},
-                    };
-
-                    int[] colors = {
-                            Color.parseColor("#546bec")
-                    };
-
-                    ColorStateList colorStateList = new ColorStateList(states, colors);
-                    fabDown.setBackgroundTintList(colorStateList);
-                    if(map.getFocusedFloor() == map.getNumFloors()-1){
-                        int[] colors2 = {
-                                Color.GRAY
-                        };
-                        colorStateList = new ColorStateList(states, colors2);
-                        fabUp.setBackgroundTintList(colorStateList);
-                    }
-                }
-            }
+            public void onClick(View view) {map.changeFloor(1);}
         });
 
         fabDown = (FloatingActionButton) findViewById(R.id.fab_down);
         fabDown.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View view) {
-                    map.changeFloor(-1);
-                    //If current floor is the ground floor then make down icon grey.
-                    if(map.getFocusedFloor() < map.getNumFloors()-1){
-                        int[][] states = {
-                                {android.R.attr.state_enabled},
-                                {android.R.attr.state_pressed},
-                        };
-
-                        int[] colors = {
-                                Color.parseColor("#546bec")
-                        };
-
-                        ColorStateList colorStateList = new ColorStateList(states, colors);
-                        fabUp.setBackgroundTintList(colorStateList);
-                        if(map.getFocusedFloor() == 0){
-                            int[] colors2 = {
-                                    Color.GRAY
-                            };
-                            colorStateList = new ColorStateList(states, colors2);
-                            fabDown.setBackgroundTintList(colorStateList);
-                        }
-                    }
-
-                }
+                public void onClick(View view) {map.changeFloor(-1);}
         });
-
-        //Makes down icon grey since each building starts with the ground floor
-        if(map.getFocusedFloor() == 0){
-            int[][] states = {
-                    {android.R.attr.state_enabled},
-                    {android.R.attr.state_pressed},
-            };
-
-            int[] colors = {
-                    Color.GRAY
-            };
-
-            ColorStateList colorStateList = new ColorStateList(states, colors);
-            fabDown.setBackgroundTintList(colorStateList);
-        }
-
-
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(

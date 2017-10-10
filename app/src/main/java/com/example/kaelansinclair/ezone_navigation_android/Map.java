@@ -1,15 +1,13 @@
 package com.example.kaelansinclair.ezone_navigation_android;
 
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -25,7 +23,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.indooratlas.android.sdk.IARegion;
-import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -81,6 +78,15 @@ public class Map implements OnMapReadyCallback {
     }
 
     private static ArrayList<Room> searchRooms;
+
+    private int[][] states = {
+            {android.R.attr.state_enabled},
+            {android.R.attr.state_pressed}
+    };
+
+    private int[] colorGrey = {Color.GRAY, Color.GRAY};
+
+    private int[] colorBlue = {Color.parseColor("#546bec"), Color.parseColor("#546bec")};
 
     private JSONObject jsonInnerPathData;
     private JSONObject jsonInnerFloorPlan;
@@ -164,8 +170,6 @@ public class Map implements OnMapReadyCallback {
     }
 
     public int getFocusedFloor() {return focusedFloor;}
-
-    public int getNumFloors() {return focusedBuildingFloorPlans.size();}
 
     public static GoogleMap getMap() {return mMap;}
 
@@ -404,6 +408,24 @@ public class Map implements OnMapReadyCallback {
             if (mPoint2 != null) {
                 if (mPoint2.isVisible() && focusedFloor == mPoint2Floor && focusedBuilding.equals(mPoint2Building)) mPoint2.setAlpha(1);
                 else mPoint2.setAlpha(0.5f);
+            }
+
+            if (focusedFloor == focusedBuildingFloorPlans.size() - 1) {
+                ColorStateList colorStateList2 = new ColorStateList(states, colorGrey);
+                mActivity.getFabUp().setBackgroundTintList(colorStateList2);
+            }
+            else {
+                ColorStateList colorStateList2 = new ColorStateList(states, colorBlue);
+                mActivity.getFabUp().setBackgroundTintList(colorStateList2);
+            }
+
+            if (focusedFloor == 0) {
+                ColorStateList colorStateList = new ColorStateList(states, colorGrey);
+                mActivity.getFabDown().setBackgroundTintList(colorStateList);
+            }
+            else {
+                ColorStateList colorStateList = new ColorStateList(states, colorBlue);
+                mActivity.getFabDown().setBackgroundTintList(colorStateList);
             }
 
             displayRooms();
@@ -768,9 +790,12 @@ public class Map implements OnMapReadyCallback {
 
             retrieveRooms.execute();
 
-          //  focusedBuildingFloorPlans.add("0dc8358c-9e1e-4afa-8adb-3bdfb7154a88");
-          //  focusedBuildingFloorPlans.add("6ee5ef62-e5e9-499e-9f8a-3f2c9c6e2d91");
-           // focusedBuildingFloorPlans.add("208ae45e-8d22-4faa-bfb2-e245f956de3b");
+            //Makes down icon grey since each building starts with the ground floor
+            ColorStateList colorStateList = new ColorStateList(states, colorGrey);
+            mActivity.getFabDown().setBackgroundTintList(colorStateList);
+
+            ColorStateList colorStateList2 = new ColorStateList(states, colorBlue);
+            mActivity.getFabUp().setBackgroundTintList(colorStateList2);
 
             mActivity.getFabUp().show();
             mActivity.getFabDown().show();
