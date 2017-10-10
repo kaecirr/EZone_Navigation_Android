@@ -8,7 +8,9 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
+import android.content.res.Configuration;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -30,6 +32,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
@@ -81,7 +85,15 @@ public class MainActivity extends AppCompatActivity
 
     private boolean navigationMode = false;
 
+    private boolean started = false;
+
     private int panelHeight = 0;
+
+    private View mRootView;
+
+    private Room entry;
+
+    private boolean updateBottomSheet;
 
     ArrayList<Room> roomHold;
 
@@ -91,84 +103,153 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
-        map = new Map(this);
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("EZone Indoor Navigation");
 
-        fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                map.setCameraPositionNeedsUpdating(true);
-                map.updateCameraPosition();
-            }
-        });
+        if (!started) {
 
-        fabUp = (FloatingActionButton) findViewById(R.id.fab_up);
-        fabUp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {map.changeFloor(1);}
-        });
+            updateBottomSheet = true;
 
-        fabDown = (FloatingActionButton) findViewById(R.id.fab_down);
-        fabDown.setOnClickListener(new View.OnClickListener() {
+            map = new Map(this);
+            setContentView(R.layout.activity_main);
+            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+            setSupportActionBar(toolbar);
+            getSupportActionBar().setTitle("EZone Indoor Navigation");
+
+            fab = (FloatingActionButton) findViewById(R.id.fab);
+            fab.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View view) {map.changeFloor(-1);}
-        });
+                public void onClick(View view) {
+                    map.setCameraPositionNeedsUpdating(true);
+                    map.updateCameraPosition();
+                }
+            });
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
+            fabUp = (FloatingActionButton) findViewById(R.id.fab_up);
+            fabUp.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    map.changeFloor(1);
+                }
+            });
 
-        //Commands to disable the drawer menu. If you need to edit the menu items, just comment out these two lines.
-        toggle.setDrawerIndicatorEnabled(false);
-        drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+            fabDown = (FloatingActionButton) findViewById(R.id.fab_down);
+            fabDown.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    map.changeFloor(-1);
+                }
+            });
 
-        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, PRIVATE_MODE);
-        if (first) {
-            SharedPreferences.Editor editor = prefs.edit();
-            editor.putBoolean("logged", false); // set it to false when the user is logged out
-            editor.commit();
-            first = false;
-        }
+            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+            ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                    this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+            drawer.setDrawerListener(toggle);
+            toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+            //Commands to disable the drawer menu. If you need to edit the menu items, just comment out these two lines.
+            toggle.setDrawerIndicatorEnabled(false);
+            drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 
-        this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
-
-        // prevent the screen going to sleep while app is on foreground
-        findViewById(android.R.id.content).setKeepScreenOn(true);
-
-        tracker = new IATracking(map, this);
-
-        //IARegion r = IARegion.floorPlan("0dc8358c-9e1e-4afa-8adb-3bdfb7154a88");
-
-        //GroundOverlay test1 = null;
-
-        //tracker.test(r, test1, true, "compSciBuilding");
-
-        mBottomMenuLayout = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
-        mBottomMenuLayout.setTouchEnabled(false);
-        mBottomMenuLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
-        panelHeight = mBottomMenuLayout.getPanelHeight();
-
-        mNavigateButton = (Button) findViewById(R.id.navigate_here);
-        mNavigateButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                map.getPath();
+            SharedPreferences prefs = getSharedPreferences(PREFS_NAME, PRIVATE_MODE);
+            if (first) {
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putBoolean("logged", false); // set it to false when the user is logged out
+                editor.commit();
+                first = false;
             }
-        });
 
-        roomHold = new ArrayList<Room>();
+            NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+            navigationView.setNavigationItemSelectedListener(this);
+
+            //this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+            //this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
+
+            // prevent the screen going to sleep while app is on foreground
+            findViewById(android.R.id.content).setKeepScreenOn(true);
+
+            tracker = new IATracking(map, this);
+
+            //IARegion r = IARegion.floorPlan("0dc8358c-9e1e-4afa-8adb-3bdfb7154a88");
+
+            //GroundOverlay test1 = null;
+
+            //tracker.test(r, test1, true, "compSciBuilding");
+
+            mBottomMenuLayout = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
+            mBottomMenuLayout.setTouchEnabled(false);
+            mBottomMenuLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
+            panelHeight = mBottomMenuLayout.getPanelHeight();
+
+            mNavigateButton = (Button) findViewById(R.id.navigate_here);
+            mNavigateButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    map.getPath();
+                }
+            });
+
+            roomHold = new ArrayList<Room>();
+
+            //getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+
+            mRootView = getWindow().getDecorView().getRootView();
+
+            mRootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    Rect measureRect = new Rect(); //you should cache this, onGlobalLayout can get called often
+                    mRootView.getWindowVisibleDisplayFrame(measureRect);
+                    // measureRect.bottom is the position above soft keypad
+                    int keypadHeight = mRootView.getRootView().getHeight() - measureRect.bottom;
+
+                    if (keypadHeight > 0 && updateBottomSheet && isSearchOpened) {
+
+                        updateBottomSheet = false;
+
+                        TypedValue tv = new TypedValue();
+                        if (getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true)) {
+                            int statusBarHeight = 0;
+                            int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+                            if (resourceId > 0) {
+                                statusBarHeight = getResources().getDimensionPixelSize(resourceId);
+                                mBottomMenuLayout.setPanelHeight((getWindow().getDecorView().getHeight() - keypadHeight) - (TypedValue.complexToDimensionPixelSize(tv.data, getResources().getDisplayMetrics()) + statusBarHeight));
+                            }
+                        }
+
+                        // keyboard is opened
+                        mBottomMenuLayout.setOverlayed(true);
+                        mBottomMenuLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+
+                        Log.d(TAG, "onGlobalLayout: ");
+                    } else if (keypadHeight == 0 && !isSearchOpened && !updateBottomSheet) {
+
+                        updateBottomSheet = true;
+                        //store keyboard state to use in onBackPress if you need to
+                        mBottomMenuLayout.setPanelHeight(0);
+                        mBottomMenuLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
+
+                        if (entry != null) {
+                            map.markerSearch(entry);
+                            entry = null;
+                        }
+                    } else if (keypadHeight == 0 && isSearchOpened && !updateBottomSheet) {
+                        TypedValue tv = new TypedValue();
+                        if (getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true)) {
+                            int statusBarHeight = 0;
+                            int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+                            if (resourceId > 0) {
+                                statusBarHeight = getResources().getDimensionPixelSize(resourceId);
+                                mBottomMenuLayout.setPanelHeight((getWindow().getDecorView().getHeight()) - (TypedValue.complexToDimensionPixelSize(tv.data, getResources().getDisplayMetrics()) + statusBarHeight));
+                            }
+                        }
+
+                        updateBottomSheet = true;
+                    }
+                }
+            });
+
+            started = true;
+        }
     }
 
     @Override
@@ -194,6 +275,8 @@ public class MainActivity extends AppCompatActivity
         if (navigationMode) tracker.getIALocationManager().registerRegionListener(tracker.getRegionListener());
 
         map.updateCameraPosition();
+
+        updateBottomSheet = true;
     }
 
     @Override
@@ -253,12 +336,21 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        updateBottomSheet = true;
+
+    }
+
     protected void handleMenuSearch() {
-        ActionBar action = getSupportActionBar(); //get the actionbar
+        final ActionBar action = getSupportActionBar(); //get the actionbar
         final ListView myLayout = (ListView) findViewById(R.id.scroll_linear);
         myLayout.setAdapter(new ArrayAdapter<Room>(getApplicationContext(), android.R.layout.simple_list_item_1, new ArrayList<Room>()));
 
         if (isSearchOpened) { //test if the search is open
+
+            isSearchOpened = false;
 
             //hides the keyboard
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -269,26 +361,12 @@ public class MainActivity extends AppCompatActivity
 
             //add the search icon in the action bar
             mSearchAction.setIcon(getResources().getDrawable(android.R.drawable.ic_menu_search));
-            mBottomMenuLayout.setPanelHeight(0);
-            mBottomMenuLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
-
-            isSearchOpened = false;
         } else { //open the search entry
-            TypedValue tv = new TypedValue();
+
+            isSearchOpened = true;
 
             bottomMenuMarkerClose(true);
 
-            if (getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true))
-            {
-                int statusBarHeight = 0;
-                int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
-                if (resourceId > 0) {
-                    statusBarHeight = getResources().getDimensionPixelSize(resourceId);
-                    mBottomMenuLayout.setPanelHeight(this.getWindow().getDecorView().getHeight() - (TypedValue.complexToDimensionPixelSize(tv.data,getResources().getDisplayMetrics()) + statusBarHeight));
-                }
-            }
-            mBottomMenuLayout.setOverlayed(true);
-            mBottomMenuLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
             action.setDisplayShowCustomEnabled(true); //enable it to display a
             // custom view in the action bar.
             action.setCustomView(R.layout.search_bar);//add the custom view
@@ -326,13 +404,17 @@ public class MainActivity extends AppCompatActivity
                         myLayout.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                             @Override
                             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                isSearchOpened = false;
+                                entry = (Room) parent.getItemAtPosition(position);
+                                updateBottomSheet = false;
+                                myLayout.setAdapter(new ArrayAdapter<Room>(getApplicationContext(), android.R.layout.simple_list_item_1, new ArrayList<Room>()));
                                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                                 imm.hideSoftInputFromWindow(edtSeach.getWindowToken(), 0);
-                                Room entry = (Room) parent.getItemAtPosition(position);
-                                myLayout.setAdapter(new ArrayAdapter<Room>(getApplicationContext(), android.R.layout.simple_list_item_1, new ArrayList<Room>()));
-                                mBottomMenuLayout.setPanelHeight(panelHeight);
-                                mBottomMenuLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
-                                map.markerSearch(entry);
+                                action.setDisplayShowCustomEnabled(false); //disable a custom view inside the actionbar
+                                action.setDisplayShowTitleEnabled(true); //show the title in the action bar
+
+                                //add the search icon in the action bar
+                                mSearchAction.setIcon(getResources().getDrawable(android.R.drawable.ic_menu_search));
                             }
                         });
                     }
@@ -350,7 +432,16 @@ public class MainActivity extends AppCompatActivity
                 @Override
                 public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                     if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                        doSearch(v);
+                        isSearchOpened = false;
+                        entry = (Room) myLayout.getAdapter().getItem(0);
+                        myLayout.setAdapter(new ArrayAdapter<Room>(getApplicationContext(), android.R.layout.simple_list_item_1, new ArrayList<Room>()));
+                        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(edtSeach.getWindowToken(), 0);
+                        action.setDisplayShowCustomEnabled(false); //disable a custom view inside the actionbar
+                        action.setDisplayShowTitleEnabled(true); //show the title in the action bar
+
+                        //add the search icon in the action bar
+                        mSearchAction.setIcon(getResources().getDrawable(android.R.drawable.ic_menu_search));
                         return true;
                     }
                     return false;
@@ -364,18 +455,7 @@ public class MainActivity extends AppCompatActivity
             imm.showSoftInput(edtSeach, InputMethodManager.SHOW_IMPLICIT);
             //add the close icon
             mSearchAction.setIcon(getResources().getDrawable(android.R.drawable.ic_menu_close_clear_cancel));
-
-            isSearchOpened = true;
         }
-    }
-
-    private void doSearch(TextView v) {
-        //hides the keyboard
-        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(edtSeach.getWindowToken(), 0);
-
-        mBottomMenuLayout.setPanelHeight(0);
-        mBottomMenuLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
     }
 
     public void bottomMenuMarkerOpen(String text1, String text2, String text3, String text4, boolean room) {
@@ -411,7 +491,10 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void bottomMenuMarkerClose(boolean search) {
-        if (!search) mBottomMenuLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
+        if (!search) {
+            mBottomMenuLayout.setPanelHeight(0);
+            mBottomMenuLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
+        }
 
         TextView name = (TextView) findViewById(R.id.name);
         name.setVisibility(View.GONE);

@@ -346,14 +346,16 @@ public class Map implements OnMapReadyCallback {
 
             if (jsonObject.has("roomInfoData")) {
                 JSONArray roomsArray = jsonObject.getJSONArray("roomInfoData");
-
+                ArrayList<Room> searchRoomsHold = new ArrayList<Room>();
                 for (int i = 0; i < roomsArray.length(); i++) {
                     JSONObject roomStore = roomsArray.getJSONObject(i);
                     if (roomStore.has("roomName") && roomStore.has("floor") && roomStore.has("roomDescription") && roomStore.has("latitude") && roomStore.has("longitude")) {
                         Room newRoom = new Room(roomStore.getString("roomName"), roomStore.getInt("floor"), roomStore.getString("roomDescription"), new LatLng(roomStore.getDouble("latitude"), roomStore.getDouble("longitude")));
-                        searchRooms.add(newRoom);
+                        searchRoomsHold.add(newRoom);
                     }
                 }
+
+                searchRooms = searchRoomsHold;
             }
         } catch (JSONException e) {
             e.printStackTrace();
