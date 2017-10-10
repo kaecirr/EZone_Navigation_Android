@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
@@ -33,6 +34,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created by Kaelan Sinclair on 27/08/2017.
@@ -54,17 +56,19 @@ public class Map implements OnMapReadyCallback {
     private CircleOptions mMarkerErrorOptions;
     private Circle mMarkerError;
     private Marker mPoint;
-    private Marker mPoint2;
-    private int mPoint2Floor;
-    private String mPoint2Building;
+    private static Marker mPoint2;
+    private static int mPoint2Floor;
+    private static String mPoint2Building;
 
     private Room markedRoom;
 
     private static GroundOverlay focusedGroundOverlay = null;
-    private String focusedBuilding;
+    private static String focusedBuilding;
     private static IARegion focusedRegion = null;
     private static int focusedFloor;
     private static boolean isFocused;
+
+    private static boolean focusOnMarker = false;
 
     private static HashMap<GroundOverlay, String> buildingOverlays;
 
@@ -79,14 +83,14 @@ public class Map implements OnMapReadyCallback {
 
     private static ArrayList<Room> searchRooms;
 
-    private int[][] states = {
+    private static int[][] states = {
             {android.R.attr.state_enabled},
             {android.R.attr.state_pressed}
     };
 
-    private int[] colorGrey = {Color.GRAY, Color.GRAY};
+    private static int[] colorGrey = {Color.GRAY, Color.GRAY};
 
-    private int[] colorBlue = {Color.parseColor("#546bec"), Color.parseColor("#546bec")};
+    private static int[] colorBlue = {Color.parseColor("#546bec"), Color.parseColor("#546bec")};
 
     private JSONObject jsonInnerPathData;
     private JSONObject jsonInnerFloorPlan;
@@ -208,6 +212,7 @@ public class Map implements OnMapReadyCallback {
             mMarkerError = mMap.addCircle(mMarkerErrorOptions);
 
             if (mPoint2 != null && mPoint2.isVisible()) {
+                getPath();
 
 //                try {
 //                    jsonInnerPathData.put("startLongitude", String.valueOf(mMarker.getPosition().longitude));
@@ -393,9 +398,17 @@ public class Map implements OnMapReadyCallback {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
+        if (focusOnMarker) {
+            int change;
+            if (focusedFloor >= mPoint2Floor) change = mPoint2Floor - focusedFloor;
+            else change = mPoint2Floor - focusedFloor;
+            if (change != 0) changeFloor(change);
+            focusOnMarker = false;
+        }
     }
 
-    public void changeFloor(int change) {
+    public static void changeFloor(int change) {
         if (focusedFloor + change >= 0 && focusedFloor + change < focusedBuildingFloorPlans.size()) {
             focusedFloor += change;
             focusedRegion = IARegion.floorPlan(focusedBuildingFloorPlans.get(focusedFloor));
@@ -434,11 +447,89 @@ public class Map implements OnMapReadyCallback {
         }
     }
 
-    private void changeFloorPlans(String floorPlanID) {
+    private static void changeFloorPlans(String floorPlanID) {
         focusedRegion = IARegion.floorPlan(floorPlanID);
         mActivity.getTracker().test(focusedRegion, focusedGroundOverlay, false, "");
         if (mPoint2 != null) {
             if (mPoint2.isVisible()) drawPolyline(pathResponse);
+        }
+    }
+
+    public void focusOnFloorPlan(boolean user) {
+        if (!user) {
+            if (!isFocused) {
+                focusOnMarker = true;
+                Iterator<GroundOverlay> overlays = buildingOverlays.keySet().iterator();
+                Log.d("dfgfdg", "focusOnFloorPlan: " + buildingOverlays.size());
+                GroundOverlay nextOverlay = null;
+                while (overlays.hasNext()) {
+                    nextOverlay = overlays.next();
+                    Log.d("dfgfdg", "focusOnFloorPlan: " + buildingOverlays.get(nextOverlay));
+                    if (mPoint2Building.equals(buildingOverlays.get(nextOverlay))) break;
+                }
+                if (focusedGroundOverlay != null && !nextOverlay.equals(focusedGroundOverlay)) {
+                    Iterator<Marker> keysIterator = displayedRooms.keySet().iterator();
+                    while (keysIterator.hasNext()) keysIterator.next().remove();
+                    focusedGroundOverlay.setTransparency(0.5f);
+                    focusedGroundOverlay.setClickable(true);
+                    if (focusedFloor != 0) changeFloorPlans(focusedBuildingFloorPlans.get(0));
+                    buildingOverlays.put(focusedGroundOverlay, focusedBuilding);
+                }
+
+                focusedGroundOverlay = nextOverlay;
+                focusedGroundOverlay.setTransparency(0.0f);
+                focusedGroundOverlay.setClickable(false);
+                //Need to make request to get floorplan information
+                focusedBuilding = buildingOverlays.get(focusedGroundOverlay);
+                focusedFloor = 0;
+                buildingOverlays.remove(focusedGroundOverlay);
+
+                try {
+
+                    jsonInnerFloorPlan.put("buildingName", focusedBuilding);
+
+                    jsonFloorPlan.put("requestMessage", "");
+                    JSONArray floorArray = new JSONArray();
+                    floorArray.put(jsonInnerFloorPlan);
+                    jsonFloorPlan.put("floorData", floorArray);
+
+                    jsonInnerRooms.put("buildingName", focusedBuilding);
+
+                    jsonRooms.put("requestMessage", "");
+                    JSONArray roomsArray = new JSONArray();
+                    roomsArray.put(jsonInnerRooms);
+                    jsonRooms.put("roomData", roomsArray);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                BackendRequest retrieveFloorPlans = new BackendRequest("floorPlan", jsonFloorPlan.toString(), false);
+
+                BackendRequest retrieveRooms = new BackendRequest("rooms", jsonRooms.toString(), false);
+
+                retrieveRooms.execute();
+
+                retrieveFloorPlans.execute();
+
+                //Makes down icon grey since each building starts with the ground floor
+                ColorStateList colorStateList = new ColorStateList(states, colorGrey);
+                mActivity.getFabDown().setBackgroundTintList(colorStateList);
+
+                ColorStateList colorStateList2 = new ColorStateList(states, colorBlue);
+                mActivity.getFabUp().setBackgroundTintList(colorStateList2);
+
+                mActivity.getFabUp().show();
+                mActivity.getFabDown().show();
+
+                isFocused = true;
+
+            }
+            else {
+                int change;
+                if (focusedFloor >= mPoint2Floor) change = mPoint2Floor - focusedFloor;
+                else change = mPoint2Floor - focusedFloor;
+                changeFloor(change);
+            }
         }
     }
 
@@ -539,6 +630,7 @@ public class Map implements OnMapReadyCallback {
                         mActivity.bottomMenuMarkerOpen("Latitude: " + latLng.latitude, "Longitude: " + latLng.longitude, "Floor: " + mPoint2Floor, "Building: " + focusedBuilding, false);
 
                         if (mPoint2 != null && mPoint2.isVisible()) {
+                            getPath();
     /*
                             try {
                                 jsonInner.put("startLongitude", String.valueOf(mPoint.getPosition().longitude));
@@ -581,6 +673,7 @@ public class Map implements OnMapReadyCallback {
                             mActivity.bottomMenuMarkerOpen("Latitude: " + latLng.latitude, "Longitude: " + latLng.longitude, "Floor: " + mPoint2Floor, "Building: " + focusedBuilding, false);
 
                             if (mPoint2 != null && mPoint2.isVisible()) {
+                                getPath();
     /*
                                 try {
                                     jsonInner.put("startLongitude", String.valueOf(mPoint.getPosition().longitude));
@@ -630,7 +723,7 @@ public class Map implements OnMapReadyCallback {
                 pathResponse = "";
                 markedRoom = displayedRooms.get(marker);
                 mActivity.bottomMenuMarkerOpen("Name: " + displayedRooms.get(marker).getName(), "Floor: " + displayedRooms.get(marker).getFloor(), "Building: " + focusedBuilding, "", true);
-
+                getPath();
             }
             return true;
         }
@@ -646,8 +739,8 @@ public class Map implements OnMapReadyCallback {
             if (!mPoint2.isVisible()) mPoint2.setVisible(true);
             mPoint2.setAlpha(1);
         }
-        mPoint2Floor = focusedFloor;
-        mPoint2Building = focusedBuilding;
+        mPoint2Floor = room.getFloor();
+        mPoint2Building = "ComputerScience";
 
         
         if (polyline != null) {
@@ -657,31 +750,34 @@ public class Map implements OnMapReadyCallback {
         pathResponse = "";
         markedRoom = room;
         mActivity.bottomMenuMarkerOpen("Name: " + markedRoom.getName(), "Floor: " + markedRoom.getFloor(), "Building: " + focusedBuilding, "", true);
+        getPath();
     }
 
     public void getPath() {
-        jsonInnerPathData = new JSONObject();
-        try {
-            jsonInnerPathData.put("startBuildingName", "ComputerScience");
-            jsonInnerPathData.put("startFloor", Integer.toString(focusedFloor));
-            jsonInnerPathData.put("startLongitude", Double.toString(mPoint2.getPosition().longitude));
-            jsonInnerPathData.put("startLatitude", Double.toString(mPoint2.getPosition().latitude));
-            jsonInnerPathData.put("endBuildingName", mPoint2Building);
-            jsonInnerPathData.put("endFloor", Integer.toString(mPoint2Floor));
-            jsonInnerPathData.put("endLongitude", Double.toString(mPoint2.getPosition().longitude));
-            jsonInnerPathData.put("endLatitude", Double.toString(mPoint2.getPosition().latitude));
-            jsonInnerPathData.put("algorithm", "DJ");
+        if (mMarker != null) {
+            jsonInnerPathData = new JSONObject();
+            try {
+                jsonInnerPathData.put("startBuildingName", "ComputerScience");
+                jsonInnerPathData.put("startFloor", Integer.toString(focusedFloor));
+                jsonInnerPathData.put("startLongitude", Double.toString(mMarker.getPosition().longitude));
+                jsonInnerPathData.put("startLatitude", Double.toString(mMarker.getPosition().latitude));
+                jsonInnerPathData.put("endBuildingName", mPoint2Building);
+                jsonInnerPathData.put("endFloor", Integer.toString(mPoint2Floor));
+                jsonInnerPathData.put("endLongitude", Double.toString(mPoint2.getPosition().longitude));
+                jsonInnerPathData.put("endLatitude", Double.toString(mPoint2.getPosition().latitude));
+                jsonInnerPathData.put("algorithm", "DJ");
 
-            jsonPathData.put("requestMessage", "");
-            jsonPathData.put("pathData", jsonInnerPathData);
-        } catch (JSONException e) {
-            e.printStackTrace();
+                jsonPathData.put("requestMessage", "");
+                jsonPathData.put("pathData", jsonInnerPathData);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            Log.d("thing", jsonPathData.toString());
+            BackendRequest t = new BackendRequest("path", jsonPathData.toString(), false);
+
+            t.execute();
         }
-
-        Log.d("thing", jsonPathData.toString());
-        BackendRequest t = new BackendRequest("path", jsonPathData.toString(), false);
-
-        t.execute();
     }
 
     public static void drawPolyline(String response) {
@@ -733,6 +829,16 @@ public class Map implements OnMapReadyCallback {
         }
     }
 
+    public void bottomDialogIfMarker() {
+        if (mPoint2 != null) {
+            if (mPoint2.isVisible() && focusedBuilding.equals(mPoint2Building)) {
+                if (focusedFloor == mPoint2Floor) mPoint2.setAlpha(1);
+                if (markedRoom == null) mActivity.bottomMenuMarkerOpen("Latitude: " + mPoint2.getPosition().latitude, "Longitude: " + mPoint2.getPosition().longitude, "Floor: " + mPoint2Floor, "Building: " + focusedBuilding, false);
+                else mActivity.bottomMenuMarkerOpen("Name: " + markedRoom.getName(), "Floor: " + markedRoom.getFloor(), "Building: " + focusedBuilding, "", true);
+            }
+        }
+    }
+
     private GoogleMap.OnGroundOverlayClickListener mGroundOverlayClickListener = new GoogleMap.OnGroundOverlayClickListener() {
         @Override
         public void onGroundOverlayClick(GroundOverlay groundOverlay) {
@@ -754,15 +860,7 @@ public class Map implements OnMapReadyCallback {
             focusedFloor = 0;
             Log.d("building", focusedBuilding);
             Log.d("building2", mPoint2Building);
-            if (mPoint2 != null) {
-                if (mPoint2.isVisible() && focusedBuilding.equals(mPoint2Building)) {
-                    if (focusedFloor == mPoint2Floor) mPoint2.setAlpha(1);
-
-                    if (markedRoom == null) mActivity.bottomMenuMarkerOpen("Latitude: " + mPoint2.getPosition().latitude, "Longitude: " + mPoint2.getPosition().longitude, "Floor: " + mPoint2Floor, "Building: " + focusedBuilding, false);
-                    else mActivity.bottomMenuMarkerOpen("Name: " + markedRoom.getName(), "Floor: " + markedRoom.getFloor(), "Building: " + focusedBuilding, "", true);
-
-                }
-            }
+            bottomDialogIfMarker();
             buildingOverlays.remove(focusedGroundOverlay);
 
             try {

@@ -230,8 +230,10 @@ public class MainActivity extends AppCompatActivity
 
                         if (entry != null) {
                             map.markerSearch(entry);
+                            map.focusOnFloorPlan(false);
                             entry = null;
                         }
+                        else map.bottomDialogIfMarker();
                     } else if (keypadHeight == 0 && isSearchOpened && !updateBottomSheet) {
                         TypedValue tv = new TypedValue();
                         if (getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true)) {
@@ -300,6 +302,8 @@ public class MainActivity extends AppCompatActivity
 
         }else if(isSearchOpened) {
             handleMenuSearch();
+            bottomMenuMarkerClose(false);
+            map.bottomDialogIfMarker();
         } else {
             super.onBackPressed();
         }
@@ -486,7 +490,7 @@ public class MainActivity extends AppCompatActivity
 
         if(room) {
             Button readMore = (Button) findViewById(R.id.read_more);
-            readMore.setVisibility(View.VISIBLE);
+            //readMore.setVisibility(View.VISIBLE);
         }
     }
 
