@@ -175,13 +175,19 @@ public class Map implements OnMapReadyCallback {
 
     public int getFocusedFloor() {return focusedFloor;}
 
+    public static String getFocusedBuilding() {return focusedBuilding;}
+
     public static GoogleMap getMap() {return mMap;}
 
     public GroundOverlay getFocusedGroundOverlay() {return focusedGroundOverlay;}
 
+    public HashMap<Integer, String> getFocusedBuildingFloorPlans() {return focusedBuildingFloorPlans;}
+
     public boolean getIsFocused() {return isFocused;}
 
     public void setFocusedGroundOverlay(GroundOverlay newGroundOverlay) {focusedGroundOverlay = newGroundOverlay;}
+
+    public void setFocusedFloor(int newFloor) {focusedFloor = newFloor;}
 
     public void setCameraPositionNeedsUpdating(Boolean needsUpdating) {mCameraPositionNeedsUpdating = needsUpdating;}
 
@@ -240,7 +246,7 @@ public class Map implements OnMapReadyCallback {
 
             if (mPoint2 != null && mPoint2.isVisible()) {
 
-
+                if (mActivity.getNaviationMode()) getPath();
 //                try {
 //                //    jsonInnerPathData.put("startLongitude", String.valueOf(mMarker.getPosition().longitude));
 //                    jsonInnerPathData.put("startLatitude", String.valueOf(mMarker.getPosition().latitude));
@@ -425,25 +431,29 @@ public class Map implements OnMapReadyCallback {
                 else mPoint2.setAlpha(0.5f);
             }
 
-            if (focusedFloor == focusedBuildingFloorPlans.size() - 1) {
-                ColorStateList colorStateList2 = new ColorStateList(states, colorGrey);
-                mActivity.getFabUp().setBackgroundTintList(colorStateList2);
-            }
-            else {
-                ColorStateList colorStateList2 = new ColorStateList(states, colorBlue);
-                mActivity.getFabUp().setBackgroundTintList(colorStateList2);
-            }
-
-            if (focusedFloor == 0) {
-                ColorStateList colorStateList = new ColorStateList(states, colorGrey);
-                mActivity.getFabDown().setBackgroundTintList(colorStateList);
-            }
-            else {
-                ColorStateList colorStateList = new ColorStateList(states, colorBlue);
-                mActivity.getFabDown().setBackgroundTintList(colorStateList);
-            }
+            changeFABColour();
 
             displayRooms();
+        }
+    }
+
+    public static void changeFABColour() {
+        if (focusedFloor == focusedBuildingFloorPlans.size() - 1) {
+            ColorStateList colorStateList2 = new ColorStateList(states, colorGrey);
+            mActivity.getFabUp().setBackgroundTintList(colorStateList2);
+        }
+        else {
+            ColorStateList colorStateList2 = new ColorStateList(states, colorBlue);
+            mActivity.getFabUp().setBackgroundTintList(colorStateList2);
+        }
+
+        if (focusedFloor == 0) {
+            ColorStateList colorStateList = new ColorStateList(states, colorGrey);
+            mActivity.getFabDown().setBackgroundTintList(colorStateList);
+        }
+        else {
+            ColorStateList colorStateList = new ColorStateList(states, colorBlue);
+            mActivity.getFabDown().setBackgroundTintList(colorStateList);
         }
     }
 
@@ -468,8 +478,7 @@ public class Map implements OnMapReadyCallback {
                     if (mPoint2Building.equals(buildingOverlays.get(nextOverlay))) break;
                 }
                 if (focusedGroundOverlay != null && !nextOverlay.equals(focusedGroundOverlay)) {
-                    Iterator<Marker> keysIterator = displayedRooms.keySet().iterator();
-                    while (keysIterator.hasNext()) keysIterator.next().remove();
+                    removeDisplayedRooms();
                     focusedGroundOverlay.setTransparency(0.5f);
                     focusedGroundOverlay.setClickable(true);
                     if (focusedFloor != 0) changeFloorPlans(focusedBuildingFloorPlans.get(0));
@@ -556,15 +565,19 @@ public class Map implements OnMapReadyCallback {
         }
     }
 
-    private static void displayRooms() {
-        Iterator<Marker> keysIterator = displayedRooms.keySet().iterator();
-        while (keysIterator.hasNext()) keysIterator.next().remove();
+    public static void displayRooms() {
+        removeDisplayedRooms();
         displayedRooms.clear();
         for (int i = 0; i < roomMap.get(focusedFloor).size(); i++) {
             Room room = roomMap.get(focusedFloor).get(i);
             BitmapDescriptor markerIcon = BitmapDescriptorFactory.fromResource(android.R.drawable.presence_invisible);
             displayedRooms.put(mMap.addMarker(new MarkerOptions().position(room.getLatLng()).icon(markerIcon).zIndex(100).anchor(0.5f,0.5f)), room);
         }
+    }
+
+    public static void removeDisplayedRooms() {
+        Iterator<Marker> keysIterator = displayedRooms.keySet().iterator();
+        while (keysIterator.hasNext()) keysIterator.next().remove();
     }
 
     private BitmapDescriptor getMarkerIconFromDrawable(Drawable drawable) {
@@ -589,7 +602,7 @@ public class Map implements OnMapReadyCallback {
     private GoogleMap.OnMapClickListener mClickListener = new GoogleMap.OnMapClickListener() {
         @Override
         public void onMapClick(LatLng latLng) {
-            if (mMap != null) {
+            if (mMap != null && !mActivity.getNaviationMode()) {
 /*
                 if (mPoint == null && mPoint2 == null) {
                     // first location, add marker
@@ -614,6 +627,8 @@ public class Map implements OnMapReadyCallback {
                         focusedBuildingFloorPlans.clear();
                         mActivity.getFabUp().hide();
                         mActivity.getFabDown().hide();
+                        Iterator<Polyline> pol = polyline.iterator();
+                        while (pol.hasNext()) pol.next().remove();
                         isFocused = false;
                         if (mPoint2 != null) {
                             if (mPoint2.isVisible()) mPoint2.setAlpha(0.5f);
@@ -702,28 +717,28 @@ public class Map implements OnMapReadyCallback {
     private GoogleMap.OnMarkerClickListener mMarkerClickListener = new GoogleMap.OnMarkerClickListener() {
         @Override
         public boolean onMarkerClick(Marker marker) {
+            if(!mActivity.getNaviationMode()) {
+                if (!marker.equals(mPoint2) && !marker.equals(mMarker)) {
+                    if (mPoint2 == null) {
+                        mPoint2 = mMap.addMarker(new MarkerOptions().position(marker.getPosition())
+                                .icon(BitmapDescriptorFactory.defaultMarker(HUE_IAGRN)).zIndex(101));
+                    } else {
+                        mPoint2.setPosition(marker.getPosition());
+                        if (!mPoint2.isVisible()) mPoint2.setVisible(true);
+                        mPoint2.setAlpha(1);
+                    }
+                    mPoint2Floor = focusedFloor;
+                    mPoint2Building = focusedBuilding;
 
-            if (!marker.equals(mPoint2) && !marker.equals(mMarker)) {
-                if (mPoint2 == null) {
-                    mPoint2 = mMap.addMarker(new MarkerOptions().position(marker.getPosition())
-                            .icon(BitmapDescriptorFactory.defaultMarker(HUE_IAGRN)).zIndex(101));
+                    if (polyline != null) {
+                        Iterator<Polyline> pol = polyline.iterator();
+                        while (pol.hasNext()) pol.next().remove();
+                    }
+                    pathResponse = "";
+                    markedRoom = displayedRooms.get(marker);
+                    mActivity.bottomMenuMarkerOpen("Name: " + displayedRooms.get(marker).getName(), "Floor: " + displayedRooms.get(marker).getFloor(), "Building: " + focusedBuilding, "", true);
+                    getPath();
                 }
-                else {
-                    mPoint2.setPosition(marker.getPosition());
-                    if (!mPoint2.isVisible()) mPoint2.setVisible(true);
-                    mPoint2.setAlpha(1);
-                }
-                mPoint2Floor = focusedFloor;
-                mPoint2Building = focusedBuilding;
-
-                if (polyline != null) {
-                    Iterator<Polyline> pol = polyline.iterator();
-                    while (pol.hasNext()) pol.next().remove();
-                }
-                pathResponse = "";
-                markedRoom = displayedRooms.get(marker);
-                mActivity.bottomMenuMarkerOpen("Name: " + displayedRooms.get(marker).getName(), "Floor: " + displayedRooms.get(marker).getFloor(), "Building: " + focusedBuilding, "", true);
-                getPath();
             }
             return true;
         }
@@ -758,7 +773,7 @@ public class Map implements OnMapReadyCallback {
             jsonInnerPathData = new JSONObject();
             try {
                 jsonInnerPathData.put("startBuildingName", "ComputerScience");
-                jsonInnerPathData.put("startFloor", Integer.toString(focusedFloor));
+                jsonInnerPathData.put("startFloor", Integer.toString(mMarkerFloor));
                 jsonInnerPathData.put("startLongitude", Double.toString(mMarker.getPosition().longitude));
                 jsonInnerPathData.put("startLatitude", Double.toString(mMarker.getPosition().latitude));
                 jsonInnerPathData.put("endBuildingName", mPoint2Building);
@@ -830,7 +845,7 @@ public class Map implements OnMapReadyCallback {
     }
 
     public void bottomDialogIfMarker() {
-        if (mPoint2 != null) {
+        if (mPoint2 != null && isFocused && focusedBuilding.equals(mPoint2Building)) {
             if (mPoint2.isVisible() && focusedBuilding.equals(mPoint2Building)) {
                 if (focusedFloor == mPoint2Floor) mPoint2.setAlpha(1);
                 if (markedRoom == null) mActivity.bottomMenuMarkerOpen("Latitude: " + mPoint2.getPosition().latitude, "Longitude: " + mPoint2.getPosition().longitude, "Floor: " + mPoint2Floor, "Building: " + focusedBuilding, false);
@@ -843,64 +858,72 @@ public class Map implements OnMapReadyCallback {
         @Override
         public void onGroundOverlayClick(GroundOverlay groundOverlay) {
             //Moving focus from one building directly to another
-            if (focusedGroundOverlay != null && !groundOverlay.equals(focusedGroundOverlay)) {
-                Iterator<Marker> keysIterator = displayedRooms.keySet().iterator();
-                while (keysIterator.hasNext()) keysIterator.next().remove();
-                focusedGroundOverlay.setTransparency(0.5f);
-                focusedGroundOverlay.setClickable(true);
-                if (focusedFloor != 0) changeFloorPlans(focusedBuildingFloorPlans.get(0));
-                buildingOverlays.put(focusedGroundOverlay, focusedBuilding);
+            if (!mActivity.getNaviationMode()) {
+                if (focusedGroundOverlay != null && !groundOverlay.equals(focusedGroundOverlay)) {
+                    Iterator<Marker> keysIterator = displayedRooms.keySet().iterator();
+                    while (keysIterator.hasNext()) keysIterator.next().remove();
+                    Iterator<Polyline> pol = polyline.iterator();
+                    while (pol.hasNext()) pol.next().remove();
+                    focusedGroundOverlay.setTransparency(0.5f);
+                    focusedGroundOverlay.setClickable(true);
+                    if (focusedFloor != 0) changeFloorPlans(focusedBuildingFloorPlans.get(0));
+                    buildingOverlays.put(focusedGroundOverlay, focusedBuilding);
+                }
+
+                focusedGroundOverlay = groundOverlay;
+                focusedGroundOverlay.setTransparency(0.0f);
+                focusedGroundOverlay.setClickable(false);
+                //Need to make request to get floorplan information
+                focusedBuilding = buildingOverlays.get(focusedGroundOverlay);
+                focusedFloor = 0;
+                Log.d("building", focusedBuilding);
+                Log.d("building2", mPoint2Building);
+                bottomDialogIfMarker();
+                buildingOverlays.remove(focusedGroundOverlay);
+
+                try {
+
+                    jsonInnerFloorPlan.put("buildingName", focusedBuilding);
+
+                    jsonFloorPlan.put("requestMessage", "");
+                    JSONArray floorArray = new JSONArray();
+                    floorArray.put(jsonInnerFloorPlan);
+                    jsonFloorPlan.put("floorData", floorArray);
+
+                    jsonInnerRooms.put("buildingName", focusedBuilding);
+
+                    jsonRooms.put("requestMessage", "");
+                    JSONArray roomsArray = new JSONArray();
+                    roomsArray.put(jsonInnerRooms);
+                    jsonRooms.put("roomData", roomsArray);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                BackendRequest retrieveFloorPlans = new BackendRequest("floorPlan", jsonFloorPlan.toString(), false);
+
+                BackendRequest retrieveRooms = new BackendRequest("rooms", jsonRooms.toString(), false);
+
+                retrieveFloorPlans.execute();
+
+                retrieveRooms.execute();
+
+                //Makes down icon grey since each building starts with the ground floor
+                ColorStateList colorStateList = new ColorStateList(states, colorGrey);
+                mActivity.getFabDown().setBackgroundTintList(colorStateList);
+
+                ColorStateList colorStateList2 = new ColorStateList(states, colorBlue);
+                mActivity.getFabUp().setBackgroundTintList(colorStateList2);
+
+                mActivity.getFabUp().show();
+                mActivity.getFabDown().show();
+
+                if (mPoint2 != null) {
+                    if (mPoint2.isVisible() && mPoint2Building.equals(focusedBuilding)) getPath();
+                }
+
+                isFocused = true;
             }
-
-            focusedGroundOverlay = groundOverlay;
-            focusedGroundOverlay.setTransparency(0.0f);
-            focusedGroundOverlay.setClickable(false);
-            //Need to make request to get floorplan information
-            focusedBuilding = buildingOverlays.get(focusedGroundOverlay);
-            focusedFloor = 0;
-            Log.d("building", focusedBuilding);
-            Log.d("building2", mPoint2Building);
-            bottomDialogIfMarker();
-            buildingOverlays.remove(focusedGroundOverlay);
-
-            try {
-
-                jsonInnerFloorPlan.put("buildingName", focusedBuilding);
-
-                jsonFloorPlan.put("requestMessage", "");
-                JSONArray floorArray = new JSONArray();
-                floorArray.put(jsonInnerFloorPlan);
-                jsonFloorPlan.put("floorData", floorArray);
-
-                jsonInnerRooms.put("buildingName", focusedBuilding);
-
-                jsonRooms.put("requestMessage", "");
-                JSONArray roomsArray = new JSONArray();
-                roomsArray.put(jsonInnerRooms);
-                jsonRooms.put("roomData", roomsArray);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-            BackendRequest retrieveFloorPlans = new BackendRequest("floorPlan", jsonFloorPlan.toString(), false);
-
-            BackendRequest retrieveRooms = new BackendRequest("rooms", jsonRooms.toString(), false);
-
-            retrieveFloorPlans.execute();
-
-            retrieveRooms.execute();
-
-            //Makes down icon grey since each building starts with the ground floor
-            ColorStateList colorStateList = new ColorStateList(states, colorGrey);
-            mActivity.getFabDown().setBackgroundTintList(colorStateList);
-
-            ColorStateList colorStateList2 = new ColorStateList(states, colorBlue);
-            mActivity.getFabUp().setBackgroundTintList(colorStateList2);
-
-            mActivity.getFabUp().show();
-            mActivity.getFabDown().show();
-
-            isFocused = true;
 
         }
     };

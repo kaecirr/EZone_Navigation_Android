@@ -27,6 +27,8 @@ import com.squareup.picasso.Picasso;
 import com.squareup.picasso.RequestCreator;
 import com.squareup.picasso.Target;
 
+import java.util.Iterator;
+
 /**
  * Created by Kaelan Sinclair on 27/08/2017.
  */
@@ -86,23 +88,33 @@ public class IATracking {
             if (region.getType() == IARegion.TYPE_FLOOR_PLAN) {
 
                 final String newId = region.getId();
-                // Are we entering a new floor plan or coming back the floor plan we just left?
-                if (map.getFocusedGroundOverlay() == null || !region.equals(mOverlayFloorPlan)) {
-                    map.setCameraPositionNeedsUpdating(true);
-                    if (map.getFocusedGroundOverlay() != null) {
-                        map.setCameraPositionNeedsUpdating(false);
-                        map.getFocusedGroundOverlay().remove();
-                        map.setFocusedGroundOverlay(null);
+
+                test(region, map.getFocusedGroundOverlay(), false, map.getFocusedBuilding());
+                Iterator<Integer> floorNums = map.getFocusedBuildingFloorPlans().keySet().iterator();
+                while (floorNums.hasNext()) {
+                    int num = floorNums.next();
+                    if (map.getFocusedBuildingFloorPlans().get(num).equals(newId)) {
+                        map.setFocusedFloor(num);
+                        break;
                     }
-                    mOverlayFloorPlan = region; // overlay will be this (unless error in loading)
-                    fetchFloorPlan(newId, false, "");
-                } else {
-                    map.getFocusedGroundOverlay().setTransparency(0.0f);
                 }
+                // Are we entering a new floor plan or coming back the floor plan we just left?
+//                if (map.getFocusedGroundOverlay() == null || !region.equals(mOverlayFloorPlan)) {
+//                    map.setCameraPositionNeedsUpdating(true);
+//                    if (map.getFocusedGroundOverlay() != null) {
+//                        map.setCameraPositionNeedsUpdating(false);
+//                        map.getFocusedGroundOverlay().remove();
+//                        map.setFocusedGroundOverlay(null);
+//                    }
+//                    mOverlayFloorPlan = region; // overlay will be this (unless error in loading)
+//                    fetchFloorPlan(newId, false, "");
+//                } else {
+//                    map.getFocusedGroundOverlay().setTransparency(0.0f);
+//                }
             }
-            // showInfo("Enter " + (region.getType() == IARegion.TYPE_VENUE
-            //       ? "VENUE "
-            //     : "FLOOR_PLAN ") + region.getId());
+//            // showInfo("Enter " + (region.getType() == IARegion.TYPE_VENUE
+//            //       ? "VENUE "
+//            //     : "FLOOR_PLAN ") + region.getId());
         }
 
         @Override
@@ -110,7 +122,7 @@ public class IATracking {
             if (map.getFocusedGroundOverlay() != null) {
                 // Indicate we left this floor plan but leave it there for reference
                 // If we enter another floor plan, this one will be removed and another one loaded
-                map.getFocusedGroundOverlay().setTransparency(0.5f);
+                //map.getFocusedGroundOverlay().setTransparency(0.5f);
             }
             // showInfo("Enter " + (region.getType() == IARegion.TYPE_VENUE
             //       ? "VENUE "
@@ -157,7 +169,10 @@ public class IATracking {
         if (map.getMap() != null) {
             BitmapDescriptor bitmapDescriptor = BitmapDescriptorFactory.fromBitmap(bitmap);
             IALatLng iaLatLng = floorPlan.getCenter();
+            LatLng[] centres = {new LatLng(-31.97761953692513, 115.81618666648865), new LatLng(-31.977629775312284, 115.81619001924993), new LatLng(-31.977641435696277, 115.81617224961522)};
             LatLng center = new LatLng(iaLatLng.latitude, iaLatLng.longitude);
+            center = centres[map.getFocusedFloor()];
+            Log.d(TAG, "setupGroundOverlay: " + center.latitude + " " + center.longitude);
             GroundOverlayOptions fpOverlay = new GroundOverlayOptions()
                     .image(bitmapDescriptor)
                     .position(center, floorPlan.getWidthMeters(), floorPlan.getHeightMeters())

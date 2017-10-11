@@ -184,7 +184,25 @@ public class MainActivity extends AppCompatActivity
             mNavigateButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    map.getPath();
+                    if (navigationMode) {
+                        navigationMode = false;
+                        tracker.getIALocationManager().unregisterRegionListener(tracker.getRegionListener());
+                        mNavigateButton.setText("NAVIGATE HERE");
+                        map.changeFABColour();
+                        fabDown.show();
+                        fabUp.show();
+                        mSearchAction.setVisible(true);
+                        map.displayRooms();
+                    }
+                    else {
+                        navigationMode = true;
+                        tracker.getIALocationManager().registerRegionListener(tracker.getRegionListener());
+                        mNavigateButton.setText("STOP NAVIGATION");
+                        fabDown.hide();
+                        fabUp.hide();
+                        mSearchAction.setVisible(false);
+                        map.removeDisplayedRooms();
+                    }
                 }
             });
 
@@ -461,6 +479,8 @@ public class MainActivity extends AppCompatActivity
             mSearchAction.setIcon(getResources().getDrawable(android.R.drawable.ic_menu_close_clear_cancel));
         }
     }
+
+    public boolean getNaviationMode() {return navigationMode;}
 
     public void bottomMenuMarkerOpen(String text1, String text2, String text3, String text4, boolean room) {
        // if (mBottomMenuLayout.getPanelState().equals(SlidingUpPanelLayout.PanelState.HIDDEN)) {
