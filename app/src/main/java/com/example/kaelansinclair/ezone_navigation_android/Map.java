@@ -270,10 +270,13 @@ public class Map implements OnMapReadyCallback {
                 mMarker.setAlpha(0.5f);
             else mMarker.setAlpha(1);
         }
+        else {
+            mMarker.setAlpha(0.5f);
+        }
 
         // our camera position needs updating if location has significantly changed
         if (mCameraPositionNeedsUpdating) {
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17.5f));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 25.0f));
             mCameraPositionNeedsUpdating = false;
         }
     }
@@ -437,6 +440,13 @@ public class Map implements OnMapReadyCallback {
         }
     }
 
+    public static void mPoint2Dim() {
+        if (mPoint2 != null) {
+            if (mPoint2.isVisible() && focusedFloor == mPoint2Floor && focusedBuilding.equals(mPoint2Building)) mPoint2.setAlpha(1);
+            else mPoint2.setAlpha(0.5f);
+        }
+    }
+
     public static void changeFABColour() {
         if (focusedFloor == focusedBuildingFloorPlans.size() - 1) {
             ColorStateList colorStateList2 = new ColorStateList(states, colorGrey);
@@ -456,6 +466,8 @@ public class Map implements OnMapReadyCallback {
             mActivity.getFabDown().setBackgroundTintList(colorStateList);
         }
     }
+
+    public static void setFocusedRegion(IARegion region) {focusedRegion = region;}
 
     private static void changeFloorPlans(String floorPlanID) {
         focusedRegion = IARegion.floorPlan(floorPlanID);
@@ -878,7 +890,6 @@ public class Map implements OnMapReadyCallback {
                 focusedFloor = 0;
                 Log.d("building", focusedBuilding);
                 Log.d("building2", mPoint2Building);
-                bottomDialogIfMarker();
                 buildingOverlays.remove(focusedGroundOverlay);
 
                 try {
@@ -923,6 +934,8 @@ public class Map implements OnMapReadyCallback {
                 }
 
                 isFocused = true;
+
+                bottomDialogIfMarker();
             }
 
         }

@@ -98,6 +98,10 @@ public class IATracking {
                         break;
                     }
                 }
+
+                map.setFocusedRegion(region);
+
+                map.mPoint2Dim();
                 // Are we entering a new floor plan or coming back the floor plan we just left?
 //                if (map.getFocusedGroundOverlay() == null || !region.equals(mOverlayFloorPlan)) {
 //                    map.setCameraPositionNeedsUpdating(true);
