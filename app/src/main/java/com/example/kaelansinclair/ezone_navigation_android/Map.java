@@ -77,10 +77,6 @@ public class Map implements OnMapReadyCallback {
     private static HashMap<Integer, ArrayList<Room>> roomMap;
     private static HashMap<Marker, Room> displayedRooms;
 
-    public static ArrayList<Room> getSearchRooms() {
-        return searchRooms;
-    }
-
     private static ArrayList<Room> searchRooms;
 
     private static int[][] states = {
@@ -279,6 +275,10 @@ public class Map implements OnMapReadyCallback {
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 25.0f));
             mCameraPositionNeedsUpdating = false;
         }
+    }
+
+    public static ArrayList<Room> getSearchRooms() {
+        return searchRooms;
     }
 
     @Override
