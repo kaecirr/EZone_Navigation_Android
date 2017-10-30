@@ -95,10 +95,14 @@ public class Map implements OnMapReadyCallback {
     private JSONObject jsonRooms;
     private JSONObject jsonInnerRooms;
 
-
+    /**
+     * Constructor for the map class
+     * @param mActivity the main activity
+     */
     public Map(MainActivity mActivity) {
         this.mActivity = mActivity;
 
+        //The following lines are setting up the default JSON object requests
         jsonInnerPathData = new JSONObject();
         try {
             jsonInnerPathData.put("startBuildingName", "computerScience");
@@ -125,7 +129,6 @@ public class Map implements OnMapReadyCallback {
         jsonInnerFloorPlan = new JSONObject();
         try {
             jsonInnerFloorPlan.put("buildingName", "ComputerScience");
-            //jsonInnerFloorPlan.put("floor", "2");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -141,7 +144,6 @@ public class Map implements OnMapReadyCallback {
         jsonInnerRooms = new JSONObject();
         try {
             jsonInnerRooms.put("buildingName", "ComputerScience");
-            //jsonInnerFloorPlan.put("floor", "2");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -154,6 +156,7 @@ public class Map implements OnMapReadyCallback {
             e.printStackTrace();
         }
 
+        //Initialising the variables to be used in the class
         pathResponse = "";
         polyline = new HashSet<Polyline>();
         buildingOverlays = new HashMap<GroundOverlay, String>();
@@ -201,9 +204,6 @@ public class Map implements OnMapReadyCallback {
         }
         if (mMarker == null) {
             // first location, add marker
-            // mMarkerOptions = new CircleOptions().center(latLng).radius(0.3).strokeColor(Color.argb(255, 8, 0, 255)).fillColor(Color.argb(255, 0, 170, 255)).zIndex(100);
-            // mMarker = mMap.addMarker(new MarkerOptions().position(latLng).icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_circle)));
-
             Drawable circleDrawable = mActivity.getResources().getDrawable(R.drawable.marker_circle);
             BitmapDescriptor markerIcon = getMarkerIconFromDrawable(circleDrawable);
             mMarker = mMap.addMarker(new MarkerOptions().position(latLng).icon(markerIcon).zIndex(100).anchor(0.5f,0.5f));
@@ -213,25 +213,7 @@ public class Map implements OnMapReadyCallback {
             mMarkerErrorOptions = new CircleOptions().center(latLng).radius(accuracy).strokeColor(Color.argb(255, 8, 0, 255)).strokeWidth(5).fillColor(Color.argb(128, 0, 170, 255)).zIndex(99);
             mMarkerError = mMap.addCircle(mMarkerErrorOptions);
 
-            if (mPoint2 != null && mPoint2.isVisible()) {
-                getPath();
-
-//                try {
-//                    jsonInnerPathData.put("startLongitude", String.valueOf(mMarker.getPosition().longitude));
-//                    jsonInnerPathData.put("startLatitude", String.valueOf(mMarker.getPosition().latitude));
-//                    jsonInnerPathData.put("endLongitude", String.valueOf(mPoint2.getPosition().longitude));
-//                    jsonInnerPathData.put("endLatitude", String.valueOf(mPoint2.getPosition().latitude));
-//
-//                    jsonPathData.put("requestMessage", "");
-//                //    jsonPathData.put("mapDataRequest", jsonInnerPathData);
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
-//
-//                BackendRequest t = new BackendRequest("path", jsonPathData.toString(), false);
-//
-//               // t.execute();
-            }
+            if (mPoint2 != null && mPoint2.isVisible()) getPath();
         } else {
             // move existing markers position to received location
             mMarkerError.setCenter(latLng);
@@ -243,21 +225,6 @@ public class Map implements OnMapReadyCallback {
             if (mPoint2 != null && mPoint2.isVisible()) {
 
                 if (mActivity.getNaviationMode()) getPath();
-//                try {
-//                //    jsonInnerPathData.put("startLongitude", String.valueOf(mMarker.getPosition().longitude));
-//                    jsonInnerPathData.put("startLatitude", String.valueOf(mMarker.getPosition().latitude));
-//                    jsonInnerPathData.put("endLongitude", String.valueOf(mPoint2.getPosition().longitude));
-//                    jsonInnerPathData.put("endLatitude", String.valueOf(mPoint2.getPosition().latitude));
-//
-//                    jsonPathData.put("requestMessage", "");
-//                //    jsonPathData.put("mapDataRequest", jsonInnerPathData);
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
-//
-//                BackendRequest t = new BackendRequest("path", jsonPathData.toString(), false);
-
-              //  t.execute();
             }
         }
 
@@ -615,16 +582,6 @@ public class Map implements OnMapReadyCallback {
         @Override
         public void onMapClick(LatLng latLng) {
             if (mMap != null && !mActivity.getNaviationMode()) {
-/*
-                if (mPoint == null && mPoint2 == null) {
-                    // first location, add marker
-
-                    Drawable circleDrawable = mActivity.getResources().getDrawable(R.drawable.marker_circle);
-                    BitmapDescriptor markerIcon = getMarkerIconFromDrawable(circleDrawable);
-                    mPoint = mMap.addMarker(new MarkerOptions().position(latLng).icon(markerIcon).zIndex(100));
-
-                }
-                */
 
                 if (focusedGroundOverlay != null) {
                     LatLng rLatLng = rotateCoordinate(focusedGroundOverlay.getPosition(), latLng, focusedGroundOverlay.getBearing());
@@ -656,26 +613,7 @@ public class Map implements OnMapReadyCallback {
 
                         mActivity.bottomMenuMarkerOpen("Latitude: " + latLng.latitude, "Longitude: " + latLng.longitude, "Floor: " + mPoint2Floor, "Building: " + focusedBuilding, false);
 
-                        if (mPoint2 != null && mPoint2.isVisible()) {
-                            getPath();
-    /*
-                            try {
-                                jsonInner.put("startLongitude", String.valueOf(mPoint.getPosition().longitude));
-                                jsonInner.put("startLatitude", String.valueOf(mPoint.getPosition().latitude));
-                                jsonInner.put("endLongitude", String.valueOf(mPoint2.getPosition().longitude));
-                                jsonInner.put("endLatitude", String.valueOf(mPoint2.getPosition().latitude));
-
-                                json.put("requestMessage", "");
-                                json.put("mapDataRequest", jsonInner);
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                            Log.d("quickDebug", json.toString());
-                            BackendRequest t = new BackendRequest("path", json.toString());
-
-                            t.execute();
-                            */
-                        }
+                        if (mPoint2 != null && mPoint2.isVisible()) getPath();
                     }
                     else if (mPoint2 != null) {
                         if (mPoint2.isVisible()) {
@@ -701,23 +639,6 @@ public class Map implements OnMapReadyCallback {
 
                             if (mPoint2 != null && mPoint2.isVisible()) {
                                 getPath();
-    /*
-                                try {
-                                    jsonInner.put("startLongitude", String.valueOf(mPoint.getPosition().longitude));
-                                    jsonInner.put("startLatitude", String.valueOf(mPoint.getPosition().latitude));
-                                    jsonInner.put("endLongitude", String.valueOf(mPoint2.getPosition().longitude));
-                                    jsonInner.put("endLatitude", String.valueOf(mPoint2.getPosition().latitude));
-
-                                    json.put("requestMessage", "");
-                                    json.put("mapDataRequest", jsonInner);
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                                Log.d("quickDebug", json.toString());
-                                BackendRequest t = new BackendRequest("path", json.toString());
-
-                                t.execute();
-                                */
                             }
                         }
                     }
