@@ -17,11 +17,12 @@ import static com.example.kaelansinclair.ezone_navigation_android.Map.setRooms;
 import static com.example.kaelansinclair.ezone_navigation_android.Map.setRoomsInit;
 
 /**
- * Created by kaelan on 29/05/17.
+ * Performs the backend server requests as an asynchronous task.
  */
 
 public class BackendRequest extends AsyncTask<Void, Void, String> {
 
+    // The URL to the backend server
     private String URL = "http://52.64.190.66:8080/springMVC-1.0-SNAPSHOT/";
 
     private Exception exception;
@@ -30,6 +31,12 @@ public class BackendRequest extends AsyncTask<Void, Void, String> {
     private String query;
     private boolean init;
 
+    /**
+     * Constructor for the BackendRequest.
+     * @param u the API call being made
+     * @param q the query to send
+     * @param init if this is an initialisation call (only on application startup)
+     */
     public BackendRequest(String u, String q, boolean init) {
         apiCall = u;
         query = q;
@@ -59,16 +66,17 @@ public class BackendRequest extends AsyncTask<Void, Void, String> {
         Log.d("INFO5", response);
         if(response == null) {
             response = "THERE WAS AN ERROR";
+            // TODO: 3/11/2017
         }
-        else if (response.equals("500") || response.equals("400")) this.execute();
-        else if (apiCall.equals("path")) drawPolyline(response);
+        else if (response.equals("500") || response.equals("400")) this.execute(); // Retry on failure TODO: Set up a maximum limit on this
+        else if (apiCall.equals("path")) drawPolyline(response); // Draw path
         else if (apiCall.equals("floorPlan")) {
-            if (init) mapInitialisation(response);
-            else setFloorPlans(response);
+            if (init) mapInitialisation(response); // On startup initialisation, initialise the map
+            else setFloorPlans(response); // Set the focused building floor plan IDs
         }
         else if (apiCall.equals("rooms")) {
-            if (init) setRoomsInit(response);
-            else setRooms(response);
+            if (init) setRoomsInit(response); // On startup get list of rooms for on device search. Should be implemented off device and on the server
+            else setRooms(response); // Set the rooms for the building
         }
     }
 

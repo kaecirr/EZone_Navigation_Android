@@ -5,7 +5,8 @@ import android.content.Context;
 import android.support.multidex.MultiDex;
 
 /**
- * Created by Kaelan Sinclair on 3/10/2017.
+ * This class is to allow compatibility with older Android devices, which require an application
+ * class to be defined.
  */
 
 public class EZoneNavigationApplication extends Application {

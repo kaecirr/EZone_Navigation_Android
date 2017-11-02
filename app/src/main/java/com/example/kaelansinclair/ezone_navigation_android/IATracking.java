@@ -30,7 +30,9 @@ import com.squareup.picasso.Target;
 import java.util.Iterator;
 
 /**
- * Created by Kaelan Sinclair on 27/08/2017.
+ * Contains most of the IndoorAtlas functionality. As much has been split from the rest of the code
+ * as possible. This is to allow for easier integration of a new indoor positioning system if that
+ * is required.
  */
 
 public class IATracking {
@@ -71,6 +73,7 @@ public class IATracking {
 
             Log.d(TAG, "new location received with coordinates: " + location.getLatitude()
                     + "," + location.getLongitude());
+            // Update user location
             map.updateLocation(new LatLng(location.getLatitude(), location.getLongitude()), location.getAccuracy(), location.getRegion(), location.getFloorLevel());
        }
 
@@ -89,7 +92,7 @@ public class IATracking {
 
                 final String newId = region.getId();
 
-                test(region, map.getFocusedGroundOverlay(), false, map.getFocusedBuilding());
+                setFetchFloorPlan(region, map.getFocusedGroundOverlay(), false, map.getFocusedBuilding());
                 Iterator<Integer> floorNums = map.getFocusedBuildingFloorPlans().keySet().iterator();
                 while (floorNums.hasNext()) {
                     int num = floorNums.next();
@@ -102,23 +105,7 @@ public class IATracking {
                 map.setFocusedRegion(region);
 
                 map.mPoint2Dim();
-                // Are we entering a new floor plan or coming back the floor plan we just left?
-//                if (map.getFocusedGroundOverlay() == null || !region.equals(mOverlayFloorPlan)) {
-//                    map.setCameraPositionNeedsUpdating(true);
-//                    if (map.getFocusedGroundOverlay() != null) {
-//                        map.setCameraPositionNeedsUpdating(false);
-//                        map.getFocusedGroundOverlay().remove();
-//                        map.setFocusedGroundOverlay(null);
-//                    }
-//                    mOverlayFloorPlan = region; // overlay will be this (unless error in loading)
-//                    fetchFloorPlan(newId, false, "");
-//                } else {
-//                    map.getFocusedGroundOverlay().setTransparency(0.0f);
-//                }
             }
-//            // showInfo("Enter " + (region.getType() == IARegion.TYPE_VENUE
-//            //       ? "VENUE "
-//            //     : "FLOOR_PLAN ") + region.getId());
         }
 
         @Override
@@ -127,17 +114,22 @@ public class IATracking {
                 // Indicate we left this floor plan but leave it there for reference
                 // If we enter another floor plan, this one will be removed and another one loaded
                 //map.getFocusedGroundOverlay().setTransparency(0.5f);
+                // TODO: 2/11/2017
             }
-            // showInfo("Enter " + (region.getType() == IARegion.TYPE_VENUE
-            //       ? "VENUE "
-            //     : "FLOOR_PLAN ") + region.getId());
         }
 
     };
 
     public IARegion.Listener getRegionListener() {return mRegionListener;}
 
-    public void test(IARegion region, GroundOverlay groundOverlay, boolean initialise, String building) {
+    /**
+     * Set up the required information to fetch a new floor plan.
+     * @param region the new region to get a floor plan for.
+     * @param groundOverlay the GroundOverlay object to be replaced.
+     * @param initialise whether this is in initialisation mode (only on application startup).
+     * @param building the name of the building the floor plan belongs to.
+     */
+    public void setFetchFloorPlan(IARegion region, GroundOverlay groundOverlay, boolean initialise, String building) {
         if (region.getType() == IARegion.TYPE_FLOOR_PLAN) {
             final String newId = region.getId();
             // Are we entering a new floor plan or coming back the floor plan we just left?
@@ -154,9 +146,6 @@ public class IATracking {
                 groundOverlay.setTransparency(0.0f);
             }
         }
-        // showInfo("Enter " + (region.getType() == IARegion.TYPE_VENUE
-        //       ? "VENUE "
-        //     : "FLOOR_PLAN ") + region.getId());
     }
 
     /**

@@ -4,7 +4,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 
 /**
- * Created by Kaelan Sinclair on 2/10/2017.
+ * Class representing rooms and holding room metadata.
  */
 
 public class Room {
@@ -13,6 +13,13 @@ public class Room {
     private String description;
     private LatLng latLng;
 
+    /**
+     * Room constructor.
+     * @param name the name of the room.
+     * @param floor the floor the room is on.
+     * @param description the description of the room.
+     * @param latLng the position of the room.
+     */
     public Room (String name, int floor, String description, LatLng latLng) {
         this.name = name;
         this.floor = floor;
