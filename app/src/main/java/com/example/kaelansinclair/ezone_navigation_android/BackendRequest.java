@@ -53,7 +53,6 @@ public class BackendRequest extends AsyncTask<Void, Void, String> {
 
         try {
             String response = makePostRequest(URL + apiCall, query);
-            Log.d("INFO", response);
             return response;
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -63,7 +62,6 @@ public class BackendRequest extends AsyncTask<Void, Void, String> {
 
     @Override
     protected void onPostExecute(String response) {
-        Log.d("INFO5", response);
         if(response == null) {
             response = "THERE WAS AN ERROR";
             // TODO: 3/11/2017
@@ -95,8 +93,6 @@ public class BackendRequest extends AsyncTask<Void, Void, String> {
             os.flush();
             os.close();
 
-            Log.d("INFO", String.valueOf(conn.getResponseCode()));
-
             BufferedReader br = new BufferedReader(new InputStreamReader(
                     (conn.getInputStream())));
 
@@ -106,8 +102,6 @@ public class BackendRequest extends AsyncTask<Void, Void, String> {
                 response.append(output);
             }
             mes = response.toString();
-            Log.d("INFO", payload);
-            Log.d("INFO", mes);
             conn.disconnect();
 
         }catch (Exception e) {

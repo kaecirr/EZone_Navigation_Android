@@ -274,7 +274,6 @@ public class MainActivity extends AppCompatActivity
                         mBottomMenuLayout.setOverlayed(true);
                         mBottomMenuLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
 
-                        Log.d(TAG, "onGlobalLayout: ");
                     } else if (keypadHeight == 0 && !isSearchOpened && !updateBottomSheet) { // If keyboard is closed and search is closed.
 
                         updateBottomSheet = true;
@@ -468,11 +467,8 @@ public class MainActivity extends AppCompatActivity
                             }
                         });
 
-                        Log.d(TAG, "onTextChanged: " + roomHold.size());
-
                         ArrayAdapter<Room> adapter = new ArrayAdapter<Room>(getApplicationContext(), android.R.layout.simple_list_item_1, roomHold.subList(0, 10));
                         myLayout.setAdapter(adapter);
-                        Log.d(TAG, "onTextChanged: " + myLayout.getAdapter().getCount());
 
                         // Sets the listener for clicking menu items
                         myLayout.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -548,7 +544,6 @@ public class MainActivity extends AppCompatActivity
      */
     public void bottomMenuMarkerOpen(String text1, String text2, String text3, String text4, boolean room) {
        // if (mBottomMenuLayout.getPanelState().equals(SlidingUpPanelLayout.PanelState.HIDDEN)) {
-            Log.d(TAG, "bottomMenuMarkerOpen: " + panelHeight);
             mBottomMenuLayout.setOverlayed(false);
             mBottomMenuLayout.setPanelHeight(panelHeight);
             mBottomMenuLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
@@ -679,7 +674,6 @@ public class MainActivity extends AppCompatActivity
                         .setPositiveButton(R.string.permission_button_accept, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                Log.d(TAG, "request permissions");
                                 ActivityCompat.requestPermissions(MainActivity.this,
                                         new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION},
                                         REQUEST_CODE_ACCESS_COARSE_LOCATION);
