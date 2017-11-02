@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/scroll_navigation_dialog"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:visibility="visible"
+        android:background="#FFFFFF">
+
+    <LinearLayout
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/navigation_dialog"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="top"
+        android:orientation="vertical"
+        android:visibility="visible"
+        android:background="@drawable/bottom_menu_background">
+
+    <TextView
+        android:id="@+id/name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.AppCompat"
+        android:textSize="18sp"
+        android:layout_marginLeft="10dp"/>
+
+    <TextView
+        android:id="@+id/room_number"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.AppCompat"
+        android:textSize="18sp"
+        android:layout_marginLeft="10dp"/>
+
+    <TextView
+        android:id="@+id/floor"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.AppCompat"
+        android:textSize="18sp"
+        android:layout_marginLeft="10dp"/>
+
+    <TextView
+        android:id="@+id/building"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.AppCompat"
+        android:textSize="18sp"
+        android:layout_marginLeft="10dp"/>
+
+        <LinearLayout
+            android:id="@+id/nav_button_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:visibility="visible">
+
+        <Button
+            android:id="@+id/read_more"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Read More"
+            android:textColor="#ffffff"
+            app:backgroundTint="#546bec"
+            android:visibility="gone"
+            app:layout_constraintBaseline_toBaselineOf="@+id/navigate_here"
+            tools:layout_constraintBaseline_creator="1"
+            tools:layout_editor_absoluteX="108dp" />
+
+            <Button
+                android:id="@+id/navigate_here"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Navigate Here"
+                android:textColor="#ffffff"
+                app:backgroundTint="#546bec"
+                tools:layout_editor_absoluteX="204dp"
+                tools:layout_editor_absoluteY="4dp" />
+
+        </LinearLayout>
+
+        <ListView
+            android:id="@+id/scroll_linear"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:visibility="visible"
+            android:layout_marginBottom="?attr/actionBarSize"/>
+
+    </LinearLayout>
+
+</LinearLayout>
