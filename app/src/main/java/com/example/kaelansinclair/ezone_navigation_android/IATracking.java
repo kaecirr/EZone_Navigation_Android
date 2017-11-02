@@ -70,9 +70,6 @@ public class IATracking {
 
         @Override
         public void onLocationChanged(IALocation location) {
-
-            Log.d(TAG, "new location received with coordinates: " + location.getLatitude()
-                    + "," + location.getLongitude());
             // Update user location
             map.updateLocation(new LatLng(location.getLatitude(), location.getLongitude()), location.getAccuracy(), location.getRegion(), location.getFloorLevel());
        }
@@ -153,9 +150,7 @@ public class IATracking {
      */
     private void setupGroundOverlay(IAFloorPlan floorPlan, Bitmap bitmap, boolean initialise, String building) {
 
-        Log.d(TAG, "removeBlah2");
         if (map.getFocusedGroundOverlay() != null) {
-            Log.d(TAG, "friggenHeck");
             map.getFocusedGroundOverlay().remove();
         }
 
@@ -165,7 +160,6 @@ public class IATracking {
             LatLng[] centres = {new LatLng(-31.97761953692513, 115.81618666648865), new LatLng(-31.977629775312284, 115.81619001924993), new LatLng(-31.977641435696277, 115.81617224961522)};
             LatLng center = new LatLng(iaLatLng.latitude, iaLatLng.longitude);
             center = centres[map.getFocusedFloor()];
-            Log.d(TAG, "setupGroundOverlay: " + center.latitude + " " + center.longitude);
             GroundOverlayOptions fpOverlay = new GroundOverlayOptions()
                     .image(bitmapDescriptor)
                     .position(center, floorPlan.getWidthMeters(), floorPlan.getHeightMeters())
@@ -193,8 +187,6 @@ public class IATracking {
 
                 @Override
                 public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                    Log.d(TAG, "onBitmap loaded with dimensions: " + bitmap.getWidth() + "x"
-                            + bitmap.getHeight());
                     setupGroundOverlay(floorPlan, bitmap, initialise, building);
                 }
 
@@ -248,7 +240,6 @@ public class IATracking {
                     if (!task.isCancelled()) {
                         // do something with error
                         showInfo("Loading floor plan failed: " + result.getError());
-                        Log.d(TAG, "onResult: " + result.getError());
                         mOverlayFloorPlan = null;
                     }
                 }

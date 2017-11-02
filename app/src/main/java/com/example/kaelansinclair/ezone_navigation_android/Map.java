@@ -294,7 +294,6 @@ public class Map implements OnMapReadyCallback {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Log.d("test", jsonFloorPlan.toString());
         BackendRequest initial = new BackendRequest("floorPlan", jsonFloorPlan.toString(), true);
 
         initial.execute();
@@ -326,13 +325,11 @@ public class Map implements OnMapReadyCallback {
      * @param response the response from the server containing the supported building information.
      */
     public static void mapInitialisation(String response) {
-        Log.d("quickDebug", response);
         try {
             JSONObject jsonObject = new JSONObject(response);
 
             if (jsonObject.has("floorPlanData")) {
                 JSONArray floorPlans = jsonObject.getJSONArray("floorPlanData");
-                Log.d("wtf", floorPlans.toString());
 
                 for (int i = 0; i < floorPlans.length(); i++) {
                     JSONObject buildingGround = floorPlans.getJSONObject(i);
@@ -357,7 +354,6 @@ public class Map implements OnMapReadyCallback {
      * @param response the response from the server containing the room information.
      */
     public static void setRoomsInit(String response) {
-        Log.d("quickDebug", response);
         try {
             JSONObject jsonObject = new JSONObject(response);
 
@@ -387,13 +383,11 @@ public class Map implements OnMapReadyCallback {
      * @param response the floor plan IDs for the focused building from the server.
      */
     public static void setFloorPlans(String response) {
-        Log.d("quickDebug", response);
         try {
             JSONObject jsonObject = new JSONObject(response);
 
             if (jsonObject.has("floorPlanData")) {
                 JSONArray floorPlans = jsonObject.getJSONArray("floorPlanData");
-                Log.d("wtf", floorPlans.toString());
                 for (int i = 0; i < floorPlans.length(); i++) {
                     JSONObject buildingStore = floorPlans.getJSONObject(i);
                     if (buildingStore.has("floorPlanID") && buildingStore.has("floor")) {
@@ -521,11 +515,9 @@ public class Map implements OnMapReadyCallback {
         if (!isFocused) { // If not focused on a building
             focusOnMarker = true;
             Iterator<GroundOverlay> overlays = buildingOverlays.keySet().iterator();
-            Log.d("dfgfdg", "focusOnFloorPlan: " + buildingOverlays.size());
             GroundOverlay nextOverlay = null;
             while (overlays.hasNext()) { // Get the overlay to focus on
                 nextOverlay = overlays.next();
-                Log.d("dfgfdg", "focusOnFloorPlan: " + buildingOverlays.get(nextOverlay));
                 if (mPoint2Building.equals(buildingOverlays.get(nextOverlay))) break;
             }
 
@@ -601,7 +593,6 @@ public class Map implements OnMapReadyCallback {
      * @param response the room data for a particular floor.
      */
     public static void setRooms(String response) {
-        Log.d("quickDebug", response);
         try {
             JSONObject jsonObject = new JSONObject(response);
 
@@ -847,7 +838,6 @@ public class Map implements OnMapReadyCallback {
                 e.printStackTrace();
             }
 
-            Log.d("thing", jsonPathData.toString());
             BackendRequest t = new BackendRequest("path", jsonPathData.toString(), false);
 
             t.execute();
@@ -861,7 +851,6 @@ public class Map implements OnMapReadyCallback {
      *                 from the server.
      */
     public static void drawPolyline(String response) {
-        Log.d("quickDebug", response);
         pathResponse = response;
         try {
             JSONObject jsonObject = new JSONObject(response);
@@ -871,16 +860,12 @@ public class Map implements OnMapReadyCallback {
                 if (jsonObject2.has("path"))  {
 
                     JSONArray path = jsonObject2.getJSONArray("path");
-                    Log.d("wtf", path.toString());
                     if (polyline != null) {
-                        Log.d("wtf565", path.toString());
                         Iterator<Polyline> pol = polyline.iterator();
                         while (pol.hasNext()) pol.next().remove();
                     }
                     polyline = new HashSet<Polyline>();
-                    Log.d("wtf3", String.valueOf(path.length()));
                     for (int i = 0; i < path.length() - 1; i++) {
-                        Log.d("wtf", path.get(i).toString());
                         JSONObject sourceJSON = path.getJSONObject(i);
                         JSONObject targetJSON = path.getJSONObject(i + 1);
                         if (sourceJSON.has("floor") && targetJSON.has("floor")) {
@@ -888,16 +873,12 @@ public class Map implements OnMapReadyCallback {
                             String targetFloor = targetJSON.getString("floor");
                             if (sourceFloor.equals(targetFloor) && Integer.parseInt(sourceFloor) == focusedFloor) {
                                 if (sourceJSON.has("latitude") && sourceJSON.has("longitude") && targetJSON.has("latitude") && targetJSON.has("longitude")) {
-                                    Log.d("help", (String) sourceJSON.get("latitude"));
-                                    Log.d("help2", (String) sourceJSON.get("longitude"));
-                                    Log.d("help3", String.valueOf(Double.valueOf((String) targetJSON.get("latitude"))));
                                     LatLng source = new LatLng(Double.valueOf(sourceJSON.getString("latitude")), Double.valueOf(sourceJSON.getString("longitude")));
                                     LatLng target = new LatLng(Double.valueOf(targetJSON.getString("latitude")), Double.valueOf(targetJSON.getString("longitude")));
                                     final PolylineOptions rectOptions = new PolylineOptions();
                                     rectOptions.add(source, target).color(Color.RED);
                                     polyline.add(mMap.addPolyline(rectOptions));
                                     Polyline u = (Polyline) polyline.toArray()[0];
-                                    Log.d("wtf2", String.valueOf(source.latitude));
                                 }
                             }
                         }
@@ -945,8 +926,6 @@ public class Map implements OnMapReadyCallback {
                 // Need to make request to get floorplan information and room data
                 focusedBuilding = buildingOverlays.get(focusedGroundOverlay);
                 focusedFloor = 0;
-                Log.d("building", focusedBuilding);
-                Log.d("building2", mPoint2Building);
                 buildingOverlays.remove(focusedGroundOverlay);
 
                 try {
