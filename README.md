@@ -1,4 +1,4 @@
-# **SYSTEMS REQUIREMENTS DOCUMENT AND PROTOTYPE** 
+# **SYSTEMS REQUIREMENTS DOCUMENT AND OVERVIEW** 
 
 Kaelan Sinclair (21292916) 
 Keyur Modi (21845191)
@@ -25,19 +25,8 @@ The following is the minimum deliverables that we expect the appplication to hav
 *	User can place marker on destination
 *	User can manually put a starting location 
 *	Determines viable path
-*	Determines the user’s closest node (start position for navigation)
-*	Use A* pathfinding algorithm that returns a list of adjacent nodes
-*	Store node information and meta-data for rooms in database
-*	Further room details page
-*	App layered on top of google maps (for consistency)
-*	Buttons to change between floors
-*	Buttons to start tracking
-*	Current location button
-*	Points-of-interest 
-*	Favourites and recent location lists
-*	Functional Login system
-*	Syncing with the server 
 
+Note that the User Stories section contains potential future functionality of the application.
 
 ### **USER ROLES**
 
@@ -232,6 +221,8 @@ If the user taps on a room on a floor, a destination marker will be placed in th
 There is a multitude of features that could be added to enhance the functionality of the EZone application.  The following section will discuss some of these features and goals as part of the potential future scope.
 
 In the future, the application could:
+* Implement some of the above user stories and functionality that has yet to be implemented
+    - Not all of the functionality has been implemented yet as the application is a proof of concept and work in progess.
 *	Allow for more complex searching of destinations
     - The present scope of the project only covers very basic searching of destinations. Adding a more complex searching algorithm would make the searching more fine-tuned and help filter out unrelated results.
 
