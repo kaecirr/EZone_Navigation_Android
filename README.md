@@ -26,7 +26,7 @@ The following is the minimum deliverables that we expect the appplication to hav
 *	User can manually put a starting location 
 *	Determines viable path
 
-Note that the User Stories section contains potential future functionality of the application. See the application presentation for demonstrations of the supported functionality.
+Note that the User Stories section contains potential future functionality of the application. See the application presentation for demonstrations of the supported functionality: <https://drive.google.com/file/d/13QjtdSsybRyloH1ykI3hnxBj3qh3H2SU/view?usp=sharing>.
 
 ### **USER ROLES**
 
